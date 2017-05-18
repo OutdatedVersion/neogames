@@ -14,7 +14,13 @@ public class Account
 {
 
     /**
-     * Constant Unique ID.
+     * Constant uniquely assigned identifier.
+     */
+    public int id;
+
+    /**
+     * Constant Unique ID assigned by Mojang
+     * to distinguish players.
      */
     public UUID uuid;
 

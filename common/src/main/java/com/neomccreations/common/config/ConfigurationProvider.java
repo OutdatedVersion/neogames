@@ -41,7 +41,7 @@ public class ConfigurationProvider
      */
     public <T> T read(String filePath, Class<T> clazz)
     {
-        final File _file = new File(Paths.CONFIG + FILE_FORMATTER.apply(filePath));
+        final File _file = Paths.CONFIG.fileAt(FILE_FORMATTER.apply(filePath));
 
         try (BufferedReader reader = Files.newBufferedReader(_file.toPath()))
         {
