@@ -8,9 +8,13 @@ import com.neomccreations.common.config.ConfigurationProvider;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Handle distributed player data.
@@ -59,6 +63,33 @@ public class Database
         cache = CacheBuilder.newBuilder().build();
 
         return this;
+    }
+
+    /**
+     * Grabs a connection from our pool.
+     *
+     * <p>
+     * Be sure you are closing these after use!!
+     *
+     * @return A fresh connection
+     * @throws SQLException In case something goes wrong
+     */
+    public Connection reserve() throws SQLException
+    {
+        return hikari.getConnection();
+    }
+
+    /**
+     * Adds the provided {@link Callable} to
+     * our task execution queue.
+     *
+     * @param task The task
+     * @param <R> Return type
+     * @return A {@link Future} wrapping the return value
+     */
+    public <R> Future<R> submitTask(Callable<R> task)
+    {
+        return executor.submit(task);
     }
 
 }

@@ -20,7 +20,7 @@ public class DatabaseConfig
      * Takes in our {@link DatabaseConfig} and returns a MySQL friendly connection address.
      */
     public static final Function<DatabaseConfig, String> FORMAT_JDBC_URL = config -> format("jdbc:mysql://%s:%s/%s",
-                                                                                                    config.host, config.port, config.database);
+                                                                                            config.host, config.port, config.database);
 
     /**
      * Info regarding authentication.
