@@ -6,15 +6,22 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that the annotated field
- * should use the name it has for looking
- * into the {@link java.sql.ResultSet}'s data.
+ * Indicates that the annotated class
+ * will be found in a certain table.
  *
  * @author Ben (OutdatedVersion)
- * @since May/20/2017 (2:12 AM)
- *
- * @see Column
+ * @since May/25/2017 (7:36 PM)
  */
 @Retention ( RetentionPolicy.RUNTIME )
-@Target ( ElementType.FIELD )
-public @interface InheritColumn { }
+@Target ( ElementType.TYPE )
+public @interface Table
+{
+
+    /**
+     * @return The table that the annotated element
+     *         is held in.
+     */
+    String value();
+
+}
+

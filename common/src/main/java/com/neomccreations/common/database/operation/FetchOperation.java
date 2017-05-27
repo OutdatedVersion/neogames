@@ -1,11 +1,11 @@
 package com.neomccreations.common.database.operation;
 
 import com.neomccreations.common.database.Database;
-import com.neomccreations.common.database.mutate.Mutators;
 import com.neomccreations.common.database.result.SQLResult;
 
-import java.sql.*;
-import java.util.concurrent.Callable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.concurrent.Future;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -25,7 +25,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author Ben (OutdatedVersion)
  * @since May/20/2017 (1:50 AM)
  */
-public class FetchOperation implements Callable<SQLResult>
+public class FetchOperation implements Operation<SQLResult>
 {
 
     /**
@@ -109,10 +109,11 @@ public class FetchOperation implements Callable<SQLResult>
         try
         (
             Connection connection = this.database.reserve();
-            PreparedStatement statement = FetchOperation.statement(connection, this.sql, this.data);
+            PreparedStatement statement = Operation.statement(connection, this.sql, this.data);
             ResultSet result = statement.executeQuery()
         )
         {
+            // probs gonna prematurely close
             return new SQLResult(result);
         }
     }
@@ -124,6 +125,7 @@ public class FetchOperation implements Callable<SQLResult>
      * @return The data from the {@link java.sql.ResultSet}
      * @throws Exception In the case something goes wrong
      */
+    @Override
     public SQLResult sync(Database database) throws Exception
     {
         this.database = database;
@@ -138,42 +140,11 @@ public class FetchOperation implements Callable<SQLResult>
      * @return Transformed & wrapped data from the {@link java.sql.ResultSet}
      * @throws Exception In the case that something goes wrong
      */
+    @Override
     public Future<SQLResult> async(Database database) throws Exception
     {
         this.database = database;
         return database.submitTask(this);
-    }
-
-    /**
-     * To keep everything wrapped in a single
-     * try-with-resources block we keep have
-     * this utility method.
-     *
-     * @param connection The connection
-     * @param sql Raw SQL
-     * @param data Data for the SQL
-     * @return The statement
-     * @throws SQLException In case something goes wrong
-     */
-    @SuppressWarnings ( "unchecked" )
-    private static PreparedStatement statement(Connection connection, String sql, Object[] data) throws SQLException
-    {
-        final PreparedStatement _statement = connection.prepareStatement(sql);
-
-        if (data != null)
-        {
-            for (int i = 0; i < data.length; i++)
-            {
-                Object _obj = data[i];
-
-                if (Mutators.hasMutator(_obj.getClass()))
-                    Mutators.of(_obj.getClass()).to(_obj, i + 1, _statement);
-                else
-                    _statement.setObject(i + 1, _obj);
-            }
-        }
-
-        return _statement;
     }
 
 }

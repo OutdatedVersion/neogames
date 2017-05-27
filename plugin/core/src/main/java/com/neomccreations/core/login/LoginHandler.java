@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.neomccreations.common.account.Account;
 import com.neomccreations.common.database.Database;
 import com.neomccreations.common.database.operation.FetchOperation;
+import com.neomccreations.common.database.operation.InsertOperation;
 import com.neomccreations.common.inject.ParallelStartup;
 import com.neomccreations.core.issue.Issues;
 import org.bukkit.event.EventHandler;
@@ -38,7 +39,10 @@ public class LoginHandler implements Listener
             final Account _account = new FetchOperation(SQL_FIND_PLAYER)
                                             .data(event.getUniqueId())
                                             .sync(database)
-                                            .as(Account.class);
+                                            .orElseInsert(() -> new InsertOperation(""))
+                                            // INSERT INTO accounts (name) VALUES (outdatedversion);
+                                            // need some sort of fallback task here
+                                            .as(Account.class); // can't complete w/o err if not in db
         }
         catch (Exception ex)
         {

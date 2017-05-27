@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.neomccreations.common.database.mutate.Mutators;
+import com.neomccreations.common.database.operation.InsertOperation;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
@@ -42,6 +43,13 @@ public class SQLResult
     private final ResultSet result;
 
     /**
+     * In the event that our {@link #result} doesn't
+     * contain anything we'll execute this alternate
+     * operation then use it's return value as our own.
+     */
+    private Supplier<InsertOperation> fallback;
+
+    /**
      * @param set See {@link #result}
      */
     public SQLResult(ResultSet set)
@@ -55,12 +63,14 @@ public class SQLResult
      * the query we'll run this code instead
      * of attempting a conversion.
      *
-     * @param runnable The code to execute
+     * @param supplier The code to execute
      * @return This result for chaining
+     *
+     * @see #fallback Some more info
      */
-    public SQLResult orElse(Runnable runnable)
+    public SQLResult orElseInsert(Supplier<InsertOperation> supplier)
     {
-
+        this.fallback = supplier;
         return this;
     }
 
@@ -77,12 +87,21 @@ public class SQLResult
         try
         {
             final T _instance = clazz.newInstance();
+            boolean _first = true;
 
             for (Field field : FIELD_CACHE.get(clazz))
             {
                 if (result.next())
                 {
                     field.set(_instance, Mutators.of(field.getType()).from(ResultUtil.columnNameFromField(field), result));
+                    _first = false;
+                }
+                else if (_first)
+                {
+                    if (fallback != null)
+                    {
+
+                    }
                 }
                 else throw new RuntimeException("Mismatched result/field count.");
             }

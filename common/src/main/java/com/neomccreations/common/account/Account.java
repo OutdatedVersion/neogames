@@ -2,6 +2,7 @@ package com.neomccreations.common.account;
 
 import com.neomccreations.common.database.annotation.Column;
 import com.neomccreations.common.database.annotation.InheritColumn;
+import com.neomccreations.common.database.annotation.Table;
 import com.neomccreations.common.reference.Role;
 
 import java.time.Instant;
@@ -14,6 +15,7 @@ import java.util.UUID;
  * @author Ben (OutdatedVersion)
  * @since May/17/2017 (10:06 PM)
  */
+@Table ( "accounts" )
 public class Account
 {
 
@@ -55,7 +57,7 @@ public class Account
     public Instant lastLogin;
 
     /**
-     * The last address we saw this player from.
+     * The last IP address we saw this player from.
      */
     @Column ( "address" )
     public String ip;
