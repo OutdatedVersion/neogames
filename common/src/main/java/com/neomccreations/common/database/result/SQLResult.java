@@ -3,6 +3,7 @@ package com.neomccreations.common.database.result;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.neomccreations.common.database.Database;
 import com.neomccreations.common.database.mutate.Mutators;
 import com.neomccreations.common.database.operation.InsertOperation;
 
@@ -43,6 +44,11 @@ public class SQLResult
     private final ResultSet result;
 
     /**
+     * An instance of our database.
+     */
+    private final Database database;
+
+    /**
      * In the event that our {@link #result} doesn't
      * contain anything we'll execute this alternate
      * operation then use it's return value as our own.
@@ -51,10 +57,12 @@ public class SQLResult
 
     /**
      * @param set See {@link #result}
+     * @param database See {@link #database}
      */
-    public SQLResult(ResultSet set)
+    public SQLResult(ResultSet set, Database database)
     {
         this.result = set;
+        this.database = database;
     }
 
     /**
@@ -98,10 +106,9 @@ public class SQLResult
                 }
                 else if (_first)
                 {
+                    // idk
                     if (fallback != null)
-                    {
-
-                    }
+                        fallback.get().sync(this.database);
                 }
                 else throw new RuntimeException("Mismatched result/field count.");
             }

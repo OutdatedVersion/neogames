@@ -40,7 +40,6 @@ public class LoginHandler implements Listener
                                             .data(event.getUniqueId())
                                             .sync(database)
                                             .orElseInsert(() -> new InsertOperation(""))
-                                            // INSERT INTO accounts (name) VALUES (outdatedversion);
                                             // need some sort of fallback task here
                                             .as(Account.class); // can't complete w/o err if not in db
         }

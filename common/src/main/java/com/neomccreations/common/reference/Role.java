@@ -13,8 +13,14 @@ public enum Role
 
     OWNER(ChatColor.GOLD),
     DEV(ChatColor.DARK_PURPLE),
+    ADMIN(ChatColor.DARK_PURPLE),
     MOD(ChatColor.DARK_GREEN),
+    BUILDER(ChatColor.DARK_AQUA),
     // ^ staff
+
+    YOUTUBE(ChatColor.RED),
+    YT(ChatColor.DARK_PURPLE),
+    // ^ media
 
     FAM(ChatColor.DARK_AQUA),
     HOMIE(ChatColor.LIGHT_PURPLE),

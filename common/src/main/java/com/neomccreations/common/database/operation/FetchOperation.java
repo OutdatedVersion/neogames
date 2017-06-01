@@ -114,7 +114,7 @@ public class FetchOperation implements Operation<SQLResult>
         )
         {
             // probs gonna prematurely close
-            return new SQLResult(result);
+            return new SQLResult(result, this.database);
         }
     }
 
