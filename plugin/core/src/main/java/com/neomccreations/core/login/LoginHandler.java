@@ -24,7 +24,7 @@ public class LoginHandler implements Listener
     /**
      * SQL query to retrieve player data.
      */
-    public static final String SQL_FIND_PLAYER = "SELECT id,name,role,first_login,last_login,address FROM accounts WHERE uuid=?;";
+    public static final String SQL_FIND_PLAYER = "SELECT iid,name,role,first_login,last_login,address FROM accounts WHERE uuid=?;";
 
     /**
      * Bridge to player data.

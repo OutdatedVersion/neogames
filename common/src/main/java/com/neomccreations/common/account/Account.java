@@ -21,8 +21,13 @@ public class Account
 
     /**
      * Constant uniquely assigned identifier.
+     *
+     * <p>
+     * The column's name is prefixed by an
+     * {@code i} to indicate it as our internally
+     * used ID. As opposed to {@link #uuid}.
      */
-    @InheritColumn
+    @Column ( "iid" )
     public int id;
 
     /**
