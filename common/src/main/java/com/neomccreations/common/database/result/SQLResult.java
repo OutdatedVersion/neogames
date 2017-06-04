@@ -34,7 +34,7 @@ public class SQLResult
                                     @Override
                                     public Field[] load(Class<?> key) throws Exception
                                     {
-                                        return Stream.of(key.getFields()).filter(ResultUtil::canUseField).toArray(Field[]::new);
+                                        return Stream.of(key.getFields()).filter(ResultTools::canUseField).toArray(Field[]::new);
                                     }
                                 });
 
@@ -101,7 +101,7 @@ public class SQLResult
             {
                 if (result.next())
                 {
-                    field.set(_instance, Mutators.of(field.getType()).from(ResultUtil.columnNameFromField(field), result));
+                    field.set(_instance, Mutators.of(field.getType()).from(ResultTools.columnNameFromField(field), result));
                     _first = false;
                 }
                 else if (_first)

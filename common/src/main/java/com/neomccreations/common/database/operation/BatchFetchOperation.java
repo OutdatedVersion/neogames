@@ -2,39 +2,31 @@ package com.neomccreations.common.database.operation;
 
 import com.neomccreations.common.database.Database;
 import com.neomccreations.common.database.api.Operation;
+import com.neomccreations.common.database.result.SQLResult;
 
 import java.util.concurrent.Future;
 
 /**
  * @author Ben (OutdatedVersion)
- * @since May/21/2017 (10:09 PM)
+ * @since Jun/03/2017 (10:45 PM)
  */
-public class InsertOperation<R> implements Operation<R>
+public class BatchFetchOperation implements Operation<SQLResult>
 {
 
-    // sql
-    private final String sql;
-
-    public InsertOperation(String sql)
-    {
-        this.sql = sql;
-    }
-
-    // data
     @Override
-    public R call() throws Exception
+    public SQLResult sync(Database database) throws Exception
     {
         return null;
     }
 
     @Override
-    public R sync(Database database) throws Exception
+    public Future<SQLResult> async(Database database) throws Exception
     {
         return null;
     }
 
     @Override
-    public Future<R> async(Database database) throws Exception
+    public SQLResult call() throws Exception
     {
         return null;
     }

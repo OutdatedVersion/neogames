@@ -1,4 +1,4 @@
-package com.neomccreations.common.database.operation;
+package com.neomccreations.common.database.api;
 
 import com.neomccreations.common.database.Database;
 import com.neomccreations.common.database.mutate.Mutators;

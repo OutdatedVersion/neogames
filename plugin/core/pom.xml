@@ -32,6 +32,13 @@
             <version>1.0</version>
         </dependency>
 
+        <!-- Apache: Random utilities related to language stuff -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.5</version>
+        </dependency>
+
     </dependencies>
 
 </project>

@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
  * @author Ben (OutdatedVersion)
  * @since May/21/2017 (7:14 PM)
  */
-class ResultUtil
+class ResultTools
 {
 
     /**

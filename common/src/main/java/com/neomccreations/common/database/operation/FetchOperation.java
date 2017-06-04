@@ -1,6 +1,7 @@
 package com.neomccreations.common.database.operation;
 
 import com.neomccreations.common.database.Database;
+import com.neomccreations.common.database.api.Operation;
 import com.neomccreations.common.database.result.SQLResult;
 
 import java.sql.Connection;
@@ -14,10 +15,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * A continence tool for working with
  * SQL data-fetching queries; Mostly
  * the {@code SELECT} command.
- *
  * <p>
  * Typical backing cycle is as follows:
- *
+ * <p>
  * 1. Query setup with object creation
  * 2. Data for the statement stored via {@link #data(Object...)}
  * 3. Statement execution in a fashion desired by {@link #sync(Database)} or {@link #async(Database)}
@@ -46,7 +46,6 @@ public class FetchOperation implements Operation<SQLResult>
 
     /**
      * Database instance for working with data.
-     *
      * <p>
      * This must be assigned by one of the exposed
      * execution methods.
@@ -66,16 +65,15 @@ public class FetchOperation implements Operation<SQLResult>
 
     /**
      * Sets the backing data for this query.
-     *
      * <p>
      * Data parameters in the query will be satisfied
      * with this data. As in, the {@code ?}s in the query.
-     *
      * <p>
      * Raw data may be mapped to new values during statement
      * creation.
      *
      * @param data The data
+     *
      * @return This operation for chaining
      */
     public FetchOperation data(Object... data)
@@ -122,6 +120,7 @@ public class FetchOperation implements Operation<SQLResult>
      * Performs the SQL query in a thread-blocking fashion.
      *
      * @param database Database instance
+     *
      * @return The data from the {@link java.sql.ResultSet}
      * @throws Exception In the case something goes wrong
      */
@@ -137,6 +136,7 @@ public class FetchOperation implements Operation<SQLResult>
      * task queue. Data is returned wrapped in a {@link Future}.
      *
      * @param database Database instance
+     *
      * @return Transformed & wrapped data from the {@link java.sql.ResultSet}
      * @throws Exception In the case that something goes wrong
      */
