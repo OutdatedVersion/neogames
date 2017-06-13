@@ -28,7 +28,6 @@ public class ConfigurationProvider
      */
     private static final Gson GSON = new Gson();
 
-
     /**
      * Read the contents of a file at the
      * specified path and return it as some

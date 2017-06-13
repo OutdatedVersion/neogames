@@ -1,11 +1,6 @@
 package com.neomccreations.common.login;
 
-import com.google.common.collect.Sets;
-import com.neomccreations.common.database.operation.FetchOperation;
-
-import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -17,12 +12,14 @@ public class LoginRequest
     private final UUID uuid;
     private final String name, address;
 
+    private boolean disallow;
+    private String denyReason;
+
     public LoginRequest(UUID uuid, String name, String address)
     {
         this.uuid = uuid;
         this.name = name;
         this.address = address;
-        this.results = Sets.newConcurrentHashSet();
     }
 
     public UUID uuid()
@@ -40,9 +37,22 @@ public class LoginRequest
         return address;
     }
 
-    public <T> LoginRequest deciding(FetchOperation fetch, Class<T> clazz, Function<T, LoginResult> dataToResult)
+    public boolean isDenied()
     {
+        return disallow;
+    }
 
+    public String denyReason()
+    {
+        return denyReason;
+    }
+
+    public LoginRequest deny(String reason)
+    {
+        this.disallow |= true;
+        this.denyReason = reason;
+
+        return this;
     }
 
 }

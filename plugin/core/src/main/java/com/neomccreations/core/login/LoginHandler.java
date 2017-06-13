@@ -9,7 +9,6 @@ import com.neomccreations.common.database.operation.InsertOperation;
 import com.neomccreations.common.inject.ParallelStartup;
 import com.neomccreations.common.login.LoginHook;
 import com.neomccreations.common.login.LoginRequest;
-import com.neomccreations.common.login.LoginResult;
 import com.neomccreations.core.issue.Issues;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,6 +30,11 @@ public class LoginHandler implements Listener
      * SQL query to retrieve player data.
      */
     public static final String SQL_FIND_PLAYER = "SELECT iid,name,role,first_login,last_login,address FROM accounts WHERE uuid=?;";
+
+    /**
+     * SQL statement to insert player data.
+     */
+    public static final String SQl_RECORD_PLAYER = "INSERT INTO accounts (iid, uuid, name, role, address, first_login, last_login) VALUES(?, ?, ?, ?, ?, ?, ?);";
 
     /**
      * Bridge to player data.
@@ -59,34 +63,22 @@ public class LoginHandler implements Listener
     {
         try
         {
-            final LoginRequest request = new LoginRequest(event.getUniqueId(),
-                            event.getName(), event.getAddress().getHostAddress());
+            final Account _account = new FetchOperation(SQL_FIND_PLAYER)
+                                                  .data(event.getUniqueId())
+                                                  .sync(database)
+                                                  .orElseInsert(() -> new InsertOperation(SQl_RECORD_PLAYER))
+                                                  .as(Account.class);
+
+
+            final LoginRequest request = new LoginRequest(event.getUniqueId(), event.getName(), event.getAddress().getHostAddress());
 
             for (LoginHook hook : loginHooks)
             {
-                final LoginResult result = hook.processLogin(request);
-
-                if (result.decision == LoginResult.Outcome.REJECT)
-                {
-
-                }
+                hook.processLogin(request);
             }
 
-            // look through every LoginRequest
-            // add onto the query
-            // go execute it
-            // throw the parsed ResultSets back in return for a LoginResult
-            // look over every result
-            // check if any are denying the login
-            // if so, find the decision maker
-            // take the reason and deny the login here
-
-            final Account _account = new FetchOperation(SQL_FIND_PLAYER)
-                                            .data(event.getUniqueId())
-                                            .sync(database)
-                                            .orElseInsert(() -> new InsertOperation(""))
-                                            // need some sort of fallback task here
-                                            .as(Account.class); // can't complete w/o err if not in db
+            if (request.isDenied())
+                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, request.denyReason());
         }
         catch (Exception ex)
         {

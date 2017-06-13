@@ -1,13 +1,11 @@
 package com.neomccreations.common.database.api;
 
 import com.neomccreations.common.database.Database;
-import com.neomccreations.common.database.mutate.Mutators;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Represents some sort of interaction with
@@ -19,8 +17,39 @@ import java.util.concurrent.Future;
  * @author Ben (OutdatedVersion)
  * @since May/25/2017 (6:19 PM)
  */
-public interface Operation<R> extends Callable<R>
+public abstract class Operation<R> implements Callable<R>
 {
+
+    /**
+     * Raw SQL behind this operation.
+     */
+    protected final String sql;
+
+    /**
+     * Data backing our SQL statement.
+     */
+    protected Object[] data;
+
+    /**
+     * Database instance for working with data.
+     * <p>
+     * This must be assigned by one of the exposed
+     * execution methods.
+     *
+     * @see #sync(Database) Value assigned
+     * @see #async(Database) Value assigned
+     */
+    protected Database database;
+
+    /**
+     * Class Constructor
+     *
+     * @param sql Raw SQL
+     */
+    public Operation(String sql)
+    {
+        this.sql = sql;
+    }
 
     /**
      * Executes this operation in a thread-blocking manor.
@@ -29,7 +58,7 @@ public interface Operation<R> extends Callable<R>
      * @return The result of type {@code T}
      * @throws Exception In the event that something goes wrong
      */
-    R sync(Database database) throws Exception;
+    public abstract R sync(Database database) throws Exception;
 
     /**
      * Executes this operation on our {@link Database}'s
@@ -40,38 +69,30 @@ public interface Operation<R> extends Callable<R>
      * @return The result held in a {@link Future}
      * @throws Exception In the event that something goes wrong
      */
-    Future<R> async(Database database) throws Exception;
+    public abstract Future<R> async(Database database) throws Exception;
 
     /**
-     * To keep everything wrapped in a single
-     * try-with-resources block we keep have
-     * this utility method.
+     * Sets the backing data for this operation.
+     * <p>
+     * Data parameters in the query will be satisfied
+     * with this data. As in, the {@code ?}s in the query.
+     * <p>
+     * Raw data may be mapped to new values during statement
+     * creation.
      *
-     * @param connection The connection
-     * @param sql Raw SQL statement
-     * @param data Data for the SQL
-     * @return The statement
-     * @throws SQLException In case something goes wrong
+     * @param data The data, as a simple array
+     * @return This operation
      */
-    @SuppressWarnings ( "unchecked" )
-    static PreparedStatement statement(Connection connection, String sql, Object[] data) throws SQLException
+    public abstract Operation data(Object... data);
+
+    /**
+     * Checks that we have the resources required
+     * to execute this operation. Usually the first
+     * statement within {@link #call()}.
+     */
+    protected void stateCheck()
     {
-        final PreparedStatement _statement = connection.prepareStatement(sql);
-
-        if (data != null)
-        {
-            for (int i = 0; i < data.length; i++)
-            {
-                Object _obj = data[i];
-
-                if (Mutators.hasMutator(_obj.getClass()))
-                    Mutators.of(_obj.getClass()).to(_obj, i + 1, _statement);
-                else
-                    _statement.setObject(i + 1, _obj);
-            }
-        }
-
-        return _statement;
+        checkNotNull(this.database, "Do NOT call this method directly. Use #sync or #async");
     }
 
 }

@@ -94,6 +94,10 @@ public class SQLResult
     {
         try
         {
+            // in case we just want the raw data
+            if (clazz.equals(ResultSet.class))
+                return (T) result;
+
             final T _instance = clazz.newInstance();
             boolean _first = true;
 
@@ -106,7 +110,6 @@ public class SQLResult
                 }
                 else if (_first)
                 {
-                    // idk
                     if (fallback != null)
                         fallback.get().sync(this.database);
                 }

@@ -25,18 +25,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author Ben (OutdatedVersion)
  * @since May/20/2017 (1:50 AM)
  */
-public class FetchOperation implements Operation<SQLResult>
+public class FetchOperation extends Operation<SQLResult>
 {
-
-    /**
-     * The SQL query behind this operation.
-     */
-    private final String sql;
-
-    /**
-     * The data provided to the query. (statement)
-     */
-    private Object[] data;
 
     /**
      * Let's us know that we don't require
@@ -45,41 +35,11 @@ public class FetchOperation implements Operation<SQLResult>
     private boolean requireNoData;
 
     /**
-     * Database instance for working with data.
-     * <p>
-     * This must be assigned by one of the exposed
-     * execution methods.
-     *
-     * @see #sync(Database) Value assigned
-     * @see #async(Database) Value assigned
-     */
-    private Database database;
-
-    /**
-     * @param sql See {@link #sql}
+     * {@inheritDoc}
      */
     public FetchOperation(String sql)
     {
-        this.sql = sql;
-    }
-
-    /**
-     * Sets the backing data for this query.
-     * <p>
-     * Data parameters in the query will be satisfied
-     * with this data. As in, the {@code ?}s in the query.
-     * <p>
-     * Raw data may be mapped to new values during statement
-     * creation.
-     *
-     * @param data The data
-     *
-     * @return This operation for chaining
-     */
-    public FetchOperation data(Object... data)
-    {
-        this.data = checkNotNull(data, "Data provided must be non-null");
-        return this;
+        super(sql);
     }
 
     /**
@@ -96,10 +56,26 @@ public class FetchOperation implements Operation<SQLResult>
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FetchOperation data(Object... data)
+    {
+        this.database = database;
+        return this;
+    }
+
+    /**
+     * Execute the query and transform it.
+     *
+     * @return Representation of the {@link ResultSet}
+     * @throws Exception In the event that something goes wrong
+     */
     @Override
     public SQLResult call() throws Exception
     {
-        checkNotNull(this.database, "Do NOT call this method directly. Use #sync or #async");
+        stateCheck();
 
         if (!requireNoData)
             checkNotNull(this.data, "You must setup the backing data first");
@@ -107,7 +83,7 @@ public class FetchOperation implements Operation<SQLResult>
         try
         (
             Connection connection = this.database.reserve();
-            PreparedStatement statement = Operation.statement(connection, this.sql, this.data);
+            PreparedStatement statement = OperationTools.statement(connection, this.sql, this.data);
             ResultSet result = statement.executeQuery()
         )
         {
@@ -116,14 +92,6 @@ public class FetchOperation implements Operation<SQLResult>
         }
     }
 
-    /**
-     * Performs the SQL query in a thread-blocking fashion.
-     *
-     * @param database Database instance
-     *
-     * @return The data from the {@link java.sql.ResultSet}
-     * @throws Exception In the case something goes wrong
-     */
     @Override
     public SQLResult sync(Database database) throws Exception
     {
@@ -131,15 +99,6 @@ public class FetchOperation implements Operation<SQLResult>
         return call();
     }
 
-    /**
-     * Performs the SQL query on our {@link Database}'s
-     * task queue. Data is returned wrapped in a {@link Future}.
-     *
-     * @param database Database instance
-     *
-     * @return Transformed & wrapped data from the {@link java.sql.ResultSet}
-     * @throws Exception In the case that something goes wrong
-     */
     @Override
     public Future<SQLResult> async(Database database) throws Exception
     {
