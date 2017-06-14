@@ -62,7 +62,7 @@ public class FetchOperation extends Operation<SQLResult>
     @Override
     public FetchOperation data(Object... data)
     {
-        this.database = database;
+        this.data = data;
         return this;
     }
 
