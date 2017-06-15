@@ -125,6 +125,18 @@ public class Database
     }
 
     /**
+     * Inserts an account into our cache.
+     *
+     * @param account The account
+     * @return The just inserted account
+     */
+    public Account cacheCommit(Account account)
+    {
+        cache.put(account.uuid, account);
+        return account;
+    }
+
+    /**
      * Remove an account from the in-memory cache.
      *
      * @param uuid The account's UUID
