@@ -2,13 +2,9 @@ package com.neomccreations.core.login;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import com.neomccreations.common.account.Account;
 import com.neomccreations.common.database.Database;
-import com.neomccreations.common.database.operation.FetchOperation;
-import com.neomccreations.common.database.operation.InsertOperation;
 import com.neomccreations.common.inject.ParallelStartup;
 import com.neomccreations.common.login.LoginHook;
-import com.neomccreations.common.login.LoginRequest;
 import com.neomccreations.core.issue.Issues;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -63,13 +59,8 @@ public class LoginHandler implements Listener
     {
         try
         {
-            final Account _account = new FetchOperation(SQL_FIND_PLAYER)
-                                                  .data(event.getUniqueId())
-                                                  .sync(database)
-                                                  .orElseInsert(() -> new InsertOperation(SQl_RECORD_PLAYER))
-                                                  .as(Account.class);
 
-
+            /*
             final LoginRequest request = new LoginRequest(event.getUniqueId(), event.getName(), event.getAddress().getHostAddress());
 
             for (LoginHook hook : loginHooks)
@@ -79,6 +70,7 @@ public class LoginHandler implements Listener
 
             if (request.isDenied())
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, request.denyReason());
+            */
         }
         catch (Exception ex)
         {
