@@ -92,4 +92,48 @@ public class Database
         return executor.submit(task);
     }
 
+    /**
+     * Grab a player's account from our
+     * cache via their UUID.
+     *
+     * @param uuid Their UUID
+     * @return Either the account or {@code null}
+     */
+    public Account cacheFetch(UUID uuid)
+    {
+        return cache.getIfPresent(uuid);
+    }
+
+    /**
+     * Grab a player's account from the
+     * cache using their username.
+     * <p>
+     * This approach traverses the value set
+     * and looks into each for a name, so
+     * as expected isn't the most performance
+     * oriented approach. Proper lookup via
+     * {@link UUID} is preferred.
+     *
+     * @see #cacheFetch(UUID) Should use if you can
+     *
+     * @param name The player's name
+     * @return Their account or {@code null}
+     */
+    public Account cacheFetch(String name)
+    {
+        return cache.asMap().values().stream().filter(acc -> acc.name.equals(name)).findFirst().orElse(null);
+    }
+
+    /**
+     * Remove an account from the in-memory cache.
+     *
+     * @param uuid The account's UUID
+     * @return This database instance
+     */
+    public Database cacheInvalidate(UUID uuid)
+    {
+        cache.invalidate(uuid);
+        return this;
+    }
+
 }
