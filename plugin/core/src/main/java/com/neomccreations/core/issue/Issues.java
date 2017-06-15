@@ -28,7 +28,7 @@ public class Issues
         throwable.printStackTrace();
 
 
-        final StackTraceElement _head = throwable.getStackTrace()[0];
+        final StackTraceElement head = throwable.getStackTrace()[0];
 
         // ex
         // x ERROR java.lang.NPE <friendly>

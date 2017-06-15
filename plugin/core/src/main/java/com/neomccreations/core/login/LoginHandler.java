@@ -2,14 +2,19 @@ package com.neomccreations.core.login;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
+import com.neomccreations.common.account.Account;
 import com.neomccreations.common.database.Database;
+import com.neomccreations.common.database.operation.FetchOperation;
+import com.neomccreations.common.database.operation.InsertOperation;
 import com.neomccreations.common.inject.ParallelStartup;
 import com.neomccreations.common.login.LoginHook;
+import com.neomccreations.common.reference.Role;
 import com.neomccreations.core.issue.Issues;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
+import java.time.Instant;
 import java.util.Set;
 
 /**
@@ -59,6 +64,13 @@ public class LoginHandler implements Listener
     {
         try
         {
+            database.cacheCommit(new FetchOperation(SQL_FIND_PLAYER)
+                                            .data(event.getUniqueId())
+                                            .sync(database)
+                                            .orElseInsert(() -> new InsertOperation(SQl_RECORD_PLAYER)
+                                                                       .data(1, event.getUniqueId(), event.getName(), Role.DEFAULT,
+                                                                                event.getAddress().getHostAddress(), Instant.now(), Instant.now()))
+                                            .as(Account.class));
 
             /*
             final LoginRequest request = new LoginRequest(event.getUniqueId(), event.getName(), event.getAddress().getHostAddress());
