@@ -5,7 +5,6 @@ import com.google.inject.Singleton;
 import com.neomccreations.common.reference.Paths;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.function.Function;
@@ -40,9 +39,7 @@ public class ConfigurationProvider
      */
     public <T> T read(String filePath, Class<T> clazz)
     {
-        final File _file = Paths.CONFIG.fileAt(FILE_FORMATTER.apply(filePath));
-
-        try (BufferedReader reader = Files.newBufferedReader(_file.toPath()))
+        try (BufferedReader reader = Files.newBufferedReader(Paths.CONFIG.fileAt(FILE_FORMATTER.apply(filePath)).toPath()))
         {
             return GSON.fromJson(reader, clazz);
         }

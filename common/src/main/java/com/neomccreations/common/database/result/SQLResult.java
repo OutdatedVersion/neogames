@@ -98,17 +98,17 @@ public class SQLResult
             if (clazz.equals(ResultSet.class))
                 return (T) result;
 
-            final T _instance = clazz.newInstance();
-            boolean _first = true;
+            final T instance = clazz.newInstance();
+            boolean first = true;
 
             for (Field field : FIELD_CACHE.get(clazz))
             {
                 if (result.next())
                 {
-                    field.set(_instance, Mutators.of(field.getType()).from(ResultTools.columnNameFromField(field), result));
-                    _first = false;
+                    field.set(instance, Mutators.of(field.getType()).from(ResultTools.columnNameFromField(field), result));
+                    first = false;
                 }
-                else if (_first)
+                else if (first)
                 {
                     if (fallback != null)
                         fallback.get().sync(this.database);
@@ -116,7 +116,7 @@ public class SQLResult
                 else throw new RuntimeException("Mismatched result/field count.");
             }
 
-            return _instance;
+            return instance;
         }
         catch (Exception ex)
         {

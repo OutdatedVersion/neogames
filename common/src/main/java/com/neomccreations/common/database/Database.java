@@ -51,14 +51,14 @@ public class Database
     @Inject
     public Database init(ConfigurationProvider provider)
     {
-        final DatabaseConfig _config = provider.read("database/standard", DatabaseConfig.class);
-        final HikariConfig _hikariConfig = new HikariConfig();
+        final DatabaseConfig config = provider.read("database/standard", DatabaseConfig.class);
+        final HikariConfig hikariConfig = new HikariConfig();
 
-        _hikariConfig.setJdbcUrl(DatabaseConfig.FORMAT_JDBC_URL.apply(_config));
-        _hikariConfig.setUsername(_config.auth.username);
-        _hikariConfig.setPassword(_config.auth.password);
+        hikariConfig.setJdbcUrl(DatabaseConfig.FORMAT_JDBC_URL.apply(config));
+        hikariConfig.setUsername(config.auth.username);
+        hikariConfig.setPassword(config.auth.password);
 
-        hikari = new HikariDataSource(_hikariConfig);
+        hikari = new HikariDataSource(hikariConfig);
         executor = Executors.newCachedThreadPool();
         cache = CacheBuilder.newBuilder().build();
 

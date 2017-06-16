@@ -92,12 +92,12 @@ class OperationTools
         {
             for (int i = 0; i < data.length; i++)
             {
-                Object _obj = data[i];
+                Object obj = data[i];
 
-                if (Mutators.hasMutator(_obj.getClass()))
-                    Mutators.of(_obj.getClass()).to(_obj, i + 1, statement);
+                if (Mutators.hasMutator(obj.getClass()))
+                    Mutators.of(obj.getClass()).to(obj, i + 1, statement);
                 else
-                    statement.setObject(i + 1, _obj);
+                    statement.setObject(i + 1, obj);
             }
         }
 

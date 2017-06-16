@@ -32,13 +32,13 @@ public class Issues
 
         // ex
         // x ERROR java.lang.NPE <friendly>
-        ComponentBuilder _builder = new ComponentBuilder("x").obfuscated(true).bold(true).color(ChatColor.GRAY);
+        ComponentBuilder builder = new ComponentBuilder("x").obfuscated(true).bold(true).color(ChatColor.GRAY);
 
-        _builder.append(" ERROR ").color(ChatColor.DARK_RED).obfuscated(false);
+        builder.append(" ERROR ").color(ChatColor.DARK_RED).obfuscated(false);
 
-        _builder.append(throwable.toString()).color(ChatColor.GRAY);
+        builder.append(throwable.toString()).color(ChatColor.GRAY);
 
-        _builder.append(friendly).color(ChatColor.RED);
+        builder.append(friendly).color(ChatColor.RED);
     }
 
 }
