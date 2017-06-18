@@ -35,6 +35,11 @@ public enum Role
      */
     public ChatColor color;
 
+    /**
+     * Constructor
+     *
+     * @param color See {@link #color}
+     */
     Role(ChatColor color)
     {
         this.color = color;

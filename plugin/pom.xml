@@ -4,12 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>net.neogamesmc</groupId>
-    <artifactId>plugin-parent</artifactId>
-    <version>1.0</version>
     <packaging>pom</packaging>
 
+    <parent>
+        <groupId>net.neogamesmc</groupId>
+        <artifactId>grandparent</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <artifactId>plugin-parent</artifactId>
 
     <modules>
         <module>core</module>
@@ -36,11 +39,29 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
     </repositories>
+    
+    
+    <dependencies>
+    
+        <!-- Minecraft oriented API(s) -->
+        <dependency>
+            <groupId>com.destroystokyo</groupId>
+            <artifactId>paper</artifactId>
+            <version>${version.paper}</version>
+        </dependency>
 
+        <!-- Apache: Random utilities related to language stuff -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.5</version>
+        </dependency>
+        
+    </dependencies>
+    
 
     <build>
         <finalName>${plugin.name}</finalName>
-        <defaultGoal>clean install</defaultGoal>
 
         <resources>
             <resource>
@@ -52,63 +73,6 @@
                 </includes>
             </resource>
         </resources>
-
-        <plugins>
-
-            <!-- Source -> byte code -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-
-            <!-- Build a fat jar -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.0.0</version>
-
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-
-                        <configuration>
-                            <!-- please stop -->
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-
-                            <artifactSet>
-                                <excludes>
-                                    <!-- we don't need test resources anymore -->
-                                    <exclude>junit:junit</exclude>
-                                </excludes>
-                            </artifactSet>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Allows us to access Git info -->
-            <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>get-the-git-infos</id>
-                        <goals>
-                            <goal>revision</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
     </build>
-    
+
 </project>
