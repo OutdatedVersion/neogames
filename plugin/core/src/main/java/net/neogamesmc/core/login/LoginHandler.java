@@ -1,8 +1,8 @@
-package com.neomccreations.core.login;
+package net.neogamesmc.core.login;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import com.neomccreations.core.issue.Issues;
+import net.neogamesmc.core.issue.Issues;
 import net.neogamesmc.common.account.Account;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.database.operation.FetchOperation;

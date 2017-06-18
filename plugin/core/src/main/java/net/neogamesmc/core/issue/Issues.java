@@ -1,4 +1,4 @@
-package com.neomccreations.core.issue;
+package net.neogamesmc.core.issue;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
