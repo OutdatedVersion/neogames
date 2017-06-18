@@ -5,3 +5,8 @@
 
 # Maven
 */target
+*/*/target
+
+
+# Other
+lib/*.jar
