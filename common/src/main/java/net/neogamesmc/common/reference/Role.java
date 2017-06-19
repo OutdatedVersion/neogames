@@ -36,6 +36,11 @@ public enum Role
     public ChatColor color;
 
     /**
+     * The public facing name for this role.
+     */
+    public String name;
+
+    /**
      * Constructor
      *
      * @param color See {@link #color}
@@ -43,6 +48,7 @@ public enum Role
     Role(ChatColor color)
     {
         this.color = color;
+        this.name = this.name().toLowerCase().replaceAll("_", "");
     }
 
 }
