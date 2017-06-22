@@ -18,6 +18,9 @@ import java.util.concurrent.Future;
 
 /**
  * Handle distributed player data.
+ * <p>
+ * This exposes both a raw data access interface
+ * and access to the cache-level data.
  *
  * @author Ben (OutdatedVersion)
  * @since May/17/2017 (9:26 PM)
@@ -63,6 +66,16 @@ public class Database
         cache = CacheBuilder.newBuilder().build();
 
         return this;
+    }
+
+    /**
+     * Close out the resources associated with
+     * this Database instance.
+     */
+    public void release()
+    {
+        this.executor.shutdown();
+        this.hikari.close();
     }
 
     /**

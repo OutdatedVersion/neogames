@@ -11,6 +11,11 @@
 
     <artifactId>lobby</artifactId>
 
+    <properties>
+        <plugin.name>Lobby</plugin.name>
+        <plugin.main>net.neogamesmc.lobby.Lobby</plugin.main>
+    </properties>
+
     <dependencies>
 
         <!-- Our central tools -->

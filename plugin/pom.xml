@@ -24,8 +24,6 @@
         <plugin.name>Default-Plugin-Name</plugin.name>
         <plugin.main>net.neogamesmc.null</plugin.main>
 
-        <plugin.core>NeosGames</plugin.core>
-
         <version.paper>1.11.2-R1</version.paper>
         <version.waterfall>1.11-R1</version.waterfall>
         <version.common>1.0</version.common>
@@ -39,10 +37,9 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
     </repositories>
-    
-    
+
     <dependencies>
-    
+
         <!-- Minecraft oriented API(s) -->
         <dependency>
             <groupId>com.destroystokyo</groupId>
