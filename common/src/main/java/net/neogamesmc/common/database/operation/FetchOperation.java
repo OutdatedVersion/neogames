@@ -32,7 +32,7 @@ public class FetchOperation extends Operation<SQLResult>
      * Let's us know that we don't require
      * any value on {@link #data}.
      */
-    private boolean requireNoData;
+    private boolean requireNoData = true;
 
     /**
      * {@inheritDoc}
@@ -43,25 +43,12 @@ public class FetchOperation extends Operation<SQLResult>
     }
 
     /**
-     * Sometimes a query will not require any
-     * sort of parameters. Though we do still
-     * need some sort of indicator that we don't
-     * actually need that for the execution.
-     *
-     * @return This operation for chaining
-     */
-    public FetchOperation noData()
-    {
-        this.requireNoData = true;
-        return this;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public FetchOperation data(Object... data)
     {
+        this.requireNoData = false;
         this.data = data;
         return this;
     }

@@ -56,7 +56,7 @@ public class Database
     {
         final DatabaseConfig config = provider.read("database/standard", DatabaseConfig.class);
         final HikariConfig hikariConfig = new HikariConfig();
-
+// sy)%TQjDSCq^2fTHEL
         hikariConfig.setJdbcUrl(DatabaseConfig.FORMAT_JDBC_URL.apply(config));
         hikariConfig.setUsername(config.auth.username);
         hikariConfig.setPassword(config.auth.password);
@@ -80,7 +80,6 @@ public class Database
 
     /**
      * Grabs a connection from our pool.
-     *
      * <p>
      * Be sure you are closing these after use!!
      *
