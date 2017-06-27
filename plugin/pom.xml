@@ -17,6 +17,7 @@
     <modules>
         <module>core</module>
         <module>lobby</module>
+        <module>bungee</module>
     </modules>
 
 
@@ -45,6 +46,7 @@
             <groupId>com.destroystokyo</groupId>
             <artifactId>paper</artifactId>
             <version>${version.paper}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Apache: Random utilities related to language stuff -->

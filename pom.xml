@@ -27,7 +27,7 @@
 
     <profiles>
         <profile>
-            <id>default-build</id>
+            <id>build-defaults</id>
 
             <build>
                 <finalName>${project.name}</finalName>
