@@ -1,5 +1,6 @@
 package net.neogamesmc.bungee.handle;
 
+import com.google.inject.Singleton;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -17,6 +18,7 @@ import java.util.function.Consumer;
  * @author Ben (OutdatedVersion)
  * @since Jun/26/2017 (3:38 PM)
  */
+@Singleton
 @ParallelStartup
 public class Ping implements Listener
 {
