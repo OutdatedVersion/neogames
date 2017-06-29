@@ -70,12 +70,10 @@ public class FetchOperation extends Operation<SQLResult>
         try
         (
             Connection connection = this.database.reserve();
-            PreparedStatement statement = OperationTools.statement(connection, this.sql, this.data);
-            ResultSet result = statement.executeQuery()
+            PreparedStatement statement = OperationTools.statement(connection, this.sql, this.data)
         )
         {
-            // probs gonna prematurely close
-            return new SQLResult(result, this.database);
+            return new SQLResult(statement.executeQuery(), this.database);
         }
     }
 
