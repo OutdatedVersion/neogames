@@ -29,13 +29,15 @@ public class DatabaseConfig
 
     /**
      * The hostname of the server.
+     * <p>
+     * Default to local server.
      */
-    public String host;
+    public String host = "127.0.0.1";
 
     /**
      * The port of the server.
      */
-    public int port;
+    public int port = 3306;
 
     /**
      * The specific database we'll be using.

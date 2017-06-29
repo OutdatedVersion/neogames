@@ -67,6 +67,27 @@ public class Account
     @Column ( "address" )
     public String ip;
 
+    /**
+     * Create a new account from the provided login data.
+     *
+     * @param uuid The player's UUID
+     * @param name The player's username
+     * @param ip The player's IP address
+     * @return The fresh account
+     */
+    public Account fromLogin(UUID uuid, String name, String ip)
+    {
+        // NEED TO ASSIGN ID
+        this.role = Role.DEFAULT;
+        this.firstLogin = Instant.now();
+        this.lastLogin = Instant.now();
+        this.name = name;
+        this.uuid = uuid;
+        this.ip = ip;
+
+        return this;
+    }
+
     @Override
     public boolean equals(Object o)
     {

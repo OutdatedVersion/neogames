@@ -6,4 +6,12 @@ package net.neogamesmc.network;
  */
 public enum DeployType
 {
+
+    /**
+     *
+     */
+    ADD_PROXY(),
+
+    ADD_SERVER();
+
 }

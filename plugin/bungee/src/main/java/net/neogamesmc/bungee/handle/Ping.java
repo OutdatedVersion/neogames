@@ -12,6 +12,9 @@ import net.neogamesmc.common.inject.ParallelStartup;
 
 import java.util.function.Consumer;
 
+import static net.md_5.bungee.api.ChatColor.*;
+import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
+
 /**
  * Respond to ping requests aimed at the proxy.
  *
@@ -27,9 +30,10 @@ public class Ping implements Listener
      * The first line of the response. Keep in mind that it will never change.
      */
     private static final ComponentBuilder FIRST_LINE = new ComponentBuilder
-                                    ("NeoGames").color(ChatColor.GOLD).bold(true)
-                                    .append(" Purely command block entertainment ").color(ChatColor.GRAY).bold(false)
-                                    .append("1.11\n").color(ChatColor.RED);
+                                    ("                   ")
+                             .append("!").color(AQUA).obfuscated(true)
+                             .append(" NeoGames", NONE).color(ChatColor.GOLD).obfuscated(false).append(" Network ").color(ChatColor.YELLOW)
+                             .append("!\n").obfuscated(true).color(AQUA);
 
     /**
      * The top-bound to the amount of players
@@ -43,7 +47,17 @@ public class Ping implements Listener
      * <p>
      * It may be "hot-swapped" at any point.
      */
-    private volatile BaseComponent responseText = updateResponse(builder -> builder.append("Are you ready kids").color(ChatColor.DARK_GREEN));
+    private volatile BaseComponent responseText = updateResponse(builder ->
+                builder.append("✜ ", NONE).color(DARK_AQUA).bold(true)
+                       .append("We are live!", NONE).color(GREEN)
+                       .append(" Chunk Runner").color(DARK_GREEN)
+                       .append(",").color(GREEN)
+                       .append(" Blast Off").color(RED)
+                       .append(" & ").color(GREEN)
+                       .append("More").color(DARK_PURPLE).underlined(true)
+                       .append("!", NONE).color(GREEN)
+                       .append(" ✜").color(DARK_AQUA).bold(true)
+    );
 
     /**
      * Update the {@code message of the day} for this proxy.

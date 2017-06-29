@@ -7,4 +7,11 @@ package net.neogamesmc.network;
 public class Coeus
 {
 
+    public Coeus deploy(DeployType type, Group group)
+    {
+        
+
+        return this;
+    }
+
 }

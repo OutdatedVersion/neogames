@@ -23,6 +23,7 @@
     <modules>
         <module>common</module>
         <module>plugin</module>
+        <module>coeus</module>
     </modules>
 
     <profiles>

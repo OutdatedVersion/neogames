@@ -1,10 +1,12 @@
-package net.neogamesmc.common.database;
+package net.neogamesmc.common.database.result;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Execute the SQL result
+ * Works similar to a {@link java.util.function.Consumer},
+ * but allows for the thrown {@link SQLException}s that the
+ * operations a set may run has.
  *
  * @author Ben (OutdatedVersion)
  * @since Jun/28/2017 (5:22 PM)

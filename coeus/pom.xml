@@ -9,8 +9,25 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.neogamesmc</groupId>
     <artifactId>coeus</artifactId>
+
+    <dependencies>
+
+        <!-- Logging framework -->
+        <dependency>
+            <groupId>org.tinylog</groupId>
+            <artifactId>tinylog</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <!-- Our stuff -->
+        <dependency>
+            <groupId>net.neogamesmc</groupId>
+            <artifactId>common</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+    </dependencies>
 
 
 </project>

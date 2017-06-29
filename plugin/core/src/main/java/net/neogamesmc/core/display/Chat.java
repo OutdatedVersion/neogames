@@ -11,7 +11,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import static java.lang.String.format;
 import static net.md_5.bungee.api.ChatColor.*;
+import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -36,15 +38,16 @@ public class Chat implements Listener
 
         final BaseComponent[] message = new ComponentBuilder
                                             // start with the player's display role
-                                            (role == Role.DEFAULT ? "" : role.name).color(role.color)
+                                            (role == Role.DEFAULT ? "" : role.name.toUpperCase() + " ").color(role.color).bold(true)
                                             // username -- gray w/o role, green if present
-                                            .append(" " + name).color(role == Role.DEFAULT ? GRAY : GREEN)
+                                            .append(name, NONE).color(role == Role.DEFAULT ? GRAY : GREEN)
                                             // the message
                                             .append(" " + event.getMessage()).color(WHITE).create();
 
 
         Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(message));
-        System.out.printf("[Chat] %s %s: %s\n", role.name(), name, event.getMessage());
+        System.out.println(format("[Chat] %s %s: %s", role.name(), name, event.getMessage()));
+        // printf() gets super weird?
     }
 
 }

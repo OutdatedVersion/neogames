@@ -5,7 +5,7 @@ import com.google.common.collect.MultimapBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.neogamesmc.common.database.Database;
-import net.neogamesmc.common.database.operation.FetchOperation;
+import net.neogamesmc.common.database.operation.RawFetchOperation;
 import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.issue.Issues;
@@ -14,8 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
-
-import java.sql.ResultSet;
 
 /**
  * In-charge of applying user permissions; which
@@ -47,24 +45,28 @@ public class Permissions implements Listener
     /**
      * Local database instance.
      */
-    @Inject private Database database;
+    private Database database;
 
     /**
      * Loads permission nodes from our database
      * and stores them in-memory for quick access.
      */
-    public Permissions()
+    @Inject
+    public Permissions(Database database)
     {
         try
         {
+            this.database = database;
+
             nodes = MultimapBuilder.enumKeys(Role.class).hashSetValues().build();
 
-            final ResultSet result = new FetchOperation(SQL_FETCH_NODES).sync(database).as(ResultSet.class);
-
-            while (result.next())
-            {
-                nodes.put(Role.valueOf(result.getString("possessor")), result.getString("node"));
-            }
+             new RawFetchOperation(SQL_FETCH_NODES).task(set ->
+             {
+                 while (set.next())
+                 {
+                     nodes.put(Role.valueOf(set.getString("possessor")), set.getString("node"));
+                 }
+             }).sync(database);
         }
         catch (Exception ex)
         {

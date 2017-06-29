@@ -6,4 +6,9 @@ package net.neogamesmc.network;
  */
 public enum Group
 {
+
+    LOBBY(),
+
+    GAME();
+
 }

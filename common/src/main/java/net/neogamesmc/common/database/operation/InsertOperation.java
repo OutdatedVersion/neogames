@@ -6,6 +6,7 @@ import net.neogamesmc.common.database.api.Operation;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -13,6 +14,11 @@ import java.util.concurrent.Future;
  */
 public class InsertOperation extends Operation<Void>
 {
+
+    /**
+     * After executing this operation, have the ability to grab this.
+     */
+    private Supplier<?> supplier;
 
     /**
      * {@inheritDoc}
@@ -31,6 +37,29 @@ public class InsertOperation extends Operation<Void>
         this.data = data;
         return this;
     }
+
+    /**
+     *
+     * @param supplier
+     * @param <T>
+     * @return
+     */
+    public <T> InsertOperation object(Supplier<T> supplier)
+    {
+        this.supplier = supplier;
+        return this;
+    }
+
+    /**
+     *
+     * @param <T>
+     * @return
+     */
+    public <T> Supplier<T> object()
+    {
+        return (Supplier<T>) supplier;
+    }
+
 
     /**
      * Sends off the SQL here.
