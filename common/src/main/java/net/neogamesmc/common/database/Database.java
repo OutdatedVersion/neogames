@@ -3,10 +3,12 @@ package net.neogamesmc.common.database;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import net.neogamesmc.common.account.Account;
 import net.neogamesmc.common.config.ConfigurationProvider;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import net.neogamesmc.common.inject.ParallelStartup;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,6 +17,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Logger;
 
 /**
  * Handle distributed player data.
@@ -25,6 +28,8 @@ import java.util.concurrent.Future;
  * @author Ben (OutdatedVersion)
  * @since May/17/2017 (9:26 PM)
  */
+@Singleton
+@ParallelStartup
 public class Database
 {
 
@@ -52,19 +57,22 @@ public class Database
      * @return The fresh database instance
      */
     @Inject
-    public Database init(ConfigurationProvider provider)
+    public Database init(Logger logger, ConfigurationProvider provider)
     {
         final DatabaseConfig config = provider.read("database/standard", DatabaseConfig.class);
         final HikariConfig hikariConfig = new HikariConfig();
 
-        hikariConfig.setJdbcUrl(DatabaseConfig.FORMAT_JDBC_URL.apply(config));
         hikariConfig.setUsername(config.auth.username);
         hikariConfig.setPassword(config.auth.password);
+        hikariConfig.setJdbcUrl(DatabaseConfig.FORMAT_JDBC_URL.apply(config));
+
+        logger.info("[Database] JDBC URL: " + hikariConfig.getJdbcUrl());
 
         hikari = new HikariDataSource(hikariConfig);
         executor = Executors.newCachedThreadPool();
         cache = CacheBuilder.newBuilder().build();
 
+        logger.info("[Database] Opened connection to MySQL instance");
         return this;
     }
 
@@ -80,7 +88,6 @@ public class Database
 
     /**
      * Grabs a connection from our pool.
-     *
      * <p>
      * Be sure you are closing these after use!!
      *

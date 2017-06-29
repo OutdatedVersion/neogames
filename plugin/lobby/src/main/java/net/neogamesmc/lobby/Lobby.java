@@ -5,9 +5,9 @@ import com.google.inject.Injector;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.inject.ParallelStartup;
-import net.neogamesmc.common.reference.Code;
 import net.neogamesmc.core.issue.Issues;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -29,10 +29,21 @@ public class Lobby extends JavaPlugin
     {
         // TODO(Ben): have custom plugin to handle injector creation and such
 
-        injector = Guice.createInjector();
+        injector = Guice.createInjector(binder ->
+        {
+            // this is lovely isn't
+            binder.bind(Plugin.class).toInstance(this);
+            binder.bind(JavaPlugin.class).toInstance(this);
+            binder.bind(Lobby.class).toInstance(this);
+        });
 
-        new FastClasspathScanner(Code.CORE_PACKAGE)
-                // start our default modules
+        // Forcefully start database first
+        register(Database.class);
+
+        System.out.println("Beginning class-path scan..");
+
+        new FastClasspathScanner("net.neogamesmc")
+                .addClassLoader(getClassLoader())
                 .matchClassesWithAnnotation(ParallelStartup.class, this::register)
                 .scan();
     }

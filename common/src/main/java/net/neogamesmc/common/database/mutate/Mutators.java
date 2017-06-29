@@ -30,7 +30,7 @@ public class Mutators
     /**
      * A relation of classes to their {@link Mutator}.
      */
-    private static final Map<Class, Mutator> DEFAULT = Maps.newHashMap();
+    private static final Map<Class, Mutator> DEFAULT = Maps.newConcurrentMap();
 
     /**
      * Grabs a {@link Mutator} for the provided class.
@@ -53,6 +53,19 @@ public class Mutators
     public static boolean hasMutator(Class clazz)
     {
         return DEFAULT.containsKey(clazz);
+    }
+
+    /**
+     * Add a mutator to the possibilities.
+     *
+     * @param clazz The class it works for.
+     * @param mutator The mutator
+     * @return The just inserted item
+     */
+    public static <T> Mutator register(Class<T> clazz, Mutator<T> mutator)
+    {
+        DEFAULT.put(clazz, mutator);
+        return mutator;
     }
 
     // populate

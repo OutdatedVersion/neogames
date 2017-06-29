@@ -23,11 +23,12 @@
     <modules>
         <module>common</module>
         <module>plugin</module>
+        <module>coeus</module>
     </modules>
 
     <profiles>
         <profile>
-            <id>default-build</id>
+            <id>build-defaults</id>
 
             <build>
                 <finalName>${project.name}</finalName>
