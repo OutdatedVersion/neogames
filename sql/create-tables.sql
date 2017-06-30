@@ -22,3 +22,9 @@ CREATE TABLE IF NOT EXISTS assigned_permissions (
   `node` VARCHAR(64),
   PRIMARY KEY (`possessor`)
 );
+
+
+# Punishment storage
+CREATE TABLE IF NOT EXISTS punishments (
+  ``
+);

@@ -3,9 +3,14 @@ package net.neogamesmc.bungee;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.neogamesmc.bungee.handle.ConnectionHandler;
 import net.neogamesmc.bungee.handle.Ping;
+import net.neogamesmc.bungee.network.MessageHandler;
+import net.neogamesmc.common.redis.RedisChannel;
+import net.neogamesmc.common.redis.RedisHandler;
 
 /**
  * BungeeCord plugin bootstrapping.
@@ -25,9 +30,10 @@ public class NeoGames extends Plugin
     @Override
     public void onEnable()
     {
-        injector = Guice.createInjector();
+        injector = Guice.createInjector(binder -> binder.bind(ProxyServer.class).toInstance(ProxyServer.getInstance()));
 
-        inject(Ping.class);
+        injector.getInstance(RedisHandler.class).init().subscribe(RedisChannel.NETWORK);
+        inject(Ping.class, ConnectionHandler.class, MessageHandler.class);
     }
 
     /**

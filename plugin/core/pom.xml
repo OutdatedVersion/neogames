@@ -21,6 +21,13 @@
             <version>${version.common}</version>
         </dependency>
 
+        <!-- Look through our loading/loaded elements easily -->
+        <dependency>
+            <groupId>io.github.lukehutch</groupId>
+            <artifactId>fast-classpath-scanner</artifactId>
+            <version>LATEST</version>
+        </dependency>
+
     </dependencies>
 
 </project>

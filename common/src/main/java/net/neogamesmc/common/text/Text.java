@@ -7,6 +7,13 @@ package net.neogamesmc.common.text;
 public class Text
 {
 
+    /**
+     * Turns the provided enumerator into
+     * a human-friendly text version.
+     *
+     * @param val The enum
+     * @return The text
+     */
     public static String fromEnum(Enum val)
     {
         final String raw = val.name()
