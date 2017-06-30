@@ -15,16 +15,19 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.MagmaCube;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Startup function(s) for a main lobby.
@@ -32,12 +35,11 @@ import org.bukkit.event.weather.WeatherChangeEvent;
  * @author Ben (OutdatedVersion)
  * @since Jun/19/2017 (3:30 AM)
  */
-public class Lobby extends Plugin implements Listener
-{
+public class Lobby extends Plugin implements Listener {
 
-    // small magma cube : blast off
-    // green villager : chunk runner
-    // skeleton w/ bow : bow plinko
+    // small magma cube : blast off - red green bold Join
+    // green villager : chunk runner - green
+    // skeleton w/ bow : bow plinko - purple
 
     /**
      * Where players are sent when joining.
@@ -50,14 +52,13 @@ public class Lobby extends Plugin implements Listener
     private Database database;
 
     @Override
-    public void enable(Injector injector)
-    {
+    public void enable(Injector injector) {
         // Forcefully start database first
         this.database = register(Database.class);
 
         register(RedisHandler.class).init().subscribe(RedisChannel.DEFAULT);
         register(CommandHandler.class).addProviders(CommandHandler.DEFAULT_PROVIDERS)
-                                      .registerInPackage("net.neogamesmc.core");
+                .registerInPackage("net.neogamesmc.core");
 
         System.out.println("Beginning class-path scan..");
 
@@ -70,11 +71,19 @@ public class Lobby extends Plugin implements Listener
         getServer().getPluginManager().registerEvents(this, this);
 
         this.spawnLocation = new Location(Bukkit.getWorld("lobby"), 10.5, 64.5, 5.5, 177.4f, -12.4f);
+
+        MagmaCube magmaCube = spawnLocation.getWorld().spawn(new Location(spawnLocation.getWorld(), -1.147, 63.06250, 2.5, -80, 0), MagmaCube.class);
+        magmaCube.setAI(false);
+        magmaCube.setSilent(true);
+        magmaCube.setCollidable(false);
+        magmaCube.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.GOLD + "" + ChatColor.BOLD + "Blastoff");
+        magmaCube.setCustomNameVisible(true);
+        magmaCube.setSize(1);
+        magmaCube.setMetadata("send-server", new FixedMetadataValue(this, "BLASTOFF"));
     }
 
     @Override
-    public void disable()
-    {
+    public void disable() {
         get(Database.class).release();
     }
 
@@ -86,10 +95,8 @@ public class Lobby extends Plugin implements Listener
      *
      * @param clazz The class to register
      */
-    public <T> T register(final Class<T> clazz)
-    {
-        try
-        {
+    public <T> T register(final Class<T> clazz) {
+        try {
             T obj = get(clazz);
 
             // auto-register event listeners
@@ -97,9 +104,7 @@ public class Lobby extends Plugin implements Listener
                 getServer().getPluginManager().registerEvents((Listener) obj, this);
 
             return obj;
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Issues.handle("Class Registration", ex);
         }
 
@@ -107,42 +112,35 @@ public class Lobby extends Plugin implements Listener
     }
 
     @EventHandler
-    public void movePlayer(PlayerJoinEvent event)
-    {
+    public void movePlayer(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         event.getPlayer().teleport(spawnLocation);
         event.getPlayer().setGameMode(GameMode.ADVENTURE);
     }
 
     @EventHandler
-    public void removeQuitMessages(PlayerQuitEvent event)
-    {
+    public void removeQuitMessages(PlayerQuitEvent event) {
         event.setQuitMessage(null);
     }
 
     @EventHandler
-    public void disallowBreaking(BlockBreakEvent event)
-    {
+    public void disallowBreaking(BlockBreakEvent event) {
         event.setCancelled(event.getPlayer().getGameMode() != GameMode.CREATIVE);
     }
 
     @EventHandler
-    public void disallowPlacing(BlockPlaceEvent event)
-    {
+    public void disallowPlacing(BlockPlaceEvent event) {
         event.setCancelled(event.getPlayer().getGameMode() != GameMode.CREATIVE);
     }
 
     @EventHandler
-    public void disallowHunger(FoodLevelChangeEvent event)
-    {
+    public void disallowHunger(FoodLevelChangeEvent event) {
         event.setCancelled(true);
     }
 
     @EventHandler
-    public void disallowDamage(EntityDamageEvent event)
-    {
-        if (event.getEntityType() == EntityType.PLAYER)
-        {
+    public void disallowDamage(EntityDamageEvent event) {
+        if (event.getEntityType() == EntityType.PLAYER) {
             if (event.getCause() == EntityDamageEvent.DamageCause.VOID)
                 event.getEntity().teleport(spawnLocation);
 
@@ -151,17 +149,25 @@ public class Lobby extends Plugin implements Listener
     }
 
     @EventHandler
-    public void disallowWeatherUpdate(WeatherChangeEvent event)
-    {
+    public void disallowWeatherUpdate(WeatherChangeEvent event) {
         event.setCancelled(event.toWeatherState());
     }
 
     // temp
     @EventHandler
-    public void roleWhitelist(PlayerLoginEvent event)
-    {
+    public void roleWhitelist(PlayerLoginEvent event) {
         if (database.cacheFetch(event.getPlayer().getUniqueId()).role.compareTo(Role.BUILDER) >= 0)
             event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ChatColor.YELLOW + "You are not permitted to join the network yet.");
+    }
+
+    @EventHandler
+    public void npcHandler(PlayerInteractEntityEvent event) {
+        if (!event.getRightClicked().hasMetadata("send-server"))
+            return;
+
+        String server = event.getRightClicked().getMetadata("send-server").get(0).asString();
+
+        Bukkit.broadcastMessage(event.getPlayer().getDisplayName() + " wants to move to server " + server);
     }
 
 }
