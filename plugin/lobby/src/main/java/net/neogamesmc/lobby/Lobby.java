@@ -11,14 +11,12 @@ import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.command.api.CommandHandler;
 import net.neogamesmc.core.issue.Issues;
 import org.bukkit.*;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.MagmaCube;
-import org.bukkit.entity.Skeleton;
-import org.bukkit.entity.Villager;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -72,8 +70,62 @@ public class Lobby extends Plugin implements Listener {
 
         this.spawnLocation = new Location(Bukkit.getWorld("lobby"), 10.5, 64.5, 5.5, 177.4f, -12.4f);
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+
+    }
+
+
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (!event.getEntity().hasMetadata("send-server"))
+            return;
+
+        event.setCancelled(true);
+    }
+
+
+    @Override
+    public void disable() {
+        get(Database.class).release();
+
+        spawnLocation.getWorld().getEntities().stream().filter(entity -> entity.hasMetadata("send-server")).forEach(Entity::remove);
+    }
+
+    /**
+     * Creates an instance of the provided class.
+     * <p>
+     * If it happens to be a descendant of a {@link Listener}
+     * we'll automatically register it with Bukkit as well.
+     *
+     * @param clazz The class to register
+     */
+    public <T> T register(final Class<T> clazz) {
+        try {
+            T obj = get(clazz);
+
+            // auto-register event listeners
+            if (obj instanceof Listener)
+                getServer().getPluginManager().registerEvents((Listener) obj, this);
+
+            return obj;
+        } catch (Exception ex) {
+            Issues.handle("Class Registration", ex);
+        }
+
+        throw new RuntimeException("An unknown issue occurred during injection.");
+
+
+    }
+
+    private boolean spawned = false;
+
+    @EventHandler
+    public void movePlayer(PlayerJoinEvent event) {
+        event.setJoinMessage(null);
+        event.getPlayer().teleport(spawnLocation);
+        event.getPlayer().setGameMode(GameMode.ADVENTURE);
+
+        if (!spawned) {
             MagmaCube magmaCube = spawnLocation.getWorld().spawn(new Location(spawnLocation.getWorld(), 3.5, 63, 1.5, -128.5f, 12.5f), MagmaCube.class);
+            magmaCube.setSize(2);
             magmaCube.setAI(false);
             magmaCube.setInvulnerable(true);
             magmaCube.setSilent(true);
@@ -100,58 +152,13 @@ public class Lobby extends Plugin implements Listener {
             villager.setCollidable(false);
             villager.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.GOLD + "" + ChatColor.BOLD + "Chunk Runner");
             villager.setCustomNameVisible(true);
-            skeleton.setMetadata("send-server", new FixedMetadataValue(this, "CHUNK_RUNNER"));
-
-        }, 20);
+            villager.setMetadata("send-server", new FixedMetadataValue(this, "CHUNK_RUNNER"));
 
 
-    }
+            Bukkit.broadcastMessage("Bukkit should have just spawned all entities, did it though?");
+            spawned = true;
 
-
-    public void onEntityDamage(EntityDamageEvent event) {
-        if (!event.getEntity().hasMetadata("send-server"))
-            return;
-
-        event.setCancelled(true);
-    }
-
-
-    @Override
-    public void disable() {
-        get(Database.class).release();
-    }
-
-    /**
-     * Creates an instance of the provided class.
-     * <p>
-     * If it happens to be a descendant of a {@link Listener}
-     * we'll automatically register it with Bukkit as well.
-     *
-     * @param clazz The class to register
-     */
-    public <T> T register(final Class<T> clazz) {
-        try {
-            T obj = get(clazz);
-
-            // auto-register event listeners
-            if (obj instanceof Listener)
-                getServer().getPluginManager().registerEvents((Listener) obj, this);
-
-            return obj;
-        } catch (Exception ex) {
-            Issues.handle("Class Registration", ex);
         }
-
-        throw new RuntimeException("An unknown issue occurred during injection.");
-    }
-
-    @EventHandler
-    public void movePlayer(PlayerJoinEvent event) {
-        event.setJoinMessage(null);
-        event.getPlayer().teleport(spawnLocation);
-        event.getPlayer().setGameMode(GameMode.ADVENTURE);
-
-
     }
 
     @EventHandler
@@ -201,9 +208,20 @@ public class Lobby extends Plugin implements Listener {
         if (!event.getRightClicked().hasMetadata("send-server"))
             return;
 
+        event.setCancelled(true);
         String server = event.getRightClicked().getMetadata("send-server").get(0).asString();
 
         Bukkit.broadcastMessage(event.getPlayer().getDisplayName() + " wants to move to server " + server);
+    }
+
+    @EventHandler
+    public void stopSmokingWeed(EntityCombustEvent event) {
+
+        if (!event.getEntity().hasMetadata("send-server"))
+            return;
+
+        event.setCancelled(true);
+
     }
 
 }
