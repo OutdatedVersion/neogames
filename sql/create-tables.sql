@@ -22,3 +22,16 @@ CREATE TABLE IF NOT EXISTS assigned_permissions (
   `node` VARCHAR(64),
   PRIMARY KEY (`possessor`)
 );
+
+
+# Punishment storage
+CREATE TABLE IF NOT EXISTS punishments (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `target_id` INT NOT NULL,
+  `issued_by` VARCHAR(40) NOT NULL,
+  `type` VARCHAR(10) NOT NULL,
+  `reason` VARCHAR(260) NOT NULL,
+  `expires_at` TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`target_id`) REFERENCES accounts(`iid`)
+);

@@ -1,4 +1,4 @@
-package net.neogamesmc.network;
+package net.neogamesmc.network.deploy;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -12,6 +12,9 @@ public enum DeployType
      */
     ADD_PROXY(),
 
+    /**
+     *
+     */
     ADD_SERVER();
 
 }
