@@ -10,12 +10,11 @@ import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.command.api.CommandHandler;
 import net.neogamesmc.core.issue.Issues;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.MagmaCube;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -27,6 +26,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 /**
@@ -72,15 +72,49 @@ public class Lobby extends Plugin implements Listener {
 
         this.spawnLocation = new Location(Bukkit.getWorld("lobby"), 10.5, 64.5, 5.5, 177.4f, -12.4f);
 
-        MagmaCube magmaCube = spawnLocation.getWorld().spawn(new Location(spawnLocation.getWorld(), -1.147, 63.06250, 2.5, -80, 0), MagmaCube.class);
-        magmaCube.setAI(false);
-        magmaCube.setSilent(true);
-        magmaCube.setCollidable(false);
-        magmaCube.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.GOLD + "" + ChatColor.BOLD + "Blastoff");
-        magmaCube.setCustomNameVisible(true);
-        magmaCube.setSize(1);
-        magmaCube.setMetadata("send-server", new FixedMetadataValue(this, "BLASTOFF"));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+            MagmaCube magmaCube = spawnLocation.getWorld().spawn(new Location(spawnLocation.getWorld(), 3.5, 63, 1.5, -128.5f, 12.5f), MagmaCube.class);
+            magmaCube.setAI(false);
+            magmaCube.setInvulnerable(true);
+            magmaCube.setSilent(true);
+            magmaCube.setCollidable(false);
+            magmaCube.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.GOLD + "" + ChatColor.BOLD + "Blastoff");
+            magmaCube.setCustomNameVisible(true);
+            magmaCube.setMetadata("send-server", new FixedMetadataValue(this, "BLASTOFF"));
+
+
+            Skeleton skeleton = spawnLocation.getWorld().spawn(new Location(spawnLocation.getWorld(), -0.5, 63.06, -2.5, -48.3f, 0f), Skeleton.class);
+            skeleton.setAI(false);
+            skeleton.setInvulnerable(true);
+            skeleton.setSilent(true);
+            skeleton.setCollidable(false);
+            skeleton.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.GOLD + "" + ChatColor.BOLD + "Bowplinko");
+            skeleton.setCustomNameVisible(true);
+            skeleton.setMetadata("send-server", new FixedMetadataValue(this, "BOWPLINKO"));
+            skeleton.getEquipment().setItemInMainHand(new ItemStack(Material.BOW, 1));
+
+            Villager villager = spawnLocation.getWorld().spawn(new Location(spawnLocation.getWorld(), -1.147, 63.06250, 2.5, -80, 0), Villager.class);
+            villager.setAI(false);
+            villager.setInvulnerable(true);
+            villager.setSilent(true);
+            villager.setCollidable(false);
+            villager.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.GOLD + "" + ChatColor.BOLD + "Chunk Runner");
+            villager.setCustomNameVisible(true);
+            skeleton.setMetadata("send-server", new FixedMetadataValue(this, "CHUNK_RUNNER"));
+
+        }, 20);
+
+
     }
+
+
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (!event.getEntity().hasMetadata("send-server"))
+            return;
+
+        event.setCancelled(true);
+    }
+
 
     @Override
     public void disable() {
@@ -116,6 +150,8 @@ public class Lobby extends Plugin implements Listener {
         event.setJoinMessage(null);
         event.getPlayer().teleport(spawnLocation);
         event.getPlayer().setGameMode(GameMode.ADVENTURE);
+
+
     }
 
     @EventHandler
