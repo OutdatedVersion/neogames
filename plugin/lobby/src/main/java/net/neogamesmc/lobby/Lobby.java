@@ -4,6 +4,8 @@ import com.google.inject.Injector;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.inject.ParallelStartup;
+import net.neogamesmc.common.redis.RedisChannel;
+import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.command.api.CommandHandler;
@@ -53,8 +55,9 @@ public class Lobby extends Plugin implements Listener
         // Forcefully start database first
         this.database = register(Database.class);
 
+        register(RedisHandler.class).init().subscribe(RedisChannel.DEFAULT);
         register(CommandHandler.class).addProviders(CommandHandler.DEFAULT_PROVIDERS)
-                                      .registerInPackage("net.neogamesmc.core.command");
+                                      .registerInPackage("net.neogamesmc.core");
 
         System.out.println("Beginning class-path scan..");
 
@@ -66,7 +69,7 @@ public class Lobby extends Plugin implements Listener
 
         getServer().getPluginManager().registerEvents(this, this);
 
-        this.spawnLocation = new Location(Bukkit.getWorld("lobby"), 10.5, 65, 5.5, 177.4f, -12.4f);
+        this.spawnLocation = new Location(Bukkit.getWorld("lobby"), 10.5, 64.5, 5.5, 177.4f, -12.4f);
     }
 
     @Override

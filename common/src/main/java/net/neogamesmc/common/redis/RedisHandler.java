@@ -168,6 +168,18 @@ public class RedisHandler
     }
 
     /**
+     * Publish the provided payload.
+     *
+     * @param payload The payload
+     * @return This handler, for chaining
+     */
+    public RedisHandler publish(Payload payload)
+    {
+        publish(payload.channel().channel, payload);
+        return this;
+    }
+
+    /**
      * @param channel the {@link RedisChannel} we're sending it to
      * @param payload our payload
      * @return our redis instance

@@ -2,9 +2,11 @@ package net.neogamesmc.common.database.operation;
 
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.database.api.Operation;
+import net.neogamesmc.common.database.result.SQLConsumer;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
@@ -19,6 +21,11 @@ public class InsertOperation extends Operation<Void>
      * After executing this operation, have the ability to grab this.
      */
     private Supplier<?> supplier;
+
+    /**
+     * Take in generated keys {@link ResultSet}.
+     */
+    private SQLConsumer consumer;
 
     /**
      * {@inheritDoc}
@@ -60,6 +67,17 @@ public class InsertOperation extends Operation<Void>
         return (Supplier<T>) supplier;
     }
 
+    /**
+     * Update the backing consumer for this.
+     *
+     * @param consumer The consumer
+     * @return This operation, for chaining
+     */
+    public InsertOperation keys(SQLConsumer consumer)
+    {
+        this.consumer = consumer;
+        return this;
+    }
 
     /**
      * Sends off the SQL here.
@@ -79,6 +97,9 @@ public class InsertOperation extends Operation<Void>
         )
         {
             statement.executeUpdate();
+
+            if (consumer != null)
+                consumer.accept(statement.getGeneratedKeys());
         }
 
         return null;

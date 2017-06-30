@@ -1,11 +1,18 @@
 package net.neogamesmc.common.text;
 
+import com.google.common.base.Joiner;
+
 /**
  * @author Ben (OutdatedVersion)
  * @since Jun/18/2017 (10:50 PM)
  */
 public class Text
 {
+
+    /**
+     * Join things together separated with a space.
+     */
+    public static final Joiner SPACE_JOINER = Joiner.on(" ");
 
     /**
      * Turns the provided enumerator into
