@@ -28,6 +28,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -236,4 +237,14 @@ public class Lobby extends Plugin implements Listener
         event.setCancelled(event.getEntity().hasMetadata("send-server"));
     }
 
+
+    public void openNavigationMenu(Player player){
+        Inventory inventory = Bukkit.createInventory(null, 27,ChatColor.GREEN + "Join Game");
+
+        ItemBuilder itemBuilder = new ItemBuilder(Material.GRASS);
+        itemBuilder.name(ChatColor.GREEN + "Chunck Runner");
+
+//        inventory.setItem();
+
+    }
 }
