@@ -11,6 +11,7 @@ import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.command.api.CommandHandler;
 import net.neogamesmc.core.issue.Issues;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftSkeleton;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -70,10 +71,10 @@ public class Lobby extends Plugin implements Listener {
 
         this.spawnLocation = new Location(Bukkit.getWorld("lobby"), 10.5, 64.5, 5.5, 177.4f, -12.4f);
 
-
     }
 
 
+    @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
         if (!event.getEntity().hasMetadata("send-server"))
             return;
@@ -130,9 +131,11 @@ public class Lobby extends Plugin implements Listener {
             magmaCube.setInvulnerable(true);
             magmaCube.setSilent(true);
             magmaCube.setCollidable(false);
-            magmaCube.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.GOLD + "" + ChatColor.BOLD + "Blastoff");
+            magmaCube.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.RED + "" + ChatColor.BOLD + "Blast Off"+ChatColor.RESET);
             magmaCube.setCustomNameVisible(true);
-            magmaCube.setMetadata("send-server", new FixedMetadataValue(this, "BLASTOFF"));
+            magmaCube.setMetadata("send-server", new FixedMetadataValue(this, "BLAST_OFF"));
+            ((CraftSkeleton) magmaCube).getHandle().setPositionRotation(3.5, 63, 1.5, -128.5f, 0);
+            ((CraftSkeleton) magmaCube).getHandle().h(-128.5f);
 
 
             Skeleton skeleton = spawnLocation.getWorld().spawn(new Location(spawnLocation.getWorld(), -0.5, 63.06, -2.5, -48.3f, 0f), Skeleton.class);
@@ -140,22 +143,28 @@ public class Lobby extends Plugin implements Listener {
             skeleton.setInvulnerable(true);
             skeleton.setSilent(true);
             skeleton.setCollidable(false);
-            skeleton.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.GOLD + "" + ChatColor.BOLD + "Bowplinko");
+            skeleton.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "Bowplinko" +ChatColor.RESET);
             skeleton.setCustomNameVisible(true);
             skeleton.setMetadata("send-server", new FixedMetadataValue(this, "BOWPLINKO"));
             skeleton.getEquipment().setItemInMainHand(new ItemStack(Material.BOW, 1));
+            ((CraftSkeleton) skeleton).getHandle().setPositionRotation(-0.5, 63.06, -2.5, -48.3f, 0f);
+            ((CraftSkeleton) skeleton).getHandle().h(-48.3f);
+
+
+
 
             Villager villager = spawnLocation.getWorld().spawn(new Location(spawnLocation.getWorld(), -1.147, 63.06250, 2.5, -80, 0), Villager.class);
             villager.setAI(false);
             villager.setInvulnerable(true);
             villager.setSilent(true);
             villager.setCollidable(false);
-            villager.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.GOLD + "" + ChatColor.BOLD + "Chunk Runner");
+            villager.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Chunk Runner"+ChatColor.RESET);
             villager.setCustomNameVisible(true);
             villager.setMetadata("send-server", new FixedMetadataValue(this, "CHUNK_RUNNER"));
+            ((CraftSkeleton) skeleton).getHandle().setPositionRotation(-1.147, 63.06250, 2.5, -80, 0);
+            ((CraftSkeleton) skeleton).getHandle().h(-80f);
 
 
-            Bukkit.broadcastMessage("Bukkit should have just spawned all entities, did it though?");
             spawned = true;
 
         }
@@ -211,7 +220,7 @@ public class Lobby extends Plugin implements Listener {
         event.setCancelled(true);
         String server = event.getRightClicked().getMetadata("send-server").get(0).asString();
 
-        Bukkit.broadcastMessage(event.getPlayer().getDisplayName() + " wants to move to server " + server);
+
     }
 
     @EventHandler
