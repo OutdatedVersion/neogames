@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 /**
@@ -38,6 +39,18 @@ public class ItemBuilder
     public ItemBuilder name(String name)
     {
         update(meta -> meta.setDisplayName(name));
+        return this;
+    }
+
+    /**
+     * Update the lore of this item.
+     *
+     * @param lines The lines
+     * @return This builder, for chaining
+     */
+    public ItemBuilder lore(String... lines)
+    {
+        update(meta -> meta.setLore(Arrays.asList(lines)));
         return this;
     }
 
