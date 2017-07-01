@@ -23,11 +23,13 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -39,8 +41,7 @@ import static org.bukkit.Material.COMPASS;
  * @author Ben (OutdatedVersion)
  * @since Jun/19/2017 (3:30 AM)
  */
-public class Lobby extends Plugin implements Listener
-{
+public class Lobby extends Plugin implements Listener {
 
     // small magma cube : blast off - red green bold Join
     // green villager : chunk runner - green
@@ -57,8 +58,7 @@ public class Lobby extends Plugin implements Listener
     private Database database;
 
     @Override
-    public void enable(Injector injector)
-    {
+    public void enable(Injector injector) {
         // Forcefully start database first
         this.database = register(Database.class);
 
@@ -112,8 +112,7 @@ public class Lobby extends Plugin implements Listener
     }
 
     @Override
-    public void disable()
-    {
+    public void disable() {
         get(Database.class).release();
 
         spawnLocation.getWorld().getEntities().stream().filter(entity -> entity.hasMetadata("send-server")).forEach(Entity::remove);
@@ -127,10 +126,8 @@ public class Lobby extends Plugin implements Listener
      *
      * @param clazz The class to register
      */
-    public <T> T register(final Class<T> clazz)
-    {
-        try
-        {
+    public <T> T register(final Class<T> clazz) {
+        try {
             T obj = get(clazz);
 
             // auto-register event listeners
@@ -138,9 +135,7 @@ public class Lobby extends Plugin implements Listener
                 getServer().getPluginManager().registerEvents((Listener) obj, this);
 
             return obj;
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Issues.handle("Class Registration", ex);
         }
 
@@ -148,22 +143,20 @@ public class Lobby extends Plugin implements Listener
     }
 
     @EventHandler
-    public void movePlayer(PlayerJoinEvent event)
-    {
+    public void movePlayer(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         event.getPlayer().teleport(spawnLocation);
 
         new HotbarItem(event.getPlayer(), new ItemBuilder(COMPASS).name("Select a game").build())
-                        .location(1)
-                        .action(Action.RIGHT_CLICK_AIR, player ->
-                        {
+                .location(1)
+                .action(Action.RIGHT_CLICK_AIR, player ->
+                {
 
-                        });
+                });
     }
 
     @EventHandler
-    public void onEntityDamage(EntityDamageEvent event)
-    {
+    public void onEntityDamage(EntityDamageEvent event) {
         if (!event.getEntity().hasMetadata("send-server"))
             return;
 
@@ -171,34 +164,28 @@ public class Lobby extends Plugin implements Listener
     }
 
     @EventHandler
-    public void removeQuitMessages(PlayerQuitEvent event)
-    {
+    public void removeQuitMessages(PlayerQuitEvent event) {
         event.setQuitMessage(null);
     }
 
     @EventHandler
-    public void disallowBreaking(BlockBreakEvent event)
-    {
+    public void disallowBreaking(BlockBreakEvent event) {
         event.setCancelled(event.getPlayer().getGameMode() != GameMode.CREATIVE);
     }
 
     @EventHandler
-    public void disallowPlacing(BlockPlaceEvent event)
-    {
+    public void disallowPlacing(BlockPlaceEvent event) {
         event.setCancelled(event.getPlayer().getGameMode() != GameMode.CREATIVE);
     }
 
     @EventHandler
-    public void disallowHunger(FoodLevelChangeEvent event)
-    {
+    public void disallowHunger(FoodLevelChangeEvent event) {
         event.setCancelled(true);
     }
 
     @EventHandler
-    public void disallowDamage(EntityDamageEvent event)
-    {
-        if (event.getEntityType() == EntityType.PLAYER)
-        {
+    public void disallowDamage(EntityDamageEvent event) {
+        if (event.getEntityType() == EntityType.PLAYER) {
             if (event.getCause() == EntityDamageEvent.DamageCause.VOID)
                 event.getEntity().teleport(spawnLocation);
 
@@ -207,22 +194,19 @@ public class Lobby extends Plugin implements Listener
     }
 
     @EventHandler
-    public void disallowWeatherUpdate(WeatherChangeEvent event)
-    {
+    public void disallowWeatherUpdate(WeatherChangeEvent event) {
         event.setCancelled(event.toWeatherState());
     }
 
     // temp
     @EventHandler
-    public void roleWhitelist(PlayerLoginEvent event)
-    {
+    public void roleWhitelist(PlayerLoginEvent event) {
         if (database.cacheFetch(event.getPlayer().getUniqueId()).role.compareTo(Role.BUILDER) >= 0)
             event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ChatColor.YELLOW + "You are not permitted to join the network yet.");
     }
 
     @EventHandler
-    public void npcHandler(PlayerInteractEntityEvent event)
-    {
+    public void npcHandler(PlayerInteractEntityEvent event) {
         if (!event.getRightClicked().hasMetadata("send-server"))
             return;
 
@@ -231,9 +215,96 @@ public class Lobby extends Plugin implements Listener
     }
 
     @EventHandler
-    public void stopSmokingWeed(EntityCombustEvent event)
-    {
+    public void stopSmokingWeed(EntityCombustEvent event) {
         event.setCancelled(event.getEntity().hasMetadata("send-server"));
     }
 
+
+    public void openNavigationMenu(Player player) {
+        Inventory inventory = Bukkit.createInventory(null, 27, ChatColor.GREEN + "Join Game");
+
+        ItemBuilder chunkRunnerItemBuilder = new ItemBuilder(Material.GRASS);
+        chunkRunnerItemBuilder.name(ChatColor.GREEN + "Chunck Runner");
+        chunkRunnerItemBuilder.lore(
+                ChatColor.DARK_GRAY + "Parkour/Challenge",
+                "",
+                ChatColor.GRAY + "Run along a parkour course that",
+                ChatColor.GRAY + "generates in one direction and",
+                ChatColor.GRAY + "crumbles away behind you at an",
+                ChatColor.GRAY + "increasing speed!",
+                "",
+                ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMC",
+                ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky & FantomLX",
+                ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "1 - 24 Players");
+
+
+        inventory.setItem(11, chunkRunnerItemBuilder.build());
+        inventory.setItem(2, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13));
+        inventory.setItem(20, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13));
+
+        ItemBuilder blastOffItemBuilder = new ItemBuilder(Material.FIREWORK_CHARGE);
+        blastOffItemBuilder.name(ChatColor.RED + "Blast Off");
+        blastOffItemBuilder.lore(
+                ChatColor.DARK_GRAY + "Minigame/Pvp",
+                "",
+                ChatColor.GRAY + "Use your arsenal of exploding weapons",
+                ChatColor.GRAY + "and tons of powerups to blast apart",
+                ChatColor.GRAY + "the map! Be the last player standing",
+                ChatColor.GRAY + "to win!",
+                "",
+                ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc",
+                ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky, Falcinspire, Dennisbuilds,",
+                ChatColor.BLUE + "ItsZender, Jayjo, Corey977, JacobRuby, Team Dracolyte & StainMine",
+                ChatColor.GRAY + "Support: " + ChatColor.YELLOW + "2 - 12 Players");
+
+        inventory.setItem(13, blastOffItemBuilder.build());
+        inventory.setItem(4, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 1));
+        inventory.setItem(22, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 1));
+
+        ItemBuilder bowplinkoItemBuilder = new ItemBuilder(Material.BOW);
+        bowplinkoItemBuilder.name(ChatColor.DARK_PURPLE + "Bowplinko");
+        bowplinkoItemBuilder.lore(
+                ChatColor.DARK_GRAY + "Minigame/Archery",
+                "",
+                ChatColor.GRAY + "A fast-paced archery war between",
+                ChatColor.GRAY + "two teams, but with a twist.",
+                ChatColor.GRAY + "If you get hit, you fall down",
+                ChatColor.GRAY + "a plinko board!",
+                "",
+                ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc",
+                ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky",
+                ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 24 Players");
+
+        inventory.setItem(15, bowplinkoItemBuilder.build());
+        inventory.setItem(6, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 1));
+        inventory.setItem(24, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 1));
+
+        player.openInventory(inventory);
+
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        Inventory inventory = event.getInventory();
+        if (inventory.getName() == null)
+            return;
+
+        if (inventory.getName().equalsIgnoreCase(ChatColor.GREEN + "Join Game")) {
+            event.setCancelled(true);
+
+            int slot = event.getSlot();
+            switch (slot){
+                case 11:
+                    player.sendMessage("You pressed on Chuck Runner");
+                    break;
+                case 13:
+                    player.sendMessage("You pressed on Blast Off");
+                    break;
+                case 15:
+                    player.sendMessage("You pressed on Bowplink");
+                    break;
+            }
+        }
+    }
 }
