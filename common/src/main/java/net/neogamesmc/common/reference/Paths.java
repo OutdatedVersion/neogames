@@ -41,7 +41,12 @@ public enum Paths
     /**
      * Where we store static content.
      */
-    STORAGE(BASE.path + ".storage");
+    STORAGE(BASE.path + ".storage"),
+
+    /**
+     * Where our plugins are located.
+     */
+    PLUGIN(STORAGE.path + ".plugin");
 
     /** The actual file system path */
     public final String path;

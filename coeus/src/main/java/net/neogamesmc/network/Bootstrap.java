@@ -1,5 +1,11 @@
 package net.neogamesmc.network;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import net.neogamesmc.common.redis.RedisChannel;
+import net.neogamesmc.common.redis.RedisHandler;
+import net.neogamesmc.network.communication.RequestHandler;
+import net.neogamesmc.network.task.PublishPayloadTask;
 import net.neogamesmc.network.util.Constant;
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.labelers.TimestampLabeler;
@@ -37,9 +43,18 @@ public class Bootstrap
         info("Version: {}", Constant.VERSION);
         info("Build: {}", "Need to inject Git SHA1");
 
-        // boot a proxy
-        // start spinning up lobbies
-        // then game servers
+        final Injector injector = Guice.createInjector(binder ->
+        {
+            binder.bind(RedisHandler.class).toInstance(new RedisHandler().init().subscribe(RedisChannel.NETWORK));
+            binder.requestStaticInjection(PublishPayloadTask.class);
+        });
+
+        injector.getInstance(RequestHandler.class);
+
+        while (true)
+        {
+            // keep app up
+        }
     }
 
 }

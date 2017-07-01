@@ -38,13 +38,12 @@ public class UpdateNetworkServersPayload implements Payload
      *
      * @param name Server ID
      * @param port Server port
-     * @param add Whether or not to add it
      */
-    public UpdateNetworkServersPayload(String name, int port, boolean add)
+    public UpdateNetworkServersPayload(String name, int port)
     {
         this.name = name;
         this.port = port;
-        this.add = add;
+        this.add = true;
     }
 
     @Override
