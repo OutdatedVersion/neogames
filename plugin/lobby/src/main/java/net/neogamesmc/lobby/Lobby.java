@@ -272,7 +272,7 @@ public class Lobby extends Plugin implements Listener
     }
 
     @EventHandler
-    public void stopSmokingWeed(EntityCombustEvent event)
+    public void preventEntityBurn(EntityCombustEvent event)
     {
         event.setCancelled(event.getEntity().hasMetadata("send-server"));
     }
@@ -293,7 +293,7 @@ public class Lobby extends Plugin implements Listener
 
         ItemBuilder blastOffItemBuilder = new ItemBuilder(Material.FIREBALL);
         blastOffItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.RED) + "Blast Off");
-        blastOffItemBuilder.lore(ChatColor.DARK_GRAY + "Minigame/PvP", "", ChatColor.GRAY + "Use your arsenal of exploding weapons", ChatColor.GRAY + "and tons of powerups to blast apart", ChatColor.GRAY + "the map! Be the last player standing", ChatColor.GRAY + "to win!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky, Falcinspire, Dennisbuilds,", ChatColor.BLUE + "ItsZender, Jayjo, Corey977, JacobRuby,", ChatColor.BLUE + "Team Dracolyte & StainMine", ChatColor.GRAY + "Support: " + ChatColor.YELLOW + "2 - 12 Players");
+        blastOffItemBuilder.lore(ChatColor.DARK_GRAY + "Minigame/PvP", "", ChatColor.GRAY + "Use your arsenal of exploding weapons", ChatColor.GRAY + "and tons of powerups to blast apart", ChatColor.GRAY + "the map! Be the last player standing", ChatColor.GRAY + "to win!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky, Falcinspire, Dennisbuilds,", ChatColor.BLUE + "ItsZender, Jayjo, Corey977, JacobRuby,", ChatColor.BLUE + "Team Dracolyte & StainMine", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 12 Players");
 
         inventory.setItem(13, blastOffItemBuilder.build());
         inventory.setItem(4, glass(1));
