@@ -13,7 +13,7 @@ public enum Role
 
     OWNER(ChatColor.GOLD),
     DEV(ChatColor.DARK_PURPLE),
-    ADMIN(ChatColor.DARK_PURPLE),
+    ADMIN(ChatColor.RED),
     MOD(ChatColor.DARK_GREEN),
     BUILDER(ChatColor.DARK_AQUA),
     // ^ staff
@@ -49,6 +49,18 @@ public enum Role
     {
         this.color = color;
         this.name = this.name().toLowerCase().replaceAll("_", "");
+    }
+
+    /**
+     * Check whether or not the provided role
+     * is of a higher position than this one.
+     *
+     * @param other The other role
+     * @return Yes or no
+     */
+    public boolean compare(Role other)
+    {
+        return this.ordinal() <= other.ordinal();
     }
 
 }

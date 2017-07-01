@@ -64,7 +64,7 @@ public class FetchOperation<V> extends Operation<V>
      * contain anything we'll execute this alternate
      * operation then use it's return value as our own.
      */
-    private Supplier<InsertOperation> fallback;
+    private Supplier<InsertUpdateOperation> fallback;
 
     /**
      * Type of our type-parameter.
@@ -90,7 +90,7 @@ public class FetchOperation<V> extends Operation<V>
      *
      * @see #fallback Some more info
      */
-    public FetchOperation<V> orElseInsert(Supplier<InsertOperation> supplier)
+    public FetchOperation<V> orElseInsert(Supplier<InsertUpdateOperation> supplier)
     {
         this.fallback = supplier;
         return this;

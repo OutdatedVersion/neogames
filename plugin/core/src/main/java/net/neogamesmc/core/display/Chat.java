@@ -1,11 +1,13 @@
 package net.neogamesmc.core.display;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.reference.Role;
+import net.neogamesmc.core.text.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,14 +21,40 @@ import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
  * @author Ben (OutdatedVersion)
  * @since Jun/18/2017 (3:34 AM)
  */
+@Singleton
 @ParallelStartup
 public class Chat implements Listener
 {
 
     /**
+     * The message used to let players know that
+     * chat is currently disabled when they attempt
+     * to send a message.
+     */
+    private static final Message SILENCE_INFORM = Message.start().content("Chat is currently disabled.", RED).bold().italic();
+
+    /**
+     * Whether or not chat is currently disabled.
+     */
+    private volatile boolean isSilenced;
+
+    /**
      * Local copy of our database.
      */
     @Inject private Database database;
+
+    /**
+     * Toggle the usability state of chat.
+     *
+     * @return This instance, for chaining.
+     */
+    public Chat toggleChat()
+    {
+        this.isSilenced = !isSilenced;
+        Message.start().content("Public chat has been " + (isSilenced ? "disabled." : "enabled."), RED).italic().bold().sendAsIs();
+
+        return this;
+    }
 
     @EventHandler
     public void handleChat(AsyncPlayerChatEvent event)
@@ -34,6 +62,13 @@ public class Chat implements Listener
         event.setCancelled(true);
 
         final Role role = database.cacheFetch(event.getPlayer().getUniqueId()).role;
+
+        if (isSilenced && !role.compare(Role.ADMIN))
+        {
+            SILENCE_INFORM.sendAsIs(event.getPlayer());
+            return;
+        }
+
         final String name = event.getPlayer().getName();
 
         final BaseComponent[] message = new ComponentBuilder

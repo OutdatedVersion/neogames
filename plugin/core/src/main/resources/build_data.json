@@ -1,0 +1,4 @@
+{
+  "built_by": "${user.name}",
+  "build_version": "git-${git.commit.id.abbrev}"
+}

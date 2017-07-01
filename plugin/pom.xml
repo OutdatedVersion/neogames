@@ -18,6 +18,7 @@
         <module>core</module>
         <module>lobby</module>
         <module>bungee</module>
+        <module>buycraft-hook</module>
     </modules>
 
 

@@ -30,7 +30,7 @@ public class Ping implements Listener
      * The first line of the response. Keep in mind that it will never change.
      */
     private static final ComponentBuilder FIRST_LINE = new ComponentBuilder
-                                    ("                   ")
+                                    ("                 ")
                              .append("!").color(AQUA).obfuscated(true)
                              .append(" NeoGames", NONE).color(ChatColor.GOLD).obfuscated(false).append(" Network ").color(ChatColor.YELLOW)
                              .append("!\n").obfuscated(true).color(AQUA);

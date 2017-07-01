@@ -5,6 +5,7 @@ import net.neogamesmc.common.database.mutate.Mutators;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Contains stateless utilities relating
@@ -30,7 +31,7 @@ class OperationTools
      */
     static PreparedStatement statement(Connection connection, String sql, Object[] data) throws SQLException
     {
-        return transferData(connection.prepareStatement(sql), data);
+        return transferData(connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS), data);
     }
 
     /**

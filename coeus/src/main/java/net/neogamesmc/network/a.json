@@ -1,0 +1,18 @@
+[
+  {
+    "id": "chunk_runner",
+    "name": "Chunk Runner",
+    "players": {
+      "min": 2,
+      "max": 24
+    },
+    "actions": {
+      "copy": [
+        {
+          "source": "{storage}/maps/chunk_runner",
+          "to": "lobby"
+        }
+      ]
+    }
+  }
+]
