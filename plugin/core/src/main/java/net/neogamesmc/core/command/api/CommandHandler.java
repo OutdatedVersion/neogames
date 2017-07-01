@@ -48,7 +48,7 @@ public class CommandHandler implements Listener
 
     /**
      * A set of {@link ArgumentSatisfier}s that a large
-     * majority of our commands require. \
+     * majority of our commands require.
      */
     public static final Collection<Class<? extends ArgumentSatisfier>> DEFAULT_PROVIDERS = Lists.newArrayList(
             RoleSatisfier.class, PlayerSatisfier.class, StringArraySatisfier.class
@@ -267,7 +267,10 @@ public class CommandHandler implements Listener
             // verify the player can actually execute this command
             if (info.node != null)
                 if (!player.hasPermission(info.node))
+                {
+                    info.permissionMessage.sendAsIs(player);
                     return;
+                }
 
             // prepare parameters
             final Arguments args = new Arguments(rawArguments);
