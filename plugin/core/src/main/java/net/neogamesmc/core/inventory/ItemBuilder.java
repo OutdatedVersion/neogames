@@ -3,7 +3,9 @@ package net.neogamesmc.core.inventory;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 /**
@@ -38,6 +40,30 @@ public class ItemBuilder
     public ItemBuilder name(String name)
     {
         update(meta -> meta.setDisplayName(name));
+        return this;
+    }
+
+    /**
+     * Update the lore of this item.
+     *
+     * @param lines The lines
+     * @return This builder, for chaining
+     */
+    public ItemBuilder lore(String... lines)
+    {
+        update(meta -> meta.setLore(Arrays.asList(lines)));
+        return this;
+    }
+
+    /**
+     * Update the data on the stack
+     *
+     * @param data Data val
+     * @return This builder, for chaining
+     */
+    public ItemBuilder byteData(byte data)
+    {
+        stack.setData(new MaterialData(stack.getType(), data));
         return this;
     }
 

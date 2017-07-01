@@ -72,9 +72,9 @@ public class Lobby extends Plugin implements Listener
 
         getServer().getPluginManager().registerEvents(this, this);
 
+
         this.spawnLocation = new Location(Bukkit.getWorld("lobby"), 10.5, 64.5, 5.5, 177.4f, -12.4f);
         this.spawnLocation.getChunk().load();
-
 
         MagmaCube magmaCube = spawnLocation.getWorld().spawn(new Location(spawnLocation.getWorld(), 3.5, 63, 1.5, -128.5f, 12.5f), MagmaCube.class);
         magmaCube.setSize(2);
