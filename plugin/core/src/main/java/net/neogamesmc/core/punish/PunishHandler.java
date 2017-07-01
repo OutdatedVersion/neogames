@@ -11,8 +11,10 @@ import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.redis.api.FromChannel;
 import net.neogamesmc.common.redis.api.HandlesType;
+import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.issue.Issues;
 import net.neogamesmc.core.punish.payload.PunishmentPayload;
+import net.neogamesmc.core.scheduler.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -80,33 +82,44 @@ public class PunishHandler
 
         if (target != null)
         {
-            payload.type.performAction(target, payload);
+            Scheduler.sync(() -> payload.type.performAction(target, payload));
         }
     }
 
-
+    /**
+     *
+     * @param issuedBy
+     * @param target
+     * @param type
+     * @param duration
+     * @param reason
+     */
     public void issue(UUID issuedBy, String target, PunishmentType type, long duration, String... reason)
     {
-        try
-        {
-            System.out.println("Hit #issue");
-            final Instant adjustedTime = Instant.now().plus(duration, ChronoUnit.MILLIS);
-            final AtomicInteger id = new AtomicInteger();
+        System.out.println("Duration: " + duration);
 
-            System.out.println("Directly before insert");
-            new InsertUpdateOperation(SQL_RECORD_PUNISHMENT)
-                        .data(target, issuedBy, type, reason, adjustedTime)
-                        .keys(result -> id.lazySet(result.getInt("id")))
-                        .async(database);
-
-            // TODO(Ben): get() makes this blocking?
-            System.out.println("Before redis");
-            new PunishmentPayload(id.get(), type, target, adjustedTime.toEpochMilli(), reason).publish(redis);
-        }
-        catch (Exception ex)
+        Scheduler.async(() ->
         {
-            Issues.handle("Issue Punishment", ex);
-        }
+            try
+            {
+                final Instant adjustedTime = Instant.now().plus(duration, ChronoUnit.MILLIS);
+                final AtomicInteger id = new AtomicInteger();
+
+                new InsertUpdateOperation(SQL_RECORD_PUNISHMENT)
+                        .data(target, issuedBy, type, Text.convertArray(reason), adjustedTime)
+                        .keys(result ->
+                        {
+                            if (result.next())
+                                id.lazySet(result.getInt(1));
+                        }).sync(database);
+
+                new PunishmentPayload(id.get(), type, target, adjustedTime.toEpochMilli(), reason).publish(redis);
+            }
+            catch (Exception ex)
+            {
+                Issues.handle("Issue Punishment", ex);
+            }
+        });
     }
 
 }

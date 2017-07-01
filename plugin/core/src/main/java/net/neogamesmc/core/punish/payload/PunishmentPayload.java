@@ -1,12 +1,12 @@
 package net.neogamesmc.core.punish.payload;
 
-import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
 import net.neogamesmc.core.punish.PunishmentType;
+import org.json.simple.JSONObject;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -62,7 +62,7 @@ public class PunishmentPayload implements Payload
     }
 
     @Override
-    public JsonObject asJSON()
+    public JSONObject asJSON()
     {
         return new JSONBuilder().add("id", id)
                                 .add("type", type.name())

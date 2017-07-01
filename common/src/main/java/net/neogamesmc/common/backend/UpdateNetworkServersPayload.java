@@ -1,9 +1,10 @@
 package net.neogamesmc.common.backend;
 
-import com.google.gson.JsonObject;
+import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
+import org.json.simple.JSONObject;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -47,15 +48,9 @@ public class UpdateNetworkServersPayload implements Payload
     }
 
     @Override
-    public JsonObject asJSON()
+    public JSONObject asJSON()
     {
-        final JsonObject json = new JsonObject();
-
-        json.addProperty("name", name);
-        json.addProperty("port", port);
-        json.addProperty("add", add);
-
-        return json;
+        return new JSONBuilder().add("name", name).add("port", port).add("add", add).done();
     }
 
     @Override

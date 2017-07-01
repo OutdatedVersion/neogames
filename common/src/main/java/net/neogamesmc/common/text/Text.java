@@ -1,18 +1,11 @@
 package net.neogamesmc.common.text;
 
-import com.google.common.base.Joiner;
-
 /**
  * @author Ben (OutdatedVersion)
  * @since Jun/18/2017 (10:50 PM)
  */
 public class Text
 {
-
-    /**
-     * Join things together separated with a space.
-     */
-    public static final Joiner SPACE_JOINER = Joiner.on(" ");
 
     /**
      * Turns the provided enumerator into
@@ -30,6 +23,36 @@ public class Text
                             .replaceAll("_", "");
 
         return raw;
+    }
+
+    /**
+     * Turn the provided array into text.
+     *
+     * @param array The array
+     * @return The single line of text.
+     */
+    public static String convertArray(String[] array)
+    {
+        return convertArray(array, 0);
+    }
+
+    /**
+     * Turn the provided array into a single string.
+     *
+     * @param array The array
+     * @param cutOff When to cutoff
+     * @return The single line of text
+     */
+    public static String convertArray(String[] array, int cutOff)
+    {
+        final StringBuilder builder = new StringBuilder();
+
+        for (int i = cutOff; i != array.length; i++)
+        {
+            builder.append(array[i]).append(" ");
+        }
+
+        return builder.toString().trim();
     }
 
 }

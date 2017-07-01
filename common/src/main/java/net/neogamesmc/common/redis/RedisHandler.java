@@ -217,6 +217,10 @@ public class RedisHandler
                 System.err.println("Issue fetching focus for payload: " + payload.getClass().getName());
                 System.err.println();
             }
+            catch (Exception ex)
+            {
+                throw new RuntimeException("Unknown issue occurred whilst publishing Redis payload.", ex);
+            }
         });
 
         return this;
@@ -234,6 +238,8 @@ public class RedisHandler
     {
         try
         {
+            debug("[Redis Handler] Provisioning hook at: " + object.getClass().getCanonicalName());
+
             // lazy init
             if (hooks == null)
                 hooks = new ConcurrentHashMap<>();

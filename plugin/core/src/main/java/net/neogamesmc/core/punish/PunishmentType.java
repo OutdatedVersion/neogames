@@ -25,6 +25,8 @@ public enum PunishmentType
         player.kickPlayer(TextComponent.toLegacyText(
                 new ComponentBuilder("A ban has been issued against your account.\n\n").color(RED)
                         .append("Expires " + PunishTools.FORMAT_LENGTH.apply(data)).color(YELLOW)
+                        .append("\nReason: ").color(GRAY)
+                        .append(Text.convertArray(data.reason)).color(WHITE)
                         .append("\nBan ID: ").color(GRAY)
                         .append("#" + data.id).color(WHITE)
                         .create()
@@ -38,7 +40,7 @@ public enum PunishmentType
         player.kickPlayer(TextComponent.toLegacyText(
                 new ComponentBuilder("You've been removed from the network.\n\n").color(RED)
                         .append("Reason: ").color(GRAY)
-                        .append(Text.SPACE_JOINER.join(data.reason)).color(WHITE)
+                        .append(Text.convertArray(data.reason)).color(WHITE)
                         .append("\nKick ID: ").color(GRAY)
                         .append("#" + data.id).color(WHITE)
                         .create()
@@ -50,8 +52,8 @@ public enum PunishmentType
      */
     MUTE((player, data) ->
     {
-        player.sendMessage(bold(RED) + "You have been muted until " + bold(GRAY) + PunishTools.FORMAT_LENGTH.apply(data));
-        player.sendMessage(bold(GRAY) + "Reason: " + bold(WHITE) + Text.SPACE_JOINER.join(data.reason));
+        player.sendMessage(bold(RED) + "You have been muted until " + bold(YELLOW) + PunishTools.FORMAT_LENGTH.apply(data));
+        player.sendMessage(bold(GRAY) + "Reason: " + bold(WHITE) + Text.convertArray(data.reason));
     });
 
 

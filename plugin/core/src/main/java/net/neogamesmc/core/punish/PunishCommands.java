@@ -4,8 +4,10 @@ import com.google.inject.Inject;
 import net.neogamesmc.core.command.api.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,7 +23,7 @@ public class PunishCommands
     /**
      * Match the time argument in these commands.
      */
-    public static final Pattern REGEX = Pattern.compile("([0-9]*)((?i)[dhmw]+)");
+    public static final Pattern REGEX = Pattern.compile("([0-9]*)((?i)[dhmw])+");
 
     /**
      * Our managing instance.
@@ -60,6 +62,7 @@ public class PunishCommands
                                            @Necessary ( "You must supply a reason" ) String[] reason)
     {
         System.out.println("Hit method");
+        Bukkit.broadcastMessage(Arrays.toString(reason));
         handler.issue(player.getUniqueId(), name, PunishmentType.KICK, -1, reason);
     }
 
@@ -81,8 +84,14 @@ public class PunishCommands
 
         long result = 0;
 
+        System.out.println(in);
+
         while (matcher.find())
         {
+            System.out.println("Found");
+            System.out.println("group 1: " + matcher.group(1));
+            System.out.println("group 2: " + matcher.group(2));
+
             result += PunishTools.parseTime(Integer.valueOf(matcher.group(1)), matcher.group(2).charAt(0));
         }
 

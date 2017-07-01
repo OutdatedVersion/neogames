@@ -1,8 +1,8 @@
 package net.neogamesmc.common.redis.api;
 
-import com.google.gson.JsonObject;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
+import org.json.simple.JSONObject;
 
 /**
  * Represents a packet of data sent over
@@ -21,7 +21,7 @@ public interface Payload
      *
      * @return the payload as JSON
      */
-    JsonObject asJSON();
+    JSONObject asJSON();
 
     /**
      * @return the Redis channel this payload
@@ -37,14 +37,14 @@ public interface Payload
      */
     default String asString(String focus)
     {
-        final JsonObject json = new JsonObject();
+        final JSONObject json = new JSONObject();
 
-        json.addProperty("focus", focus);
+        json.put("focus", focus);
 
-        final JsonObject payload = this.asJSON();
+        final JSONObject payload = this.asJSON();
 
         if (payload != null)
-            json.add("payload", payload);
+            json.put("payload", payload);
 
         return json.toString();
     }

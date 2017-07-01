@@ -1,10 +1,10 @@
 package net.neogamesmc.common.backend;
 
-import com.google.gson.JsonObject;
 import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
+import org.json.simple.JSONObject;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -44,7 +44,7 @@ public class TransactionNoticePayload implements Payload
     }
 
     @Override
-    public JsonObject asJSON()
+    public JSONObject asJSON()
     {
         return new JSONBuilder()
                         .add("name", name)

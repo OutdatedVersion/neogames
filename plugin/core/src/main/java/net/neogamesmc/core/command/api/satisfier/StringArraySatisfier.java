@@ -14,14 +14,14 @@ public class StringArraySatisfier implements ArgumentSatisfier<String[]>
     @Override
     public String[] get(Player player, Arguments args)
     {
-        final String[] _array = new String[args.remainingElements()];
+        final String[] array = new String[args.remainingElements()];
 
-        for (int i = args.currentPosition(); i < _array.length; i++)
+        for (int i = args.currentPosition(); i < array.length; i++)
         {
-            _array[i] = args.next();
+            array[i] = args.next();
         }
 
-        return _array;
+        return array;
     }
 
     @Override
