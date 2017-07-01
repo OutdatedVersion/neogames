@@ -45,6 +45,11 @@ public class HotbarItem
         this.stack = stack;
     }
 
+    public HotbarItem location(int loc)
+    {
+        return this;
+    }
+
     /**
      * Assign the action to execute when we click
      * on this item.

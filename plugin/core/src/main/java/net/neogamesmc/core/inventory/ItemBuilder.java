@@ -1,5 +1,6 @@
 package net.neogamesmc.core.inventory;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -11,22 +12,43 @@ import java.util.function.Consumer;
  * @author Ben (OutdatedVersion)
  * @since Jun/30/2017 (7:51 PM)
  */
-public class ItemStackBuilder
+public class ItemBuilder
 {
 
     /**
      * The stack behind this builder.
      */
-    public ItemStack stack;
+    private ItemStack stack;
 
     /**
-     * a
-     * @return a
+     * Class Constructor
+     *
+     * @param material The material to initialize with
      */
-    public ItemStackBuilder name(String name)
+    public ItemBuilder(Material material)
+    {
+        this.stack = new ItemStack(material);
+    }
+
+    /**
+     * Updates the display name of this item.
+     *
+     * @return This builder, for chaining
+     */
+    public ItemBuilder name(String name)
     {
         update(meta -> meta.setDisplayName(name));
         return this;
+    }
+
+    /**
+     * Finish off this builder
+     *
+     * @return The stack
+     */
+    public ItemStack build()
+    {
+        return stack;
     }
 
     /**
