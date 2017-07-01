@@ -5,7 +5,7 @@ import com.google.inject.Singleton;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.database.mutate.Mutator;
 import net.neogamesmc.common.database.mutate.Mutators;
-import net.neogamesmc.common.database.operation.InsertOperation;
+import net.neogamesmc.common.database.operation.InsertUpdateOperation;
 import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
@@ -35,6 +35,9 @@ public class PunishHandler
 
     public static final String SQL_FETCH_RECORD = "";
 
+    /**
+     * SQL statement to insert punishments.
+     */
     public static final String SQL_RECORD_PUNISHMENT = "INSERT INTO punishments (target_id, issued_by, type, reason, expires_at) VALUES ((SELECT iid FROM accounts WHERE name=?), ?, ?, ?, ?);";
 
     /**
@@ -91,7 +94,7 @@ public class PunishHandler
             final AtomicInteger id = new AtomicInteger();
 
             System.out.println("Directly before insert");
-            new InsertOperation(SQL_RECORD_PUNISHMENT)
+            new InsertUpdateOperation(SQL_RECORD_PUNISHMENT)
                         .data(target, issuedBy, type, reason, adjustedTime)
                         .keys(result -> id.lazySet(result.getInt("id")))
                         .async(database);

@@ -1,0 +1,8 @@
+name: ${plugin.name}
+main: ${plugin.main}
+author: OutdatedVersion
+version: git-${git.commit.id.abbrev}
+
+commands:
+  hook:
+    usage: /<command>

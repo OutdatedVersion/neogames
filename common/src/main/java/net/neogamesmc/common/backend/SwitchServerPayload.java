@@ -43,7 +43,7 @@ public class SwitchServerPayload implements Payload
      * @param server The nam,e
      * @param targets The players to send
      */
-    public SwitchServerPayload(String server, String[] targets)
+    public SwitchServerPayload(String server, String... targets)
     {
         this.server = server;
         this.targets = targets;

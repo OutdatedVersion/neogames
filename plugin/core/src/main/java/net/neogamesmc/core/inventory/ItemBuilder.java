@@ -3,7 +3,6 @@ package net.neogamesmc.core.inventory;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -63,7 +62,7 @@ public class ItemBuilder
      */
     public ItemBuilder byteData(byte data)
     {
-        stack.setData(new MaterialData(stack.getType(), data));
+        stack.setDurability(data);
         return this;
     }
 

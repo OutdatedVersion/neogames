@@ -87,7 +87,7 @@ public class RedisHandler
      *
      * @return this handler
      */
-    public RedisHandler releaseResources()
+    public RedisHandler release()
     {
         pool.close();
         executor.shutdown();

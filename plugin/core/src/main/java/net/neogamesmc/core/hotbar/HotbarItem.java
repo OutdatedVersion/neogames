@@ -8,7 +8,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
@@ -19,14 +18,14 @@ public class HotbarItem
 {
 
     /**
-     *  The item stack behind this.
+     * The player associated with this item.
      */
-    public ItemStack stack;
+    public final Player player;
 
     /**
-     * UUID of the player possessing this item.
+     *  The item stack behind this.
      */
-    public UUID uuid;
+    public final ItemStack stack;
 
     /**
      * A collection of every executable action.
@@ -41,12 +40,19 @@ public class HotbarItem
      */
     public HotbarItem(Player player, ItemStack stack)
     {
-        this.uuid = player.getUniqueId();
+        this.player = player;
         this.stack = stack;
     }
 
+    /**
+     * Set the item where it should be
+     *
+     * @param loc The slot number
+     * @return The
+     */
     public HotbarItem location(int loc)
     {
+        player.getInventory().setItem(loc, stack);
         return this;
     }
 
@@ -60,6 +66,18 @@ public class HotbarItem
     public HotbarItem action(Action type, Consumer<Player> action)
     {
         actions.put(type, action);
+        return this;
+    }
+
+    /**
+     * Add this item to the provided handler.
+     *
+     * @param handler The handler
+     * @return This item, for chaining
+     */
+    public HotbarItem add(HotbarHandler handler)
+    {
+        handler.register(this);
         return this;
     }
 

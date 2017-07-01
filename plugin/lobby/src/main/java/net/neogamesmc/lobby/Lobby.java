@@ -9,11 +9,15 @@ import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.command.api.CommandHandler;
+import net.neogamesmc.core.hotbar.HotbarHandler;
 import net.neogamesmc.core.hotbar.HotbarItem;
 import net.neogamesmc.core.inventory.ItemBuilder;
 import net.neogamesmc.core.issue.Issues;
+import net.neogamesmc.core.text.Colors;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftMagmaCube;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftSkeleton;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftVillager;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,15 +28,13 @@ import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import static net.neogamesmc.core.text.Colors.bold;
 import static org.bukkit.Material.COMPASS;
 
 /**
@@ -41,7 +43,8 @@ import static org.bukkit.Material.COMPASS;
  * @author Ben (OutdatedVersion)
  * @since Jun/19/2017 (3:30 AM)
  */
-public class Lobby extends Plugin implements Listener {
+public class Lobby extends Plugin implements Listener
+{
 
     // small magma cube : blast off - red green bold Join
     // green villager : chunk runner - green
@@ -58,10 +61,12 @@ public class Lobby extends Plugin implements Listener {
     private Database database;
 
     @Override
-    public void enable(Injector injector) {
+    public void enable(Injector injector)
+    {
         // Forcefully start database first
         this.database = register(Database.class);
 
+        register(HotbarHandler.class);
         register(RedisHandler.class).init().subscribe(RedisChannel.DEFAULT);
         register(CommandHandler.class).addProviders(CommandHandler.DEFAULT_PROVIDERS).registerInPackage("net.neogamesmc.core");
 
@@ -72,7 +77,7 @@ public class Lobby extends Plugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
 
 
-        this.spawnLocation = new Location(Bukkit.getWorld("lobby"), 10.5, 64.5, 5.5, 177.4f, -12.4f);
+        this.spawnLocation = new Location(Bukkit.getWorld("lobby"), 10.5, 64.5, 5.5, 162.6f, 0f);
         this.spawnLocation.getChunk().load();
 
         MagmaCube magmaCube = spawnLocation.getWorld().spawn(new Location(spawnLocation.getWorld(), 3.5, 63, 1.5, -128.5f, 12.5f), MagmaCube.class);
@@ -84,8 +89,8 @@ public class Lobby extends Plugin implements Listener {
         magmaCube.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.RED + "" + ChatColor.BOLD + "Blast Off" + ChatColor.RESET);
         magmaCube.setCustomNameVisible(true);
         magmaCube.setMetadata("send-server", new FixedMetadataValue(this, "BLAST_OFF"));
-        ((CraftSkeleton) magmaCube).getHandle().setPositionRotation(3.5, 63, 1.5, -128.5f, 0);
-        ((CraftSkeleton) magmaCube).getHandle().h(-128.5f);
+        ((CraftMagmaCube) magmaCube).getHandle().setPositionRotation(3.5, 63, 1.5, -60.8f, 0);
+        ((CraftMagmaCube) magmaCube).getHandle().h(-60.8f);
 
         Skeleton skeleton = spawnLocation.getWorld().spawn(new Location(spawnLocation.getWorld(), -0.5, 63.06, -2.5, -48.3f, 0f), Skeleton.class);
         skeleton.setAI(false);
@@ -107,12 +112,13 @@ public class Lobby extends Plugin implements Listener {
         villager.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Chunk Runner" + ChatColor.RESET);
         villager.setCustomNameVisible(true);
         villager.setMetadata("send-server", new FixedMetadataValue(this, "CHUNK_RUNNER"));
-        ((CraftSkeleton) skeleton).getHandle().setPositionRotation(-1.147, 63.06250, 2.5, -80, 0);
-        ((CraftSkeleton) skeleton).getHandle().h(-80f);
+        ((CraftVillager) villager).getHandle().setPositionRotation(-1.147, 63.06250, 2.5, -80, 0);
+        ((CraftVillager) villager).getHandle().h(-80f);
     }
 
     @Override
-    public void disable() {
+    public void disable()
+    {
         get(Database.class).release();
 
         spawnLocation.getWorld().getEntities().stream().filter(entity -> entity.hasMetadata("send-server")).forEach(Entity::remove);
@@ -126,8 +132,10 @@ public class Lobby extends Plugin implements Listener {
      *
      * @param clazz The class to register
      */
-    public <T> T register(final Class<T> clazz) {
-        try {
+    public <T> T register(final Class<T> clazz)
+    {
+        try
+        {
             T obj = get(clazz);
 
             // auto-register event listeners
@@ -135,7 +143,9 @@ public class Lobby extends Plugin implements Listener {
                 getServer().getPluginManager().registerEvents((Listener) obj, this);
 
             return obj;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             Issues.handle("Class Registration", ex);
         }
 
@@ -143,20 +153,38 @@ public class Lobby extends Plugin implements Listener {
     }
 
     @EventHandler
-    public void movePlayer(PlayerJoinEvent event) {
+    public void movePlayer(PlayerJoinEvent event)
+    {
         event.setJoinMessage(null);
         event.getPlayer().teleport(spawnLocation);
 
-        new HotbarItem(event.getPlayer(), new ItemBuilder(COMPASS).name("Select a game").build())
-                .location(1)
-                .action(Action.RIGHT_CLICK_AIR, player ->
-                {
-
-                });
+        new HotbarItem(event.getPlayer(), new ItemBuilder(COMPASS).name(bold(net.md_5.bungee.api.ChatColor.DARK_GREEN) + "Game Selection").build())
+                .location(0)
+                .action(Action.RIGHT_CLICK_AIR, this::openNavigationMenu)
+                .add(get(HotbarHandler.class));
     }
 
     @EventHandler
-    public void onEntityDamage(EntityDamageEvent event) {
+    public void disallowDrop(PlayerDropItemEvent event)
+    {
+        event.setCancelled(event.getPlayer().getGameMode() != GameMode.CREATIVE);
+    }
+
+    @EventHandler
+    public void disallowMovement(InventoryClickEvent event)
+    {
+        event.setCancelled(event.getWhoClicked().getGameMode() != GameMode.CREATIVE);
+    }
+
+    @EventHandler
+    public void disallowMovement(PlayerSwapHandItemsEvent event)
+    {
+        event.setCancelled(event.getPlayer().getGameMode() != GameMode.CREATIVE);
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event)
+    {
         if (!event.getEntity().hasMetadata("send-server"))
             return;
 
@@ -164,28 +192,34 @@ public class Lobby extends Plugin implements Listener {
     }
 
     @EventHandler
-    public void removeQuitMessages(PlayerQuitEvent event) {
+    public void removeQuitMessages(PlayerQuitEvent event)
+    {
         event.setQuitMessage(null);
     }
 
     @EventHandler
-    public void disallowBreaking(BlockBreakEvent event) {
+    public void disallowBreaking(BlockBreakEvent event)
+    {
         event.setCancelled(event.getPlayer().getGameMode() != GameMode.CREATIVE);
     }
 
     @EventHandler
-    public void disallowPlacing(BlockPlaceEvent event) {
+    public void disallowPlacing(BlockPlaceEvent event)
+    {
         event.setCancelled(event.getPlayer().getGameMode() != GameMode.CREATIVE);
     }
 
     @EventHandler
-    public void disallowHunger(FoodLevelChangeEvent event) {
+    public void disallowHunger(FoodLevelChangeEvent event)
+    {
         event.setCancelled(true);
     }
 
     @EventHandler
-    public void disallowDamage(EntityDamageEvent event) {
-        if (event.getEntityType() == EntityType.PLAYER) {
+    public void disallowDamage(EntityDamageEvent event)
+    {
+        if (event.getEntityType() == EntityType.PLAYER)
+        {
             if (event.getCause() == EntityDamageEvent.DamageCause.VOID)
                 event.getEntity().teleport(spawnLocation);
 
@@ -194,19 +228,22 @@ public class Lobby extends Plugin implements Listener {
     }
 
     @EventHandler
-    public void disallowWeatherUpdate(WeatherChangeEvent event) {
+    public void disallowWeatherUpdate(WeatherChangeEvent event)
+    {
         event.setCancelled(event.toWeatherState());
     }
 
     // temp
     @EventHandler
-    public void roleWhitelist(PlayerLoginEvent event) {
-        if (database.cacheFetch(event.getPlayer().getUniqueId()).role.compareTo(Role.BUILDER) >= 0)
+    public void roleWhitelist(PlayerLoginEvent event)
+    {
+        if (database.cacheFetch(event.getPlayer().getUniqueId()).role.compareTo(Role.YOUTUBE) >= 0)
             event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ChatColor.YELLOW + "You are not permitted to join the network yet.");
     }
 
     @EventHandler
-    public void npcHandler(PlayerInteractEntityEvent event) {
+    public void npcHandler(PlayerInteractEntityEvent event)
+    {
         if (!event.getRightClicked().hasMetadata("send-server"))
             return;
 
@@ -215,86 +252,59 @@ public class Lobby extends Plugin implements Listener {
     }
 
     @EventHandler
-    public void stopSmokingWeed(EntityCombustEvent event) {
+    public void stopSmokingWeed(EntityCombustEvent event)
+    {
         event.setCancelled(event.getEntity().hasMetadata("send-server"));
     }
 
 
-    public void openNavigationMenu(Player player) {
+    public void openNavigationMenu(Player player)
+    {
         Inventory inventory = Bukkit.createInventory(null, 27, ChatColor.GREEN + "Join Game");
 
         ItemBuilder chunkRunnerItemBuilder = new ItemBuilder(Material.GRASS);
-        chunkRunnerItemBuilder.name(ChatColor.GREEN + "Chunck Runner");
-        chunkRunnerItemBuilder.lore(
-                ChatColor.DARK_GRAY + "Parkour/Challenge",
-                "",
-                ChatColor.GRAY + "Run along a parkour course that",
-                ChatColor.GRAY + "generates in one direction and",
-                ChatColor.GRAY + "crumbles away behind you at an",
-                ChatColor.GRAY + "increasing speed!",
-                "",
-                ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMC",
-                ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky & FantomLX",
-                ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "1 - 24 Players");
+        chunkRunnerItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.GREEN) + "Chunk Runner");
+        chunkRunnerItemBuilder.lore(ChatColor.DARK_GRAY + "Parkour/Challenge", "", ChatColor.GRAY + "Run along a parkour course that", ChatColor.GRAY + "generates in one direction and", ChatColor.GRAY + "crumbles away behind you at an", ChatColor.GRAY + "increasing speed!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMC", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky & FantomLX", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "1 - 24 Players");
 
 
         inventory.setItem(11, chunkRunnerItemBuilder.build());
-        inventory.setItem(2, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13));
-        inventory.setItem(20, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13));
+        inventory.setItem(2, glass(13));
+        inventory.setItem(20, glass(13));
 
-        ItemBuilder blastOffItemBuilder = new ItemBuilder(Material.FIREWORK_CHARGE);
-        blastOffItemBuilder.name(ChatColor.RED + "Blast Off");
-        blastOffItemBuilder.lore(
-                ChatColor.DARK_GRAY + "Minigame/Pvp",
-                "",
-                ChatColor.GRAY + "Use your arsenal of exploding weapons",
-                ChatColor.GRAY + "and tons of powerups to blast apart",
-                ChatColor.GRAY + "the map! Be the last player standing",
-                ChatColor.GRAY + "to win!",
-                "",
-                ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc",
-                ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky, Falcinspire, Dennisbuilds,",
-                ChatColor.BLUE + "ItsZender, Jayjo, Corey977, JacobRuby, Team Dracolyte & StainMine",
-                ChatColor.GRAY + "Support: " + ChatColor.YELLOW + "2 - 12 Players");
+        ItemBuilder blastOffItemBuilder = new ItemBuilder(Material.FIREBALL);
+        blastOffItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.RED) + "Blast Off");
+        blastOffItemBuilder.lore(ChatColor.DARK_GRAY + "Minigame/PvP", "", ChatColor.GRAY + "Use your arsenal of exploding weapons", ChatColor.GRAY + "and tons of powerups to blast apart", ChatColor.GRAY + "the map! Be the last player standing", ChatColor.GRAY + "to win!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky, Falcinspire, Dennisbuilds,", ChatColor.BLUE + "ItsZender, Jayjo, Corey977, JacobRuby,", ChatColor.BLUE + "Team Dracolyte & StainMine", ChatColor.GRAY + "Support: " + ChatColor.YELLOW + "2 - 12 Players");
 
         inventory.setItem(13, blastOffItemBuilder.build());
-        inventory.setItem(4, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 1));
-        inventory.setItem(22, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 1));
+        inventory.setItem(4, glass(1));
+        inventory.setItem(22, glass(1));
 
         ItemBuilder bowplinkoItemBuilder = new ItemBuilder(Material.BOW);
-        bowplinkoItemBuilder.name(ChatColor.DARK_PURPLE + "Bowplinko");
-        bowplinkoItemBuilder.lore(
-                ChatColor.DARK_GRAY + "Minigame/Archery",
-                "",
-                ChatColor.GRAY + "A fast-paced archery war between",
-                ChatColor.GRAY + "two teams, but with a twist.",
-                ChatColor.GRAY + "If you get hit, you fall down",
-                ChatColor.GRAY + "a plinko board!",
-                "",
-                ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc",
-                ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky",
-                ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 24 Players");
+        bowplinkoItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.DARK_PURPLE) + "Bowplinko");
+        bowplinkoItemBuilder.lore(ChatColor.DARK_GRAY + "Minigame/Archery", "", ChatColor.GRAY + "A fast-paced archery war between", ChatColor.GRAY + "two teams, but with a twist.", ChatColor.GRAY + "If you get hit, you fall down", ChatColor.GRAY + "a plinko board!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 24 Players");
 
         inventory.setItem(15, bowplinkoItemBuilder.build());
-        inventory.setItem(6, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 1));
-        inventory.setItem(24, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 1));
+        inventory.setItem(6, glass(10));
+        inventory.setItem(24, glass(10));
 
         player.openInventory(inventory);
-
     }
 
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
+    public void onInventoryClick(InventoryClickEvent event)
+    {
         Player player = (Player) event.getWhoClicked();
         Inventory inventory = event.getInventory();
+
         if (inventory.getName() == null)
             return;
 
-        if (inventory.getName().equalsIgnoreCase(ChatColor.GREEN + "Join Game")) {
+        if (inventory.getName().equalsIgnoreCase(ChatColor.GREEN + "Join Game"))
+        {
             event.setCancelled(true);
 
-            int slot = event.getSlot();
-            switch (slot){
+            switch (event.getSlot())
+            {
                 case 11:
                     player.sendMessage("You pressed on Chuck Runner");
                     break;
@@ -302,9 +312,19 @@ public class Lobby extends Plugin implements Listener {
                     player.sendMessage("You pressed on Blast Off");
                     break;
                 case 15:
-                    player.sendMessage("You pressed on Bowplink");
+                    player.sendMessage("You pressed on Bowplinko");
                     break;
             }
         }
     }
+
+    /**
+     * @param data The color
+     * @return The glass
+     */
+    private static ItemStack glass(int data)
+    {
+        return new ItemBuilder(Material.STAINED_GLASS_PANE).byteData((byte) data).name(" ").build();
+    }
+
 }

@@ -28,6 +28,12 @@ public class Message
     private boolean isBold = false;
 
     /**
+     * Whether or not we're currently working
+     * with italicised text.
+     */
+    private boolean isItalic = false;
+
+    /**
      * Class Constructor
      *
      * @param prefix The prefix
@@ -64,6 +70,17 @@ public class Message
     public Message bold()
     {
         builder.bold(isBold = !isBold);
+        return this;
+    }
+
+    /**
+     * Invert the current italics status on this message.
+     *
+     * @return This builder for chaining.
+     */
+    public Message italic()
+    {
+        builder.italic(isItalic = !isItalic);
         return this;
     }
 
@@ -125,9 +142,18 @@ public class Message
      */
     public void send()
     {
-        final BaseComponent[] _message = builder.append(".").color(ChatColor.GRAY).create();
+        final BaseComponent[] message = builder.append(".").color(ChatColor.GRAY).create();
 
-        Players.stream().forEach(player -> player.sendMessage(_message));
+        Players.stream().forEach(player -> player.sendMessage(message));
+    }
+
+    /**
+     * Send this message to everyone online.
+     */
+    public void sendAsIs()
+    {
+        final BaseComponent[] message = builder.create();
+        Players.stream().forEach(player -> player.sendMessage(message));
     }
 
 }

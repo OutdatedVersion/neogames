@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  * @author Ben (OutdatedVersion)
  * @since May/21/2017 (10:09 PM)
  */
-public class InsertOperation extends Operation<Void>
+public class InsertUpdateOperation extends Operation<Void>
 {
 
     /**
@@ -30,7 +30,7 @@ public class InsertOperation extends Operation<Void>
     /**
      * {@inheritDoc}
      */
-    public InsertOperation(String sql)
+    public InsertUpdateOperation(String sql)
     {
         super(sql);
     }
@@ -39,7 +39,7 @@ public class InsertOperation extends Operation<Void>
      * {@inheritDoc}
      */
     @Override
-    public InsertOperation data(Object... data)
+    public InsertUpdateOperation data(Object... data)
     {
         this.data = data;
         return this;
@@ -51,7 +51,7 @@ public class InsertOperation extends Operation<Void>
      * @param <T>
      * @return
      */
-    public <T> InsertOperation object(Supplier<T> supplier)
+    public <T> InsertUpdateOperation object(Supplier<T> supplier)
     {
         this.supplier = supplier;
         return this;
@@ -73,7 +73,7 @@ public class InsertOperation extends Operation<Void>
      * @param consumer The consumer
      * @return This operation, for chaining
      */
-    public InsertOperation keys(SQLConsumer consumer)
+    public InsertUpdateOperation keys(SQLConsumer consumer)
     {
         this.consumer = consumer;
         return this;

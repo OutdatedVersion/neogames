@@ -6,7 +6,7 @@ import com.google.inject.Singleton;
 import net.neogamesmc.common.account.Account;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.database.operation.FetchOperation;
-import net.neogamesmc.common.database.operation.InsertOperation;
+import net.neogamesmc.common.database.operation.InsertUpdateOperation;
 import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.login.LoginHook;
 import net.neogamesmc.common.reference.Role;
@@ -70,7 +70,7 @@ public class LoginHandler implements Listener
             final Account account = new FetchOperation<Account>(SQL_FIND_PLAYER)
                                             .type(Account.class)
                                             .data(event.getUniqueId())
-                                            .orElseInsert(() -> new InsertOperation(SQL_RECORD_PLAYER)
+                                            .orElseInsert(() -> new InsertUpdateOperation(SQL_RECORD_PLAYER)
                                                                       .data(event.getUniqueId(), event.getName(), Role.DEFAULT,
                                                                             event.getAddress().getHostAddress(), Instant.now(), Instant.now())
                                                                       .object(() -> new Account().fromLogin(event.getUniqueId(), event.getName(), event.getAddress().getHostAddress())))

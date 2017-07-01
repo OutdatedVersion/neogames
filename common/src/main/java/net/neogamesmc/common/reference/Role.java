@@ -51,4 +51,16 @@ public enum Role
         this.name = this.name().toLowerCase().replaceAll("_", "");
     }
 
+    /**
+     * Check whether or not the provided role
+     * is of a higher position than this one.
+     *
+     * @param other The other role
+     * @return Yes or no
+     */
+    public boolean compare(Role other)
+    {
+        return this.ordinal() <= other.ordinal();
+    }
+
 }

@@ -32,7 +32,7 @@ public class HotbarHandler implements Listener
      */
     public HotbarHandler register(HotbarItem item)
     {
-        items.put(item.uuid, item);
+        items.put(item.player.getUniqueId(), item);
         return this;
     }
 
@@ -44,7 +44,7 @@ public class HotbarHandler implements Listener
      */
     public HotbarHandler remove(HotbarItem item)
     {
-        items.remove(item.uuid, item);
+        items.remove(item.player.getUniqueId(), item);
         return this;
     }
 
