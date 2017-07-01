@@ -27,7 +27,7 @@ public class Bootstrap
     public static void main(String[] args)
     {
         Configurator.currentConfig()
-                    .formatPattern("[{date:MM/dd hh:mm/ss aa}] [{thread}] {level:|min-size=8} : {message|indent=4}")
+                    .formatPattern("[{date:MM/dd hh:mm/ss aa}] [{thread:|min-size=8}] {level} : {message|indent=4}")
                     .writer(new ConsoleWriter())
                     .addWriter(new RollingFileWriter("network-manager.log.txt", 2, new TimestampLabeler(), new DailyPolicy()))
                     .writingThread(true)
