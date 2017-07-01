@@ -66,7 +66,6 @@ public class Lobby extends Plugin implements Listener
                 .matchClassesWithAnnotation(ParallelStartup.class, this::register)
                 .scan();
 
-
         getServer().getPluginManager().registerEvents(this, this);
 
         this.spawnLocation = new Location(Bukkit.getWorld("lobby"), 10.5, 64.5, 5.5, 177.4f, -12.4f);

@@ -17,4 +17,9 @@ public enum DeployType
      */
     ADD_SERVER();
 
+    // copy over template
+    // create data file
+    // execute startup script
+    // add to proxy
+
 }
