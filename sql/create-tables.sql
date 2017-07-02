@@ -27,11 +27,15 @@ CREATE TABLE IF NOT EXISTS assigned_permissions (
 # Punishment storage
 CREATE TABLE IF NOT EXISTS punishments (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `target_id` INT NOT NULL,
+  `target` INT NOT NULL,
   `issued_by` VARCHAR(40) NOT NULL,
   `type` VARCHAR(10) NOT NULL,
   `reason` VARCHAR(260) NOT NULL,
-  `expires_at` TIMESTAMP DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`target_id`) REFERENCES accounts(`iid`)
+  `revoked` BOOL NOT NULL,
+  `revoked_by` VARCHAR(40) DEFAULT NULL,
+  `expires_at` TIMESTAMP NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`)
 );
+
+# Create index on punishments
+# CREATE INDEX full_uuid ON punishments ()

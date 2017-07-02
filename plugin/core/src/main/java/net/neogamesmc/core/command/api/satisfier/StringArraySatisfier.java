@@ -16,7 +16,7 @@ public class StringArraySatisfier implements ArgumentSatisfier<String[]>
     {
         final String[] array = new String[args.remainingElements()];
 
-        for (int i = args.currentPosition(); i < array.length; i++)
+        for (int i = 0; i < array.length; i++)
         {
             array[i] = args.next();
         }

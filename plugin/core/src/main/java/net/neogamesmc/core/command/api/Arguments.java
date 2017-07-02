@@ -81,7 +81,7 @@ public class Arguments implements Iterator<String>, Cloneable
     }
 
     @Override
-    protected Arguments clone()
+    public Arguments clone()
     {
         return new Arguments(this.raw, this.currentPosition);
     }

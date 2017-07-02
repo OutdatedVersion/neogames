@@ -29,7 +29,7 @@ public class PunishmentPayload implements Payload
     /**
      * The reason behind issuing this punishment.
      */
-    public String[] reason;
+    public String reason;
 
     /**
      * The name of the player it's being issued against.
@@ -52,7 +52,7 @@ public class PunishmentPayload implements Payload
      * @param targetPlayer The target
      * @param expiresAt When it expires
      */
-    public PunishmentPayload(int id, PunishmentType type, String targetPlayer, long expiresAt, String[] reason)
+    public PunishmentPayload(int id, PunishmentType type, String targetPlayer, long expiresAt, String reason)
     {
         this.id = id;
         this.type = type;
