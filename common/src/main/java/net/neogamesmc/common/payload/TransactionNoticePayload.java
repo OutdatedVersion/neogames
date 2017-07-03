@@ -1,4 +1,4 @@
-package net.neogamesmc.common.backend;
+package net.neogamesmc.common.payload;
 
 import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;

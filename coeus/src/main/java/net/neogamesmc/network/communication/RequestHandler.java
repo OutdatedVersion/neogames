@@ -2,7 +2,7 @@ package net.neogamesmc.network.communication;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import net.neogamesmc.common.backend.RequestServerCreationPayload;
+import net.neogamesmc.common.payload.RequestServerCreationPayload;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.redis.api.FromChannel;

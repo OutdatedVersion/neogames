@@ -1,7 +1,7 @@
 package net.neogamesmc.discord.hook;
 
 import net.dv8tion.jda.core.entities.Guild;
-import net.neogamesmc.common.backend.SendDiscordMessagePayload;
+import net.neogamesmc.common.payload.SendDiscordMessagePayload;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.redis.api.HandlesType;
 

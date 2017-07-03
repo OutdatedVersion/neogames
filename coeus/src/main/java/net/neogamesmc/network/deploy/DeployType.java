@@ -1,6 +1,6 @@
 package net.neogamesmc.network.deploy;
 
-import net.neogamesmc.common.backend.UpdateNetworkServersPayload;
+import net.neogamesmc.common.payload.UpdateNetworkServersPayload;
 import net.neogamesmc.common.reference.Paths;
 import net.neogamesmc.network.data.ServerData;
 import net.neogamesmc.network.task.*;

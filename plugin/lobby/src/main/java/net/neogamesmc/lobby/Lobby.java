@@ -4,7 +4,7 @@ import com.destroystokyo.paper.event.server.ServerExceptionEvent;
 import com.google.inject.Binder;
 import com.google.inject.Injector;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
-import net.neogamesmc.common.backend.SwitchServerPayload;
+import net.neogamesmc.common.payload.SwitchServerPayload;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.redis.RedisChannel;
@@ -78,8 +78,8 @@ public class Lobby extends Plugin implements Listener
         // Forcefully start database first
         this.database = register(Database.class);
 
+        get(RedisHandler.class).subscribe(RedisChannel.DEFAULT);
         register(HotbarHandler.class);
-        register(RedisHandler.class).init().subscribe(RedisChannel.DEFAULT);
         register(CommandHandler.class).addProviders(CommandHandler.DEFAULT_PROVIDERS).registerInPackage("net.neogamesmc.core");
 
         System.out.println("Beginning class-path scan..");
@@ -284,7 +284,7 @@ public class Lobby extends Plugin implements Listener
 
         ItemBuilder chunkRunnerItemBuilder = new ItemBuilder(Material.GRASS);
         chunkRunnerItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.GREEN) + "Chunk Runner");
-        chunkRunnerItemBuilder.lore(ChatColor.DARK_GRAY + "Parkour/Challenge", "", ChatColor.GRAY + "Run along a parkour course that", ChatColor.GRAY + "generates in one direction and", ChatColor.GRAY + "crumbles away behind you at an", ChatColor.GRAY + "increasing speed!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMC", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky & FantomLX", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "1 - 24 Players");
+        chunkRunnerItemBuilder.lore(ChatColor.DARK_GRAY + "Parkour/Challenge", "", ChatColor.GRAY + "Run along a parkour course that", ChatColor.GRAY + "generates in one direction and", ChatColor.GRAY + "crumbles away behind you at an", ChatColor.GRAY + "increasing speed!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky & FantomLX", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "1 - 24 Players");
 
 
         inventory.setItem(11, chunkRunnerItemBuilder.build());
@@ -293,7 +293,7 @@ public class Lobby extends Plugin implements Listener
 
         ItemBuilder blastOffItemBuilder = new ItemBuilder(Material.FIREBALL);
         blastOffItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.RED) + "Blast Off");
-        blastOffItemBuilder.lore(ChatColor.DARK_GRAY + "Minigame/PvP", "", ChatColor.GRAY + "Use your arsenal of exploding weapons", ChatColor.GRAY + "and tons of powerups to blast apart", ChatColor.GRAY + "the map! Be the last player standing", ChatColor.GRAY + "to win!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky, Falcinspire, Dennisbuilds,", ChatColor.BLUE + "ItsZender, Jayjo, Corey977, JacobRuby,", ChatColor.BLUE + "Team Dracolyte & StainMine", ChatColor.GRAY + "Support: " + ChatColor.YELLOW + "2 - 12 Players");
+        blastOffItemBuilder.lore(ChatColor.DARK_GRAY + "Minigame/PvP", "", ChatColor.GRAY + "Use your arsenal of exploding weapons", ChatColor.GRAY + "and tons of powerups to blast apart", ChatColor.GRAY + "the map! Be the last player standing", ChatColor.GRAY + "to win!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky, Falcinspire, Dennisbuilds,", ChatColor.BLUE + "ItsZender, Jayjo, Corey977, JacobRuby,", ChatColor.BLUE + "Team Dracolyte & StainMine", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 12 Players");
 
         inventory.setItem(13, blastOffItemBuilder.build());
         inventory.setItem(4, glass(1));

@@ -3,7 +3,7 @@ package net.neogamesmc.core.payment;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.neogamesmc.common.backend.TransactionNoticePayload;
+import net.neogamesmc.common.payload.TransactionNoticePayload;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.redis.RedisChannel;

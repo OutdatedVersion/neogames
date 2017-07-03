@@ -1,7 +1,7 @@
 package net.neogamesmc.core.command;
 
 import com.google.inject.Inject;
-import net.neogamesmc.common.backend.SwitchServerPayload;
+import net.neogamesmc.common.payload.SwitchServerPayload;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.core.command.api.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;

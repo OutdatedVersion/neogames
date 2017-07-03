@@ -10,6 +10,12 @@
     <version>1.0</version>
     <packaging>pom</packaging>
 
+    <modules>
+        <module>common</module>
+        <module>plugin</module>
+        <module>coeus</module>
+        <module>discord-bot</module>
+    </modules>
 
     <!-- Global properties -->
     <properties>
@@ -26,12 +32,17 @@
         <app.main>change-in-children</app.main>
     </properties>
 
-    <modules>
-        <module>common</module>
-        <module>plugin</module>
-        <module>coeus</module>
-        <module>discord-bot</module>
-    </modules>
+    <dependencies>
+
+        <!-- Compiler-time code generation -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.16</version>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
 
     <profiles>
         <profile>

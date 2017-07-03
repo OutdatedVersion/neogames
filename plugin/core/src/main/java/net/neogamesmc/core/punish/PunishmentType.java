@@ -2,7 +2,8 @@ package net.neogamesmc.core.punish;
 
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.neogamesmc.core.punish.payload.PunishmentPayload;
+import net.neogamesmc.common.payload.PunishmentPayload;
+import net.neogamesmc.core.text.Message;
 import org.bukkit.entity.Player;
 
 import java.util.function.BiConsumer;
@@ -22,16 +23,17 @@ public enum PunishmentType
      * Removes the ability for a player to join the network.
      */
     BAN((player, data) ->
+    {
         player.kickPlayer(TextComponent.toLegacyText(
                 new ComponentBuilder("A ban has been issued against your account.\n\n").color(RED).bold(true)
-                        .append("Expires " + PunishTools.FORMAT_LENGTH.apply(data), NONE).color(YELLOW)
-                        .append("\nReason: ").color(GRAY)
-                        .append(data.reason).color(WHITE)
-                        .append("\nBan ID: ").color(GRAY)
-                        .append("#" + data.id).color(WHITE)
-                        .create()
-        ))
-    , ":hammer: -id **-target** has been banned by **-issued_by**. This will expire -expire.\n**Reason:** -reason"),
+                             .append("Expires " + PunishTools.format(data), NONE).color(YELLOW)
+                             .append("\nReason: ").color(GRAY)
+                             .append(data.reason).color(WHITE)
+                             .append("\nBan ID: ").color(GRAY).append("#" + data.id).color(WHITE).create())
+        );
+
+        Message.start().content("A player has been removed from your game for abuse.", RED).bold().sendAsIs();
+    }, ":hammer: -id **-target** has been banned by **-issued_by**. This will expire -expire.\n**Reason:** -reason"),
 
     /**
      * Removes a player from the network, but allows them to rejoin.
@@ -52,7 +54,7 @@ public enum PunishmentType
      */
     MUTE((player, data) ->
         player.sendMessage(new ComponentBuilder("You have been muted until ").color(RED).bold(true)
-                .append(PunishTools.FORMAT_LENGTH.apply(data), FORMATTING).color(YELLOW)
+                .append(PunishTools.format(data), FORMATTING).color(YELLOW)
                 .append(".\n").color(RED)
                 .append("Reason: ").color(GRAY)
                 .append(data.reason).color(WHITE).create())
@@ -103,7 +105,7 @@ public enum PunishmentType
     {
         return this.discordMessage.replace("-target", payload.targetPlayer)
                                   .replace("-issued_by", issuedBy)
-                                  .replace("-expire", PunishTools.FORMAT_LENGTH.apply(payload))
+                                  .replace("-expire", PunishTools.format(payload))
                                   .replace("-reason", payload.reason)
                                   .replace("-id", "__#" + payload.id + "__ | ");
     }

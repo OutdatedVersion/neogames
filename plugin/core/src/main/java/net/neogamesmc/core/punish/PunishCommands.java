@@ -28,7 +28,7 @@ public class PunishCommands
     /**
      * Our managing instance.
      */
-    @Inject private PunishHandler handler;
+    @Inject private PunishmentHandler handler;
 
     @Command ( executor = "ban" )
     @Permission ( "punish.command.ban" )

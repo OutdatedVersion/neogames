@@ -1,5 +1,6 @@
-package net.neogamesmc.common.backend;
+package net.neogamesmc.common.payload;
 
+import lombok.AllArgsConstructor;
 import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
@@ -11,6 +12,7 @@ import org.json.simple.JSONObject;
  * @since Jul/02/2017 (12:21 AM)
  */
 @Focus ( "discord-message" )
+@AllArgsConstructor
 public class SendDiscordMessagePayload implements Payload
 {
 
@@ -23,18 +25,6 @@ public class SendDiscordMessagePayload implements Payload
      * The message content itself to send.
      */
     public final String content;
-
-    /**
-     * Class Constructor
-     *
-     * @param channel The channel's ID.
-     * @param content The content
-     */
-    public SendDiscordMessagePayload(long channel, String content)
-    {
-        this.channel = channel;
-        this.content = content;
-    }
 
     @Override
     public JSONObject asJSON()
