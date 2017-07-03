@@ -1,7 +1,10 @@
 package net.neogamesmc.common.json;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.Collections;
 
 /**
  * Allows a chaining approach to creating {@link JsonObject}s.
@@ -15,14 +18,14 @@ public class JSONBuilder
     /**
      * The underlying object for this builder.
      */
-    private JsonObject json;
+    private JSONObject json;
 
     /**
      * Create a new builder.
      */
     public JSONBuilder()
     {
-        this.json = new JsonObject();
+        this.json = new JSONObject();
     }
 
     /**
@@ -34,9 +37,9 @@ public class JSONBuilder
      * @param val The value to store
      * @return This builder, for chaining
      */
-    public JSONBuilder add(String key, String val)
+    public JSONBuilder add(String key, Object val)
     {
-        json.addProperty(key, val);
+        json.put(key, val);
         return this;
     }
 
@@ -49,27 +52,10 @@ public class JSONBuilder
      */
     public JSONBuilder add(String key, String... elements)
     {
-        final JsonArray array = new JsonArray();
+        final JSONArray array = new JSONArray();
+        Collections.addAll(array, elements);
 
-        for (String element : elements)
-            array.add(element);
-
-        json.add(key, array);
-        return this;
-    }
-
-    /**
-     * Store a new item into this object.
-     * <p>
-     * Takes in some sort of number.
-     *
-     * @param key The key to store it at
-     * @param val The value to store
-     * @return This builder, for chaining
-     */
-    public JSONBuilder add(String key, Number val)
-    {
-        json.addProperty(key, val);
+        json.put(key, array);
         return this;
     }
 
@@ -79,7 +65,7 @@ public class JSONBuilder
      * @return The underlying JSON object
      *         we've been working with.
      */
-    public JsonObject done()
+    public JSONObject done()
     {
         return json;
     }

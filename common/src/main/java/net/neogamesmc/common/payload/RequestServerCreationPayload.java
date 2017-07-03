@@ -1,32 +1,40 @@
-package net.neogamesmc.common.backend;
+package net.neogamesmc.common.payload;
 
-import com.google.gson.JsonObject;
+import lombok.AllArgsConstructor;
 import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
+import org.json.simple.JSONObject;
 
 /**
  * @author Ben (OutdatedVersion)
  * @since Jul/01/2017 (7:05 AM)
  */
 @Focus ( "req-create-server" )
+@AllArgsConstructor
 public class RequestServerCreationPayload implements Payload
 {
 
+    /**
+     * The name of the player who requested this.
+     * <p>
+     * {@code null} if the system did so.
+     */
     public String player;
+
+    /**
+     * The type of server to create.
+     */
     public String type;
+
+    /**
+     * Any extra data for our manager to use.
+     */
     public String data;
 
-    public RequestServerCreationPayload(String player, String type, String data)
-    {
-        this.player = player;
-        this.type = type;
-        this.data = data;
-    }
-
     @Override
-    public JsonObject asJSON()
+    public JSONObject asJSON()
     {
         return new JSONBuilder()
                 .add("player", player)

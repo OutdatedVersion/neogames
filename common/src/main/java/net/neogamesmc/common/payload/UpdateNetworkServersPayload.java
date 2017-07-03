@@ -1,9 +1,10 @@
-package net.neogamesmc.common.backend;
+package net.neogamesmc.common.payload;
 
-import com.google.gson.JsonObject;
+import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
+import org.json.simple.JSONObject;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -34,6 +35,17 @@ public class UpdateNetworkServersPayload implements Payload
     public boolean add;
 
     /**
+     * Request to remove a server from the network.
+     *
+     * @param name Name of the server.
+     */
+    public UpdateNetworkServersPayload(String name)
+    {
+        this.name = name;
+        this.add = false;
+    }
+
+    /**
      * Class Constructor
      *
      * @param name Server ID
@@ -47,15 +59,9 @@ public class UpdateNetworkServersPayload implements Payload
     }
 
     @Override
-    public JsonObject asJSON()
+    public JSONObject asJSON()
     {
-        final JsonObject json = new JsonObject();
-
-        json.addProperty("name", name);
-        json.addProperty("port", port);
-        json.addProperty("add", add);
-
-        return json;
+        return new JSONBuilder().add("name", name).add("port", port).add("add", add).done();
     }
 
     @Override

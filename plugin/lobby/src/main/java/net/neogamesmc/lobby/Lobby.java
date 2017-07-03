@@ -1,7 +1,10 @@
 package net.neogamesmc.lobby;
 
+import com.destroystokyo.paper.event.server.ServerExceptionEvent;
+import com.google.inject.Binder;
 import com.google.inject.Injector;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
+import net.neogamesmc.common.payload.SwitchServerPayload;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.redis.RedisChannel;
@@ -13,6 +16,7 @@ import net.neogamesmc.core.hotbar.HotbarHandler;
 import net.neogamesmc.core.hotbar.HotbarItem;
 import net.neogamesmc.core.inventory.ItemBuilder;
 import net.neogamesmc.core.issue.Issues;
+import net.neogamesmc.core.scheduler.Scheduler;
 import net.neogamesmc.core.text.Colors;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftMagmaCube;
@@ -33,6 +37,8 @@ import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 import static net.neogamesmc.core.text.Colors.bold;
 import static org.bukkit.Material.COMPASS;
@@ -61,13 +67,19 @@ public class Lobby extends Plugin implements Listener
     private Database database;
 
     @Override
+    public void setupInjector(Binder binder)
+    {
+        binder.requestStaticInjection(Scheduler.class);
+    }
+
+    @Override
     public void enable(Injector injector)
     {
         // Forcefully start database first
         this.database = register(Database.class);
 
+        get(RedisHandler.class).subscribe(RedisChannel.DEFAULT);
         register(HotbarHandler.class);
-        register(RedisHandler.class).init().subscribe(RedisChannel.DEFAULT);
         register(CommandHandler.class).addProviders(CommandHandler.DEFAULT_PROVIDERS).registerInPackage("net.neogamesmc.core");
 
         System.out.println("Beginning class-path scan..");
@@ -77,10 +89,12 @@ public class Lobby extends Plugin implements Listener
         getServer().getPluginManager().registerEvents(this, this);
 
 
-        this.spawnLocation = new Location(Bukkit.getWorld("lobby"), 10.5, 64.5, 5.5, 162.6f, 0f);
-        this.spawnLocation.getChunk().load();
+        final World lobby = Bukkit.getWorld("lobby");
+        this.spawnLocation = new Location(lobby, 10.5, 64.5, 5.5, 162.6f, 0f);
+        lobby.loadChunk(-1, 0);
+        lobby.loadChunk(-1, -1);
 
-        MagmaCube magmaCube = spawnLocation.getWorld().spawn(new Location(spawnLocation.getWorld(), 3.5, 63, 1.5, -128.5f, 12.5f), MagmaCube.class);
+        MagmaCube magmaCube = lobby.spawn(new Location(lobby, 3.5, 63, 1.5, -128.5f, 12.5f), MagmaCube.class);
         magmaCube.setSize(2);
         magmaCube.setAI(false);
         magmaCube.setInvulnerable(true);
@@ -88,30 +102,30 @@ public class Lobby extends Plugin implements Listener
         magmaCube.setCollidable(false);
         magmaCube.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.RED + "" + ChatColor.BOLD + "Blast Off" + ChatColor.RESET);
         magmaCube.setCustomNameVisible(true);
-        magmaCube.setMetadata("send-server", new FixedMetadataValue(this, "BLAST_OFF"));
+        magmaCube.setMetadata("send-server", new FixedMetadataValue(this, "blastoff"));
         ((CraftMagmaCube) magmaCube).getHandle().setPositionRotation(3.5, 63, 1.5, -60.8f, 0);
         ((CraftMagmaCube) magmaCube).getHandle().h(-60.8f);
 
-        Skeleton skeleton = spawnLocation.getWorld().spawn(new Location(spawnLocation.getWorld(), -0.5, 63.06, -2.5, -48.3f, 0f), Skeleton.class);
+        Skeleton skeleton = lobby.spawn(new Location(lobby, -0.5, 63.06, -2.5, -48.3f, 0f), Skeleton.class);
         skeleton.setAI(false);
         skeleton.setInvulnerable(true);
         skeleton.setSilent(true);
         skeleton.setCollidable(false);
         skeleton.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "Bowplinko" + ChatColor.RESET);
         skeleton.setCustomNameVisible(true);
-        skeleton.setMetadata("send-server", new FixedMetadataValue(this, "BOWPLINKO"));
+        skeleton.setMetadata("send-server", new FixedMetadataValue(this, "bowplinko"));
         skeleton.getEquipment().setItemInMainHand(new ItemStack(Material.BOW, 1));
         ((CraftSkeleton) skeleton).getHandle().setPositionRotation(-0.5, 63.06, -2.5, -48.3f, 0f);
         ((CraftSkeleton) skeleton).getHandle().h(-48.3f);
 
-        Villager villager = spawnLocation.getWorld().spawn(new Location(spawnLocation.getWorld(), -1.147, 63.06250, 2.5, -80, 0), Villager.class);
+        Villager villager = lobby.spawn(new Location(lobby, -1.147, 63.06250, 2.5, -80, 0), Villager.class);
         villager.setAI(false);
         villager.setInvulnerable(true);
         villager.setSilent(true);
         villager.setCollidable(false);
         villager.setCustomName(ChatColor.GREEN + "" + ChatColor.BOLD + "Join " + ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Chunk Runner" + ChatColor.RESET);
         villager.setCustomNameVisible(true);
-        villager.setMetadata("send-server", new FixedMetadataValue(this, "CHUNK_RUNNER"));
+        villager.setMetadata("send-server", new FixedMetadataValue(this, "chunkrunner"));
         ((CraftVillager) villager).getHandle().setPositionRotation(-1.147, 63.06250, 2.5, -80, 0);
         ((CraftVillager) villager).getHandle().h(-80f);
     }
@@ -150,6 +164,12 @@ public class Lobby extends Plugin implements Listener
         }
 
         throw new RuntimeException("An unknown issue occurred during injection.");
+    }
+
+    @EventHandler
+    public void exception(ServerExceptionEvent event)
+    {
+        event.getException().printStackTrace();
     }
 
     @EventHandler
@@ -248,7 +268,7 @@ public class Lobby extends Plugin implements Listener
             return;
 
         event.setCancelled(true);
-        String server = event.getRightClicked().getMetadata("send-server").get(0).asString();
+        new SwitchServerPayload(event.getRightClicked().getMetadata("send-server").get(0).asString() + ThreadLocalRandom.current().nextInt(1, 2), event.getPlayer().getUniqueId().toString()).publish(get(RedisHandler.class));
     }
 
     @EventHandler
@@ -264,7 +284,7 @@ public class Lobby extends Plugin implements Listener
 
         ItemBuilder chunkRunnerItemBuilder = new ItemBuilder(Material.GRASS);
         chunkRunnerItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.GREEN) + "Chunk Runner");
-        chunkRunnerItemBuilder.lore(ChatColor.DARK_GRAY + "Parkour/Challenge", "", ChatColor.GRAY + "Run along a parkour course that", ChatColor.GRAY + "generates in one direction and", ChatColor.GRAY + "crumbles away behind you at an", ChatColor.GRAY + "increasing speed!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMC", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky & FantomLX", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "1 - 24 Players");
+        chunkRunnerItemBuilder.lore(ChatColor.DARK_GRAY + "Parkour/Challenge", "", ChatColor.GRAY + "Run along a parkour course that", ChatColor.GRAY + "generates in one direction and", ChatColor.GRAY + "crumbles away behind you at an", ChatColor.GRAY + "increasing speed!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky & FantomLX", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "1 - 24 Players");
 
 
         inventory.setItem(11, chunkRunnerItemBuilder.build());
@@ -273,7 +293,7 @@ public class Lobby extends Plugin implements Listener
 
         ItemBuilder blastOffItemBuilder = new ItemBuilder(Material.FIREBALL);
         blastOffItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.RED) + "Blast Off");
-        blastOffItemBuilder.lore(ChatColor.DARK_GRAY + "Minigame/PvP", "", ChatColor.GRAY + "Use your arsenal of exploding weapons", ChatColor.GRAY + "and tons of powerups to blast apart", ChatColor.GRAY + "the map! Be the last player standing", ChatColor.GRAY + "to win!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky, Falcinspire, Dennisbuilds,", ChatColor.BLUE + "ItsZender, Jayjo, Corey977, JacobRuby,", ChatColor.BLUE + "Team Dracolyte & StainMine", ChatColor.GRAY + "Support: " + ChatColor.YELLOW + "2 - 12 Players");
+        blastOffItemBuilder.lore(ChatColor.DARK_GRAY + "Minigame/PvP", "", ChatColor.GRAY + "Use your arsenal of exploding weapons", ChatColor.GRAY + "and tons of powerups to blast apart", ChatColor.GRAY + "the map! Be the last player standing", ChatColor.GRAY + "to win!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky, Falcinspire, Dennisbuilds,", ChatColor.BLUE + "ItsZender, Jayjo, Corey977, JacobRuby,", ChatColor.BLUE + "Team Dracolyte & StainMine", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 12 Players");
 
         inventory.setItem(13, blastOffItemBuilder.build());
         inventory.setItem(4, glass(1));

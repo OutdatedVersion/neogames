@@ -11,6 +11,10 @@
 
     <artifactId>coeus</artifactId>
 
+    <properties>
+        <app.main>net.neogamesmc.network.Bootstrap</app.main>
+    </properties>
+
     <dependencies>
 
         <!-- Logging framework -->
@@ -49,24 +53,5 @@
         </dependency>
 
     </dependencies>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-    
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>net.neogamesmc.network.Bootstrap</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
 
 </project>

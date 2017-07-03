@@ -1,7 +1,7 @@
 package net.neogamesmc.buycraft.transaction;
 
 import net.neogamesmc.buycraft.TransactionProcessor;
-import net.neogamesmc.common.backend.TransactionNoticePayload;
+import net.neogamesmc.common.payload.TransactionNoticePayload;
 import net.neogamesmc.common.database.operation.InsertUpdateOperation;
 
 /**

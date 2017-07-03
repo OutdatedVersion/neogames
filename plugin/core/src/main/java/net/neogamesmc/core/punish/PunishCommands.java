@@ -1,6 +1,8 @@
 package net.neogamesmc.core.punish;
 
+import com.google.common.base.Splitter;
 import com.google.inject.Inject;
+import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.command.api.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
@@ -21,12 +23,12 @@ public class PunishCommands
     /**
      * Match the time argument in these commands.
      */
-    public static final Pattern REGEX = Pattern.compile("([0-9]*)((?i)[dhmw]+)");
+    public static final Pattern REGEX = Pattern.compile("([0-9]+)((?i)[dhmw])");
 
     /**
      * Our managing instance.
      */
-    @Inject private PunishHandler handler;
+    @Inject private PunishmentHandler handler;
 
     @Command ( executor = "ban" )
     @Permission ( "punish.command.ban" )
@@ -34,9 +36,9 @@ public class PunishCommands
                                           @Necessary ( "A duration for the punishment is required" ) String duration,
                                           @Necessary ( "You must supply a reason" ) String[] reason)
     {
-        handler.issue(player.getUniqueId(), name, PunishmentType.BAN,
+        handler.issue(player, name, PunishmentType.BAN, duration,
                       duration.equalsIgnoreCase("perm") ? -1 : parseTime(duration),
-                      reason);
+                      Text.convertArray(reason));
 
         // /ban Nokoa 1w Being bad
     }
@@ -47,9 +49,9 @@ public class PunishCommands
                                            @Necessary ( "A duration for the punishment is required" ) String duration,
                                            @Necessary ( "You must supply a reason" ) String[] reason)
     {
-        handler.issue(player.getUniqueId(), name, PunishmentType.MUTE,
+        handler.issue(player, name, PunishmentType.MUTE, duration,
                       duration.equalsIgnoreCase("perm") ? -1 : parseTime(duration),
-                      reason);
+                      Text.convertArray(reason));
 
         // /mute Nokoa 1y Talking about trains too much
     }
@@ -59,8 +61,7 @@ public class PunishCommands
     public void kickCommand(Player player, @Necessary ( "A target name must be provided" ) String name,
                                            @Necessary ( "You must supply a reason" ) String[] reason)
     {
-        System.out.println("Hit method");
-        handler.issue(player.getUniqueId(), name, PunishmentType.KICK, -1, reason);
+        handler.issue(player, name, PunishmentType.KICK, null, -1, Text.convertArray(reason));
     }
 
     /**
@@ -73,16 +74,16 @@ public class PunishCommands
      */
     private static long parseTime(String in) throws IllegalArgumentException
     {
-        // 1w2d
-        final Matcher matcher = REGEX.matcher(in);
-
-        if (!matcher.matches())
-            throw new IllegalArgumentException("Invalid time provided");
-
+        Iterable<String> groups = Splitter.fixedLength(2).split(in);
         long result = 0;
 
-        while (matcher.find())
+        for (String val : groups)
         {
+            final Matcher matcher = REGEX.matcher(val);
+
+            if (!matcher.matches())
+                throw new IllegalArgumentException("Invalid time provided");
+
             result += PunishTools.parseTime(Integer.valueOf(matcher.group(1)), matcher.group(2).charAt(0));
         }
 

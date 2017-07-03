@@ -1,10 +1,12 @@
-package net.neogamesmc.common.backend;
+package net.neogamesmc.common.payload;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.Collections;
 
 /**
  * Represents the action of changing the
@@ -51,16 +53,15 @@ public class SwitchServerPayload implements Payload
     }
 
     @Override
-    public JsonObject asJSON()
+    public JSONObject asJSON()
     {
-        final JsonObject json = new JsonObject();
-        final JsonArray targets = new JsonArray();
+        final JSONObject json = new JSONObject();
+        final JSONArray targetsJSON = new JSONArray();
+        Collections.addAll(targetsJSON, this.targets);
 
-        for (String element : this.targets)
-            targets.add(element);
-
-        json.addProperty("bulk", bulk);
-        json.add("targets", targets);
+        json.put("bulk", bulk);
+        json.put("server", server);
+        json.put("targets", targetsJSON);
 
         return json;
     }
