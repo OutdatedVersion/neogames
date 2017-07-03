@@ -9,6 +9,8 @@ import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.neogamesmc.common.database.Database;
+import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
@@ -64,6 +66,11 @@ public class CommandHandler implements Listener
      * over a layer of abstraction.
      */
     @Inject private Plugin plugin;
+
+    /**
+     * Interact with player data.
+     */
+    @Inject private Database database;
 
     /**
      * A relation of our commands
@@ -265,8 +272,8 @@ public class CommandHandler implements Listener
         try
         {
             // verify the player can actually execute this command
-            if (info.node != null)
-                if (!player.hasPermission(info.node))
+            if (info.role != Role.DEFAULT)
+                if (!database.cacheFetch(player.getUniqueId()).role.compare(info.role))
                 {
                     info.permissionMessage.sendAsIs(player);
                     return;
@@ -359,14 +366,14 @@ public class CommandHandler implements Listener
 
         if (perm != null)
         {
-            info.node = perm.value();
+            info.role = perm.value();
             info.permissionMessage = perm.note().equals("DEFAULT_MESSAGE")
                                      ? Message.PERMISSION_MESSAGE
                                      : prefix("Permissions").content(perm.note(), RED);
         }
         else
         {
-            info.node = null;
+            info.role = Role.DEFAULT;
             info.permissionMessage = Message.PERMISSION_MESSAGE;
         }
     }
@@ -396,8 +403,8 @@ public class CommandHandler implements Listener
         /** what someone may type to run this command */
         Set<String> executors;
 
-        /** The permission node a player must hold to run this command */
-        String node;
+        /** The role a player must hold to run this command */
+        Role role;
 
         /** Message to send the player if we are unable to execute the command */
         Message permissionMessage;

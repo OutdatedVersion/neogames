@@ -1,6 +1,7 @@
 package net.neogamesmc.core.command;
 
 import com.google.inject.Inject;
+import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.command.api.Command;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.display.Chat;
@@ -19,7 +20,7 @@ public class SilenceChatCommand
     @Inject private Chat chat;
 
     @Command ( executor = "silence" )
-    @Permission ( "core.command.silence" )
+    @Permission ( Role.ADMIN )
     public void execute(Player player)
     {
         chat.toggleChat();

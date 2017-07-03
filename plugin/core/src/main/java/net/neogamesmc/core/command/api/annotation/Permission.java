@@ -1,5 +1,7 @@
 package net.neogamesmc.core.command.api.annotation;
 
+import net.neogamesmc.common.reference.Role;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -15,15 +17,12 @@ public @interface Permission
 {
 
     /**
-     * @return The permission node required
-     *         to execute this command.
+     * @return The {@link Role} a player must possess to run the annotated command.
      */
-    String value();
+    Role value();
 
     /**
-     * @return the message we send in case
-     *         the player doesn't have the
-     *         role
+     * @return The message we send in case the player doesn't have the role.
      */
     String note() default "DEFAULT_MESSAGE";
 

@@ -96,11 +96,13 @@ public abstract class Plugin extends JavaPlugin
     @Override
     public void onDisable()
     {
+        val redis = get(RedisHandler.class).init();
+
         // Remove from proxy now
-        new UpdateNetworkServersPayload(get(ServerData.class).name).publish(get(RedisHandler.class));
+        new UpdateNetworkServersPayload(get(ServerData.class).name).publish(redis);
 
         disable();
-        get(RedisHandler.class).release();
+        redis.release();
     }
 
 }

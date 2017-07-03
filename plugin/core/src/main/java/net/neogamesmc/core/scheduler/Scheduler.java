@@ -85,4 +85,16 @@ public class Scheduler
         return get().runTask(plugin, runnable).getTaskId();
     }
 
+    /**
+     * Run a task every {@code x} ticks.
+     *
+     * @param runnable The task
+     * @param every The tick interval
+     * @return The Bukkit task ID
+     */
+    public static int timer(Runnable runnable, long every)
+    {
+        return get().scheduleSyncRepeatingTask(plugin, runnable, 0, every);
+    }
+
 }

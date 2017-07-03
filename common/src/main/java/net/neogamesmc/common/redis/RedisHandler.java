@@ -108,10 +108,10 @@ public class RedisHandler
         readyCheck("incoming data handler setup");
 
         // we need the channels we're subbing to as Strings so
-        final String[] _channelsAsString = new String[channels.length];
+        final String[] channelsAsString = new String[channels.length];
 
         for (int i = 0; i < channels.length; i++)
-            _channelsAsString[i] = channels[i].channel;
+            channelsAsString[i] = channels[i].channel;
 
         new Thread("Hyleria Redis Pub/Sub")
         {
@@ -160,7 +160,7 @@ public class RedisHandler
                             System.err.println();
                         }
                     }
-                }, _channelsAsString);
+                }, channelsAsString);
             }
         }.start();
 

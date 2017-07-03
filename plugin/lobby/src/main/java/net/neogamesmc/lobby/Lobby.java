@@ -18,6 +18,7 @@ import net.neogamesmc.core.inventory.ItemBuilder;
 import net.neogamesmc.core.issue.Issues;
 import net.neogamesmc.core.scheduler.Scheduler;
 import net.neogamesmc.core.text.Colors;
+import net.neogamesmc.lobby.news.News;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftMagmaCube;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftSkeleton;
@@ -29,6 +30,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -79,6 +81,7 @@ public class Lobby extends Plugin implements Listener
         this.database = register(Database.class);
 
         get(RedisHandler.class).subscribe(RedisChannel.DEFAULT);
+        register(News.class);
         register(HotbarHandler.class);
         register(CommandHandler.class).addProviders(CommandHandler.DEFAULT_PROVIDERS).registerInPackage("net.neogamesmc.core");
 
@@ -205,10 +208,7 @@ public class Lobby extends Plugin implements Listener
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event)
     {
-        if (!event.getEntity().hasMetadata("send-server"))
-            return;
-
-        event.setCancelled(true);
+        event.setCancelled(event.getEntity().hasMetadata("send-server"));
     }
 
     @EventHandler
@@ -248,6 +248,13 @@ public class Lobby extends Plugin implements Listener
     }
 
     @EventHandler
+    public void disallowDamage(EntityDamageByEntityEvent event)
+    {
+        if (event.getEntityType() == EntityType.PLAYER)
+            event.setCancelled(true);
+    }
+
+    @EventHandler
     public void disallowWeatherUpdate(WeatherChangeEvent event)
     {
         event.setCancelled(event.toWeatherState());
@@ -272,9 +279,9 @@ public class Lobby extends Plugin implements Listener
     }
 
     @EventHandler
-    public void stopSmokingWeed(EntityCombustEvent event)
+    public void keepEntityFromCatchingOnFire(EntityCombustEvent event)
     {
-        event.setCancelled(event.getEntity().hasMetadata("send-server"));
+        event.setCancelled(true);
     }
 
 
@@ -319,7 +326,7 @@ public class Lobby extends Plugin implements Listener
         if (inventory.getName() == null)
             return;
 
-        if (inventory.getName().equalsIgnoreCase(ChatColor.GREEN + "Join Game"))
+        if (inventory.getName().equals(ChatColor.GREEN + "Join Game"))
         {
             event.setCancelled(true);
 

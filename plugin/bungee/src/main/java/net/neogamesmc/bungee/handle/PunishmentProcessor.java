@@ -42,7 +42,7 @@ public class PunishmentProcessor implements Listener
      * We limit the result's quantity as we only really need one
      * active ban to deny their login.
      */
-    private static final String SQL_ACTIVE_BANS = "SELECT id,reason,expires_at FROM punishments WHERE target=? AND revoked != 1 AND type='BAN' AND (expires_at IS NULL OR expires_at > CURDATE()) ORDER BY expires_at DESC LIMIT 1;";
+    private static final String SQL_ACTIVE_BANS = "SELECT id,reason,expires_at FROM punishments WHERE target=? AND revoked != 1 AND type='BAN' AND (expires_at IS NULL OR expires_at > NOW()) ORDER BY expires_at DESC LIMIT 1;";
 
     /**
      * The reason send when denying a login due to an issue on our side.

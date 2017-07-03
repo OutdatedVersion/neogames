@@ -37,5 +37,17 @@ CREATE TABLE IF NOT EXISTS punishments (
   PRIMARY KEY (`id`)
 );
 
+
+# Lobby news bar table
+CREATE TABLE IF NOT EXISTS news (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `val` VARCHAR(280) NOT NULL,
+  `updated_by` INT NOT NULL,
+  `last_updated_at` TIMESTAMP NOT NULL,
+  FOREIGN KEY (`updated_by`) REFERENCES accounts(`iid`),
+  PRIMARY KEY (`id`)
+);
+
+
 # Create index on punishments
 # CREATE INDEX full_uuid ON punishments ()
