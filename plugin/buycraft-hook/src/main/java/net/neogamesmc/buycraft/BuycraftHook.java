@@ -1,11 +1,11 @@
 package net.neogamesmc.buycraft;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
-import net.md_5.bungee.api.plugin.Plugin;
 import net.neogamesmc.common.database.Database;
-import net.neogamesmc.common.redis.RedisHandler;
+import net.neogamesmc.core.bukkit.Plugin;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -16,36 +16,21 @@ public class BuycraftHook extends Plugin
 {
 
     /**
-     * Dependency injection tool.
+     * Service to run primary task.
      */
-    private Injector injector = Guice.createInjector();
+    private ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 
     @Override
-    public void onEnable()
+    public void enable(Injector injector)
     {
-        get(RedisHandler.class).init();
-
-        getProxy().getPluginManager().registerCommand(this, get(HookCommand.class));
-        getProxy().getScheduler().schedule(this, get(TransactionProcessor.class), 500, TimeUnit.MILLISECONDS);
+        getCommand("hook").setExecutor(get(HookCommand.class));
+        service.scheduleAtFixedRate(get(TransactionProcessor.class), 0, 500, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public void onDisable()
+    public void disable()
     {
         get(Database.class).release();
-        get(RedisHandler.class).release();
-    }
-
-    /**
-     * Grab an instance of a class via our injector.
-     *
-     * @param clazz The class
-     * @param <T> Type-parameter for this class.
-     * @return The instance
-     */
-    public <T> T get(Class<T> clazz)
-    {
-        return injector.getInstance(clazz);
     }
 
 }

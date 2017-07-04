@@ -264,7 +264,7 @@ public class Lobby extends Plugin implements Listener
     @EventHandler
     public void roleWhitelist(PlayerLoginEvent event)
     {
-        if (database.cacheFetch(event.getPlayer().getUniqueId()).role.compareTo(Role.YOUTUBE) >= 0)
+        if (database.cacheFetch(event.getPlayer().getUniqueId()).role().compareTo(Role.YOUTUBE) >= 0)
             event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ChatColor.YELLOW + "You are not permitted to join the network yet.");
     }
 

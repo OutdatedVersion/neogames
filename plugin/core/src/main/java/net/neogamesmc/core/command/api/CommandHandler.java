@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
+import lombok.val;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -273,11 +274,15 @@ public class CommandHandler implements Listener
         {
             // verify the player can actually execute this command
             if (info.role != Role.DEFAULT)
-                if (!database.cacheFetch(player.getUniqueId()).role.compare(info.role))
+            {
+                val account = database.cacheFetch(player.getUniqueId());
+
+                if (!account.role().compare(info.role))
                 {
                     info.permissionMessage.sendAsIs(player);
                     return;
                 }
+            }
 
             // prepare parameters
             final Arguments args = new Arguments(rawArguments);
@@ -328,11 +333,11 @@ public class CommandHandler implements Listener
 
                     if (invokingWith[i] == null)
                     {
-                        final String _next = copy.next();
+                        val next = copy.next();
+                        val fail = provider.fail(next);
 
-                        // TODO(Ben): this probably shouldn't be invoked twice; find a way around this
-                        if (provider.fail(_next) != null)
-                            player.sendMessage(provider.fail(_next));
+                        if (fail != null)
+                            Message.prefix("Commands").content(fail, RED).send(player);
 
                         return;
                     }

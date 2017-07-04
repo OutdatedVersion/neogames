@@ -85,7 +85,8 @@ public abstract class Plugin extends JavaPlugin
             enable(this.injector);
 
             // Add to network
-            new UpdateNetworkServersPayload(data.name, Bukkit.getPort()).publish(redis);
+            if (data.interactWithNetwork)
+                new UpdateNetworkServersPayload(data.name, Bukkit.getPort()).publish(redis);
         }
         catch (Exception ex)
         {
@@ -97,9 +98,11 @@ public abstract class Plugin extends JavaPlugin
     public void onDisable()
     {
         val redis = get(RedisHandler.class).init();
+        val data = get(ServerData.class);
 
         // Remove from proxy now
-        new UpdateNetworkServersPayload(get(ServerData.class).name).publish(redis);
+        if (data.interactWithNetwork)
+            new UpdateNetworkServersPayload(data.name).publish(redis);
 
         disable();
         redis.release();

@@ -1,5 +1,6 @@
 package net.neogamesmc.common.backend;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 
 import java.io.File;
@@ -21,5 +22,11 @@ public class ServerData
      * Name of this server.
      */
     public final String name;
+
+    /**
+     * Whether or not to automatically add/remove this server to/from the network.
+     */
+    @SerializedName ( "interact_with_network" )
+    public boolean interactWithNetwork = true;
 
 }

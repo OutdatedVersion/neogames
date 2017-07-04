@@ -15,17 +15,19 @@ public enum Role
     DEV(ChatColor.DARK_PURPLE),
     ADMIN(ChatColor.RED),
     MOD(ChatColor.DARK_GREEN),
+    VIP(ChatColor.YELLOW),
     BUILDER(ChatColor.DARK_AQUA),
     // ^ staff
 
     YOUTUBE(ChatColor.RED),
-    YT(ChatColor.DARK_PURPLE),
+    YT(ChatColor.DARK_RED),
     // ^ media
 
+    PAL(ChatColor.YELLOW),
     FAM(ChatColor.DARK_AQUA),
     HOMIE(ChatColor.LIGHT_PURPLE),
+    BRO(ChatColor.BLUE),
     DUDE(ChatColor.GREEN),
-    BRO(ChatColor.YELLOW),
     // ^ donator
 
     DEFAULT(ChatColor.GRAY);

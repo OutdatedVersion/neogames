@@ -6,25 +6,29 @@
         <artifactId>plugin-parent</artifactId>
         <groupId>net.neogamesmc</groupId>
         <version>1.0</version>
-        <relativePath>../plugin/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>buycraft-hook</artifactId>
-    
+
+    <properties>
+        <plugin.name>Buycraft-Hook</plugin.name>
+        <plugin.main>net.neogamesmc.buycraft.BuycraftHook</plugin.main>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- Our stuff -->
         <dependency>
             <groupId>net.neogamesmc</groupId>
-            <artifactId>common</artifactId>
-            <version>${version.common}</version>
-        </dependency>
-
-        <!-- BungeeCord -->
-        <dependency>
-            <groupId>com.destroystokyo</groupId>
-            <artifactId>waterfall</artifactId>
-            <version>${version.waterfall}</version>
+            <artifactId>core</artifactId>
+            <version>${version.core}</version>
         </dependency>
     </dependencies>
 
