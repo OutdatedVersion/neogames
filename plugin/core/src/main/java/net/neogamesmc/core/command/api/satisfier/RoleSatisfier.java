@@ -31,7 +31,7 @@ public class RoleSatisfier implements ArgumentSatisfier<Role>
     @Override
     public String fail(String provided)
     {
-        return "No role matching [" + YELLOW + provided.toUpperCase() + RED + "].";
+        return "No role found matching [" + YELLOW + provided.toUpperCase() + RED + "]";
     }
 
     @Override

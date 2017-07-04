@@ -21,7 +21,6 @@ import org.bukkit.entity.Player;
 import java.util.Optional;
 
 import static net.md_5.bungee.api.ChatColor.RED;
-import static net.md_5.bungee.api.ChatColor.YELLOW;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -98,7 +97,7 @@ public class UpdateRoleCommand
                 Message.prefix("Account").content("You have updated the role of")
                         .player(account.name())
                         .content("to")
-                        .content(Text.fromEnum(role), YELLOW)
+                        .content(Text.fromEnum(role), role.color)
                         .send(player);
             }
             catch (Exception ex)

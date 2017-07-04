@@ -4,9 +4,9 @@ import com.destroystokyo.paper.event.server.ServerExceptionEvent;
 import com.google.inject.Binder;
 import com.google.inject.Injector;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
-import net.neogamesmc.common.payload.SwitchServerPayload;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.inject.ParallelStartup;
+import net.neogamesmc.common.payload.SwitchServerPayload;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.reference.Role;
@@ -42,6 +42,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static net.md_5.bungee.api.ChatColor.DARK_GREEN;
+import static net.md_5.bungee.api.ChatColor.GREEN;
 import static net.neogamesmc.core.text.Colors.bold;
 import static org.bukkit.Material.COMPASS;
 
@@ -72,6 +74,7 @@ public class Lobby extends Plugin implements Listener
     public void setupInjector(Binder binder)
     {
         binder.requestStaticInjection(Scheduler.class);
+        binder.requestStaticInjection(LobbyScoreboard.class);
     }
 
     @Override
@@ -181,10 +184,18 @@ public class Lobby extends Plugin implements Listener
         event.setJoinMessage(null);
         event.getPlayer().teleport(spawnLocation);
 
-        new HotbarItem(event.getPlayer(), new ItemBuilder(COMPASS).name(bold(net.md_5.bungee.api.ChatColor.DARK_GREEN) + "Game Selection").build())
+        new HotbarItem(event.getPlayer(), new ItemBuilder(COMPASS).name(bold(DARK_GREEN) + "Game Selection").build())
                 .location(0)
                 .action(Action.RIGHT_CLICK_AIR, this::openNavigationMenu)
                 .add(get(HotbarHandler.class));
+
+        LobbyScoreboard.create(event.getPlayer());
+    }
+
+    @EventHandler
+    public void cleanup(PlayerQuitEvent event)
+    {
+        LobbyScoreboard.destroy(event.getPlayer());
     }
 
     @EventHandler
@@ -290,7 +301,7 @@ public class Lobby extends Plugin implements Listener
         Inventory inventory = Bukkit.createInventory(null, 27, ChatColor.GREEN + "Join Game");
 
         ItemBuilder chunkRunnerItemBuilder = new ItemBuilder(Material.GRASS);
-        chunkRunnerItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.GREEN) + "Chunk Runner");
+        chunkRunnerItemBuilder.name(Colors.bold(GREEN) + "Chunk Runner");
         chunkRunnerItemBuilder.lore(ChatColor.DARK_GRAY + "Parkour/Challenge", "", ChatColor.GRAY + "Run along a parkour course that", ChatColor.GRAY + "generates in one direction and", ChatColor.GRAY + "crumbles away behind you at an", ChatColor.GRAY + "increasing speed!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky & FantomLX", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "1 - 24 Players");
 
 
