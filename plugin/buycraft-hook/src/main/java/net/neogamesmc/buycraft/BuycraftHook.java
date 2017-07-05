@@ -25,6 +25,8 @@ public class BuycraftHook extends Plugin
     {
         getCommand("hook").setExecutor(get(HookCommand.class));
         service.scheduleAtFixedRate(get(TransactionProcessor.class), 0, 500, TimeUnit.MILLISECONDS);
+
+        System.out.println("[Store Hook] Tracking transactions via /hook");
     }
 
     @Override

@@ -33,6 +33,8 @@ public class InsertUpdateOperation extends Operation<Void>
     public InsertUpdateOperation(String sql)
     {
         super(sql);
+
+        System.out.println("[Database] Insert/Update SQL: " + sql);
     }
 
     /**

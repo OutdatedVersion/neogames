@@ -43,6 +43,7 @@ public class HookCommand implements CommandExecutor
                 }
 
                 processor.queue(transaction);
+                System.out.println("[Payment Hook] Processing queued: " + transaction.toString());
             }
         }
 
