@@ -97,7 +97,7 @@ public class Account
     public Account fromLogin(UUID uuid, String name, String ip)
     {
         // NEED TO ASSIGN ID
-        this.role = Role.DEFAULT;
+        this.role = Role.PLAYER;
         this.firstLogin = Instant.now();
         this.lastLogin = Instant.now();
         this.name = name;

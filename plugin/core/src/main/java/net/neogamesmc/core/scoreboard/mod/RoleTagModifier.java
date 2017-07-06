@@ -43,7 +43,10 @@ public class RoleTagModifier implements ScoreboardModifier
             val id = idToRole.computeIfAbsent(role, ignore -> UUID.randomUUID().toString().substring(0, 8));
 
             // prefix
-            scoreboard.registerNewTeam(id).setPrefix(role.toName() + ChatColor.RESET + " " + ChatColor.GREEN);
+            if (role == Role.PLAYER)
+                scoreboard.registerNewTeam(id).setPrefix(ChatColor.RESET + " " + ChatColor.GRAY);
+            else
+                scoreboard.registerNewTeam(id).setPrefix(role.toName() + ChatColor.RESET + " " + ChatColor.GREEN);
         }
     }
 
@@ -85,7 +88,7 @@ public class RoleTagModifier implements ScoreboardModifier
     /**
      * Grab a {@link Team} for the role the provided player has.
      *
-     * @param player The player
+     * @param player The player in question
      * @param scoreboard Scoreboard being used
      * @return The team
      */
@@ -93,5 +96,4 @@ public class RoleTagModifier implements ScoreboardModifier
     {
         return scoreboard.getTeam(idToRole.get(database.cacheFetch(player.getUniqueId()).role()));
     }
-
 }

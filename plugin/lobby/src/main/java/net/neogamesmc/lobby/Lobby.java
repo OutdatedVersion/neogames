@@ -47,6 +47,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static net.md_5.bungee.api.ChatColor.*;
+import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
 import static net.neogamesmc.core.text.Colors.bold;
 import static org.bukkit.Material.COMPASS;
 
@@ -115,7 +116,7 @@ public class Lobby extends Plugin implements Listener
 
 
         val lobby = Bukkit.getWorld("lobby");
-        this.spawnLocation = new Location(lobby, 10.5, 64.5, 5.5, 162.6f, 0f);
+        this.spawnLocation = new Location(lobby, 10.5, 64, 5.5, 162.6f, 0f);
         lobby.loadChunk(-1, 0);
         lobby.loadChunk(-1, -1);
 
@@ -204,7 +205,8 @@ public class Lobby extends Plugin implements Listener
 
         scoreboard.create(event.getPlayer());
 
-        event.getPlayer().sendTitle(BUILDER.subtitle(new ComponentBuilder("Welcome back, ").append(event.getPlayer().getName()).color(DARK_GREEN).create()).build());
+        event.getPlayer().sendTitle(BUILDER.subtitle(new ComponentBuilder("Welcome back, ")
+                .append(event.getPlayer().getName()).color(DARK_GREEN).append("!", NONE).create()).build());
     }
 
     @EventHandler

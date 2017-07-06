@@ -1,4 +1,4 @@
-# Select correct table
+# Select correct database
 USE neogames;
 
 

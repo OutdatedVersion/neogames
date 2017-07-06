@@ -73,9 +73,9 @@ public class Chat implements Listener
 
         val message = new ComponentBuilder
                             // start with the player's display role
-                            (role == Role.DEFAULT ? "" : role.name.toUpperCase() + " ").color(role.color).bold(true)
+                            (role == Role.PLAYER ? "" : role.name.toUpperCase() + " ").color(role.color).bold(true)
                             // username -- gray w/o role, green if present
-                            .append(name, NONE).color(role == Role.DEFAULT ? GRAY : GREEN)
+                            .append(name, NONE).color(role == Role.PLAYER ? GRAY : GREEN)
                             // the message
                             .append(" " + event.getMessage()).color(WHITE).create();
 

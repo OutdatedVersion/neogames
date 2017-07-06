@@ -2,12 +2,20 @@ package net.neogamesmc.common.text;
 
 import org.apache.commons.lang3.text.WordUtils;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 /**
  * @author Ben (OutdatedVersion)
  * @since Jun/18/2017 (10:50 PM)
  */
 public class Text
 {
+
+    /**
+     * Currency formatter instance.
+     */
+    private static final NumberFormat FORMAT = NumberFormat.getInstance(Locale.US);
 
     /**
      * Turns the provided enumerator into
@@ -25,6 +33,18 @@ public class Text
                     // remove delimiter
                     .replaceAll("_", "")
         );
+    }
+
+    /**
+     * Turns the provided number into a
+     * formatted string.
+     *
+     * @param val The number
+     * @return The text
+     */
+    public static String fromCurreny(int val)
+    {
+        return FORMAT.format(val);
     }
 
     /**
