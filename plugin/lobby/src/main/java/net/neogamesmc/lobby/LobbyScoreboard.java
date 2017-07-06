@@ -78,8 +78,8 @@ public class LobbyScoreboard implements Listener
     {
         val sidebar = manager.sidebar(event.player);
 
-        sidebar.remove(10);
-        sidebar.set(9, roleFor(event.player));
+        // sidebar.remove(10);
+        // sidebar.set(9, roleFor(event.player));
 
         sidebar.modifier(RoleTagModifier.class).ifPresent(mod -> Players.stream().forEach(player -> mod.playerRefresh(player, sidebar.scoreboard())));
     }

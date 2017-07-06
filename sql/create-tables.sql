@@ -8,13 +8,13 @@ CREATE TABLE IF NOT EXISTS accounts (
   `uuid` VARCHAR(40) NOT NULL,
   `name` VARCHAR(20) NOT NULL,
   `role` VARCHAR(16) NOT NULL DEFAULT 'DEFAULT',
+  `coins` INT NOT NULL DEFAULT 100,
   `address` VARCHAR(42) NOT NULL,
   `first_login` TIMESTAMP NOT NULL DEFAULT NOW(),
   `last_login` TIMESTAMP NOT NULL DEFAULT NOW(),
   PRIMARY KEY (`iid`),
   UNIQUE KEY (`uuid`)
 );
-
 
 # Permission node storage
 CREATE TABLE IF NOT EXISTS assigned_permissions (
