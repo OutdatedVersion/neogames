@@ -1,7 +1,7 @@
 package net.neogamesmc.network;
 
 import com.google.inject.Guice;
-import com.google.inject.Injector;
+import lombok.val;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.network.communication.RequestHandler;
@@ -43,7 +43,7 @@ public class Bootstrap
         info("Version: {}", Constant.VERSION);
         info("Build: {}", "Need to inject Git SHA1");
 
-        final Injector injector = Guice.createInjector(binder ->
+        val injector = Guice.createInjector(binder ->
         {
             binder.bind(RedisHandler.class).toInstance(new RedisHandler().init().subscribe(RedisChannel.NETWORK));
             binder.requestStaticInjection(PublishPayloadTask.class);

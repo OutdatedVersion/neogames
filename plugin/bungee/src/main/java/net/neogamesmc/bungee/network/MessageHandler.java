@@ -83,6 +83,7 @@ public class MessageHandler
         }
         else
         {
+            System.out.println("[Network] Removing server by name: " + payload.name);
             proxy.getServers().remove(payload.name);
         }
     }

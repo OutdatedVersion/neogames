@@ -1,5 +1,6 @@
 package net.neogamesmc.buycraft.transaction;
 
+import lombok.ToString;
 import net.neogamesmc.buycraft.TransactionProcessor;
 
 /**
@@ -8,6 +9,7 @@ import net.neogamesmc.buycraft.TransactionProcessor;
  * @author Ben (OutdatedVersion)
  * @since Jul/01/2017 (1:24 AM)
  */
+@ToString
 public abstract class Transaction
 {
 

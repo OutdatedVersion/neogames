@@ -2,6 +2,7 @@ package net.neogamesmc.core.punish;
 
 import com.google.common.base.Splitter;
 import com.google.inject.Inject;
+import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.command.api.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
@@ -31,7 +32,7 @@ public class PunishCommands
     @Inject private PunishmentHandler handler;
 
     @Command ( executor = "ban" )
-    @Permission ( "punish.command.ban" )
+    @Permission ( Role.MOD )
     public void banCommand(Player player, @Necessary ( "Please provide the target's name" ) String name,
                                           @Necessary ( "A duration for the punishment is required" ) String duration,
                                           @Necessary ( "You must supply a reason" ) String[] reason)
@@ -44,7 +45,7 @@ public class PunishCommands
     }
 
     @Command ( executor = "mute" )
-    @Permission ( "punish.command.mute" )
+    @Permission ( Role.MOD )
     public void muteCommand(Player player, @Necessary ( "Please provide the target's name" ) String name,
                                            @Necessary ( "A duration for the punishment is required" ) String duration,
                                            @Necessary ( "You must supply a reason" ) String[] reason)
@@ -57,7 +58,7 @@ public class PunishCommands
     }
 
     @Command ( executor = "kick" )
-    @Permission ( "punish.command.kick" )
+    @Permission ( Role.ADMIN )
     public void kickCommand(Player player, @Necessary ( "A target name must be provided" ) String name,
                                            @Necessary ( "You must supply a reason" ) String[] reason)
     {

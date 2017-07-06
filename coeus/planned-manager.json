@@ -1,0 +1,39 @@
+{
+  "lobby": {
+    "operations": [
+      {
+        "id": "copy-map",
+        "name": "main_lobby"
+      },
+      {
+        "id": "copy-plugin",
+        "name": "Lobby"
+      }
+    ]
+  },
+  "games": {
+    "group-operations": [
+      {
+        "id": "copy-map",
+        "name": "${id}"
+      },
+      {
+        "id": "copy-plugin",
+        "name": "Game-Connector"
+      }
+    ],
+    "chunk_runner": {
+      "name": "Chunk Runner",
+      "players": {
+        "min": 2,
+        "max": 24
+      }
+    },
+    "blast_off": {
+      "name": "Blast Off"
+    },
+    "bowplinko": {
+      "name": "Bowplinko"
+    }
+  }
+}

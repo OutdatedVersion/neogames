@@ -8,13 +8,13 @@ CREATE TABLE IF NOT EXISTS accounts (
   `uuid` VARCHAR(40) NOT NULL,
   `name` VARCHAR(20) NOT NULL,
   `role` VARCHAR(16) NOT NULL DEFAULT 'DEFAULT',
+  `coins` INT NOT NULL DEFAULT 100,
   `address` VARCHAR(42) NOT NULL,
-  `first_login` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `last_login` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `first_login` TIMESTAMP NOT NULL DEFAULT NOW(),
+  `last_login` TIMESTAMP NOT NULL DEFAULT NOW(),
   PRIMARY KEY (`iid`),
   UNIQUE KEY (`uuid`)
 );
-
 
 # Permission node storage
 CREATE TABLE IF NOT EXISTS assigned_permissions (
@@ -36,6 +36,18 @@ CREATE TABLE IF NOT EXISTS punishments (
   `expires_at` TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 );
+
+
+# Lobby news bar table
+CREATE TABLE IF NOT EXISTS news (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `val` VARCHAR(280) NOT NULL,
+  `updated_by` INT NOT NULL,
+  `last_updated_at` TIMESTAMP NOT NULL,
+  FOREIGN KEY (`updated_by`) REFERENCES accounts(`iid`),
+  PRIMARY KEY (`id`)
+);
+
 
 # Create index on punishments
 # CREATE INDEX full_uuid ON punishments ()

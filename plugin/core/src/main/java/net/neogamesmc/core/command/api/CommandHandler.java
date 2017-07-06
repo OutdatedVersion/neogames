@@ -6,9 +6,12 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
+import lombok.val;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.neogamesmc.common.database.Database;
+import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
@@ -64,6 +67,11 @@ public class CommandHandler implements Listener
      * over a layer of abstraction.
      */
     @Inject private Plugin plugin;
+
+    /**
+     * Interact with player data.
+     */
+    @Inject private Database database;
 
     /**
      * A relation of our commands
@@ -265,12 +273,16 @@ public class CommandHandler implements Listener
         try
         {
             // verify the player can actually execute this command
-            if (info.node != null)
-                if (!player.hasPermission(info.node))
+            if (info.role != Role.DEFAULT)
+            {
+                val account = database.cacheFetch(player.getUniqueId());
+
+                if (!account.role().compare(info.role))
                 {
                     info.permissionMessage.sendAsIs(player);
                     return;
                 }
+            }
 
             // prepare parameters
             final Arguments args = new Arguments(rawArguments);
@@ -290,10 +302,18 @@ public class CommandHandler implements Listener
                 // make sure if we need something & it doesn't exist that we fail
                 final Necessary necessary = working.getDeclaredAnnotation(Necessary.class);
 
-                if (necessary != null && args.remainingElements() == 0)
+                if (args.remainingElements() == 0)
                 {
-                    prefix("Commands").content(necessary.value(), ChatColor.RED).send(player);
-                    return;
+                    if (necessary != null)
+                    {
+                        prefix("Commands").content(necessary.value(), ChatColor.RED).send(player);
+                        return;
+                    }
+                    else
+                    {
+                        invokingWith[i] = null;
+                        // todo
+                    }
                 }
 
                 // if there's an annotation present we'll handle
@@ -321,11 +341,11 @@ public class CommandHandler implements Listener
 
                     if (invokingWith[i] == null)
                     {
-                        final String _next = copy.next();
+                        val next = copy.next();
+                        val fail = provider.fail(next);
 
-                        // TODO(Ben): this probably shouldn't be invoked twice; find a way around this
-                        if (provider.fail(_next) != null)
-                            player.sendMessage(provider.fail(_next));
+                        if (fail != null)
+                            Message.prefix("Commands").content(fail, RED).send(player);
 
                         return;
                     }
@@ -359,14 +379,14 @@ public class CommandHandler implements Listener
 
         if (perm != null)
         {
-            info.node = perm.value();
+            info.role = perm.value();
             info.permissionMessage = perm.note().equals("DEFAULT_MESSAGE")
                                      ? Message.PERMISSION_MESSAGE
                                      : prefix("Permissions").content(perm.note(), RED);
         }
         else
         {
-            info.node = null;
+            info.role = Role.DEFAULT;
             info.permissionMessage = Message.PERMISSION_MESSAGE;
         }
     }
@@ -396,8 +416,8 @@ public class CommandHandler implements Listener
         /** what someone may type to run this command */
         Set<String> executors;
 
-        /** The permission node a player must hold to run this command */
-        String node;
+        /** The role a player must hold to run this command */
+        Role role;
 
         /** Message to send the player if we are unable to execute the command */
         Message permissionMessage;

@@ -3,6 +3,7 @@ package net.neogamesmc.core.command;
 import com.google.inject.Inject;
 import net.neogamesmc.common.payload.RequestProxyActionPayload;
 import net.neogamesmc.common.redis.RedisHandler;
+import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.command.api.Command;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.text.Message;
@@ -24,7 +25,7 @@ public class PurgeProxyPunishmentCacheCommand
     @Inject private RedisHandler redis;
 
     @Command ( executor = "purgeproxycache" )
-    @Permission ( "network.cache.punishment.purge" )
+    @Permission ( Role.DEV )
     public void execute(Player player)
     {
         new RequestProxyActionPayload(PURGE_PUNISHMENT_CACHE).publish(redis);

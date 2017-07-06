@@ -4,18 +4,17 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import lombok.val;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.database.operation.RawFetchOperation;
 import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.issue.Issues;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.permissions.PermissionAttachment;
 
 /**
  * In-charge of applying user permissions; which
@@ -84,10 +83,10 @@ public class Permissions implements Listener
     @EventHandler ( priority = EventPriority.MONITOR )
     public void applyPermissions(PlayerLoginEvent event)
     {
-        final Player player = event.getPlayer();
-        final PermissionAttachment attachment = player.addAttachment(plugin);
+        val player = event.getPlayer();
+        val attachment = player.addAttachment(plugin);
 
-        nodes.get(database.cacheFetch(player.getUniqueId()).role).forEach(node -> attachment.setPermission(node, true));
+        nodes.get(database.cacheFetch(player.getUniqueId()).role()).forEach(node -> attachment.setPermission(node, true));
     }
 
 }

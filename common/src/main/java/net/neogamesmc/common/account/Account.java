@@ -1,12 +1,18 @@
 package net.neogamesmc.common.account;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.database.annotation.Column;
 import net.neogamesmc.common.database.annotation.InheritColumn;
 import net.neogamesmc.common.database.annotation.Table;
+import net.neogamesmc.common.database.operation.InsertUpdateOperation;
+import net.neogamesmc.common.payload.UpdatePlayerRolePayload;
+import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.reference.Role;
 
 import java.time.Instant;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -16,8 +22,15 @@ import java.util.UUID;
  * @since May/17/2017 (10:06 PM)
  */
 @Table ( "accounts" )
+@EqualsAndHashCode
+@Getter
 public class Account
 {
+
+    /**
+     * SQL statement to update a player's account after they've logged in.
+     */
+    private static final String SQL_UPDATE_ACCOUNT = "UPDATE accounts SET name=?,ip=?,last_login=? WHERE iid=?;";
 
     /**
      * Constant uniquely assigned identifier.
@@ -35,37 +48,43 @@ public class Account
      * to distinguish players.
      */
     @InheritColumn
-    public UUID uuid;
+    private UUID uuid;
 
     /**
      * Player chosen display name.
      */
     @InheritColumn
-    public String name;
+    private String name;
 
     /**
      * Permission/display role of this player.
      */
     @InheritColumn
-    public Role role;
+    private Role role;
 
     /**
-     * UNIX epoch timestamp of when the player was first seen here.
+     * The amount of currency this player possesses.
+     */
+    @InheritColumn
+    private int coins;
+
+    /**
+     * When the player was first seen here.
      */
     @Column ( "first_login" )
-    public Instant firstLogin;
+    private Instant firstLogin;
 
     /**
-     * UNIX epoch timestamp of when the player was last seen on the network.
+     * When the player was last seen on the network.
      */
     @Column ( "last_login" )
-    public Instant lastLogin;
+    private Instant lastLogin;
 
     /**
      * The last IP address we saw this player from.
      */
     @Column ( "address" )
-    public String ip;
+    private String ip;
 
     /**
      * Create a new account from the provided login data.
@@ -88,16 +107,57 @@ public class Account
         return this;
     }
 
-    @Override
-    public boolean equals(Object o)
+    /**
+     * Update a player's account in our database
+     * with data formed when logging in.
+     *
+     * @param database An instance of our database
+     * @return This account
+     */
+    public Account updateData(Database database)
     {
-        return this == o || !(o == null || getClass() != o.getClass()) && id == ((Account) o).id;
+        try
+        {
+            new InsertUpdateOperation(SQL_UPDATE_ACCOUNT)
+                    .data(name, ip, lastLogin, id)
+                    .async(database);
+        }
+        catch (Exception ex)
+        {
+            throw new RuntimeException("Issue saving player data.", ex);
+        }
+
+        return this;
     }
 
-    @Override
-    public int hashCode()
+    /**
+     * Update the player's role.
+     *
+     * @param role The new role
+     * @param database Our database instance
+     * @param redis An instance of our Redis wrapper.
+     * @return This account
+     */
+    @SneakyThrows
+    public Account role(Role role, Database database, RedisHandler redis)
     {
-        return Objects.hash(id);
+        new InsertUpdateOperation("UPDATE accounts SET role=? WHERE iid=?;").data(role, id).async(database);
+        new UpdatePlayerRolePayload(name, role).publish(redis);
+
+        return unsafeRole(role);
+    }
+
+    /**
+     * Modify the role value itself without any sort of
+     * database updates/Redis notifications.
+     *
+     * @param role The new role
+     * @return This account
+     */
+    public Account unsafeRole(Role role)
+    {
+        this.role = role;
+        return this;
     }
 
 }

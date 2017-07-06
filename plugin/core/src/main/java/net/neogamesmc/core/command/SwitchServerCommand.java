@@ -1,8 +1,10 @@
 package net.neogamesmc.core.command;
 
 import com.google.inject.Inject;
+import net.neogamesmc.common.backend.ServerData;
 import net.neogamesmc.common.payload.SwitchServerPayload;
 import net.neogamesmc.common.redis.RedisHandler;
+import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.command.api.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
@@ -23,8 +25,13 @@ public class SwitchServerCommand
      */
     @Inject private RedisHandler redis;
 
+    /**
+     * Data associated with this server.
+     */
+    @Inject private ServerData data;
+
     @Command ( executor = "server" )
-    @Permission ( value = "core.command.server", note = "Sorry, you're not permitted to use this! Try the menus/NPCs to get around! :)" )
+    @Permission ( value = Role.MOD, note = "Sorry, you're not permitted to use this! Try the menus/NPCs to get around! :)" )
     public void execute(Player player, @Necessary ( "You missed the server's name" ) String server)
     {
         // TODO(Ben): move this
@@ -35,7 +42,7 @@ public class SwitchServerCommand
     @Command ( executor = { "current", "where", "whereami" } )
     public void execute(Player player)
     {
-        Message.prefix("Network").content("You are currently connected to:").content("require-inject", YELLOW).send(player);
+        Message.prefix("Network").content("You are currently connected to:").content(data.name, YELLOW).send(player);
     }
 
 }
