@@ -30,3 +30,9 @@ CREATE PROCEDURE insert_settings()
 
 
 DELIMITER ;
+
+# Execute
+CALL insert_settings();
+
+# Cleanup
+DROP PROCEDURE insert_settings;
