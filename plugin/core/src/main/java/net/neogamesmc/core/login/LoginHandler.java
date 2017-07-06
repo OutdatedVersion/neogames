@@ -12,6 +12,7 @@ import net.neogamesmc.common.login.LoginHook;
 import net.neogamesmc.core.issue.Issues;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -94,7 +95,7 @@ public class LoginHandler implements Listener
      *
      * @param event The event
      */
-    @EventHandler
+    @EventHandler ( priority = EventPriority.LOWEST )
     public void cleanup(PlayerQuitEvent event)
     {
         database.cacheInvalidate(event.getPlayer().getUniqueId());

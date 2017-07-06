@@ -7,7 +7,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.reference.Role;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -39,15 +38,12 @@ public class RoleTagModifier implements ScoreboardModifier
     @Override
     public void start(Scoreboard scoreboard)
     {
-        System.out.println("RoleTagModifier#init");
-
         for (Role role : Role.VALUES)
         {
             val id = idToRole.computeIfAbsent(role, ignore -> UUID.randomUUID().toString().substring(0, 8));
 
             // prefix
             scoreboard.registerNewTeam(id).setPrefix(role.toName() + ChatColor.RESET + " " + ChatColor.GREEN);
-            System.out.println("Assigning " + role.name() + " to " + id);
         }
     }
 
@@ -71,13 +67,7 @@ public class RoleTagModifier implements ScoreboardModifier
     @Override
     public void playerAdd(Player player, Scoreboard scoreboard)
     {
-        System.out.println("RoleTagModifier#playerAdd");
-        val team = team(player, scoreboard);
-
-        System.out.println("team == null > " + (team == null));
-
-        if (team != null)
-            team.addEntry(player.getName());
+        team(player, scoreboard).addEntry(player.getName());
     }
 
     /**
@@ -89,7 +79,6 @@ public class RoleTagModifier implements ScoreboardModifier
     @Override
     public void playerRemove(Player player, Scoreboard scoreboard)
     {
-        System.out.println("RoleTagModifier#playerRemove");
         team(player, scoreboard).removeEntry(player.getName());
     }
 
@@ -102,8 +91,6 @@ public class RoleTagModifier implements ScoreboardModifier
      */
     private Team team(Player player, Scoreboard scoreboard)
     {
-        System.out.println("Objective Name: " + scoreboard.getObjective(DisplaySlot.SIDEBAR).getName());
-        System.out.println("Role of " + player.getName() + ": " + idToRole.get(database.cacheFetch(player.getUniqueId()).role()));
         return scoreboard.getTeam(idToRole.get(database.cacheFetch(player.getUniqueId()).role()));
     }
 

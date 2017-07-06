@@ -15,6 +15,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -124,7 +125,7 @@ public class PlayerSidebar
      * @param text The text
      * @return This sidebar
      */
-    private PlayerSidebar set(int line, String text)
+    public PlayerSidebar set(int line, String text)
     {
         this.objective.getScore(text).setScore(line);
         this.lines.put(line, text);
@@ -245,7 +246,6 @@ public class PlayerSidebar
 
         modifier.start(scoreboard);
         activeModifiers.add(modifier);
-        activeModifiers.forEach(m -> System.out.println(m.toString()));
         return this;
     }
 
@@ -262,6 +262,12 @@ public class PlayerSidebar
     {
         manager.add(player, this);
         return this;
+    }
+
+    public Optional<ScoreboardModifier> modifier(Class<? extends ScoreboardModifier> clazz)
+    {
+        modifierCheck();
+        return activeModifiers.stream().filter(mod -> mod.getClass().equals(clazz)).findFirst();
     }
 
     /**

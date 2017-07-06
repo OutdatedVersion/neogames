@@ -1,10 +1,12 @@
 package net.neogamesmc.lobby;
 
 import com.google.inject.Inject;
+import lombok.val;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.event.UpdatePlayerRoleEvent;
+import net.neogamesmc.core.player.Players;
 import net.neogamesmc.core.scoreboard.PlayerSidebar;
 import net.neogamesmc.core.scoreboard.PlayerSidebarManager;
 import net.neogamesmc.core.scoreboard.mod.RoleTagModifier;
@@ -35,7 +37,6 @@ public class LobbyScoreboard implements Listener
     @Inject
     public void init(Plugin plugin, PlayerSidebarManager manager)
     {
-        System.out.println("LobbyScoreboard#init");
         this.manager = manager.addDefaultModifier(plugin.get(RoleTagModifier.class));
     }
 
@@ -75,7 +76,12 @@ public class LobbyScoreboard implements Listener
     @EventHandler
     public void updateScoreboardText(UpdatePlayerRoleEvent event)
     {
-        // todo
+        val sidebar = manager.sidebar(event.player);
+
+        sidebar.remove(10);
+        sidebar.set(9, roleFor(event.player));
+
+        sidebar.modifier(RoleTagModifier.class).ifPresent(mod -> Players.stream().forEach(player -> mod.playerRefresh(player, sidebar.scoreboard())));
     }
 
     /**

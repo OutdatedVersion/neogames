@@ -1,9 +1,11 @@
 package net.neogamesmc.lobby;
 
+import com.destroystokyo.paper.Title;
 import com.google.inject.Binder;
 import com.google.inject.Injector;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import lombok.val;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.payload.SwitchServerPayload;
@@ -44,8 +46,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static net.md_5.bungee.api.ChatColor.DARK_GREEN;
-import static net.md_5.bungee.api.ChatColor.GREEN;
+import static net.md_5.bungee.api.ChatColor.*;
 import static net.neogamesmc.core.text.Colors.bold;
 import static org.bukkit.Material.COMPASS;
 
@@ -57,6 +58,13 @@ import static org.bukkit.Material.COMPASS;
  */
 public class Lobby extends Plugin implements Listener
 {
+
+    /**
+     * The beginning of the role.
+     */
+    private static final Title.Builder BUILDER = new Title.Builder()
+            .title(new ComponentBuilder("Neo").bold(true).color(YELLOW).append("Games").color(GOLD).create())
+            .stay(20 * 3);
 
     /**
      * Where players are sent when joining.
@@ -72,6 +80,7 @@ public class Lobby extends Plugin implements Listener
      * Maintain our lobby scoreboard.
      */
     private LobbyScoreboard scoreboard;
+
 
     @Override
     public void setupInjector(Binder binder)
@@ -194,6 +203,8 @@ public class Lobby extends Plugin implements Listener
                 .add(get(HotbarHandler.class));
 
         scoreboard.create(event.getPlayer());
+
+        event.getPlayer().sendTitle(BUILDER.subtitle(new ComponentBuilder("Welcome back, ").append(event.getPlayer().getName()).color(DARK_GREEN).create()).build());
     }
 
     @EventHandler

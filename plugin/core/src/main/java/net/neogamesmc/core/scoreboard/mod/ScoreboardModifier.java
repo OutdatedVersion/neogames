@@ -40,4 +40,16 @@ public interface ScoreboardModifier
      */
     default void playerRemove(Player player, Scoreboard scoreboard) { }
 
+    /**
+     * Refresh whatever this modifier does for the provided player.
+     *
+     * @param player The player
+     * @param scoreboard Scoreboard we're working with
+     */
+    default void playerRefresh(Player player, Scoreboard scoreboard)
+    {
+        playerRemove(player, scoreboard);
+        playerAdd(player, scoreboard);
+    }
+
 }
