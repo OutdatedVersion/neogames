@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
  * @author Ben (OutdatedVersion)
  * @since May/21/2017 (7:14 PM)
  */
-class ResultTools
+public class ResultTools
 {
 
     /**
@@ -23,7 +23,7 @@ class ResultTools
      * @param field The field
      * @return Yes or no
      */
-    static boolean canUseField(Field field)
+    public static boolean canUseField(Field field)
     {
         return field.isAnnotationPresent(Column.class) || field.isAnnotationPresent(InheritColumn.class);
     }
@@ -44,7 +44,7 @@ class ResultTools
      *
      * @see #canUseField(Field) Verification that this will work
      */
-    static String columnNameFromField(Field field)
+    public static String columnNameFromField(Field field)
     {
         return field.isAnnotationPresent(InheritColumn.class) ? field.getName() : field.getAnnotation(Column.class).value();
     }

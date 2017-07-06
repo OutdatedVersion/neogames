@@ -21,22 +21,32 @@ public enum Paths
     /**
      * Where data related to properties for tools and such is held.
      */
-    CONFIG(BASE + ".config"),
+    CONFIG(BASE.path + ".config"),
 
     /**
      * Where assorted servers are located.
      */
-    NETWORK(BASE + ".network"),
+    NETWORK(BASE.path + ".network"),
 
     /**
      * Where our currently single BungeeCord proxy is.
      */
-    PROXY(NETWORK + ".proxy"),
+    PROXY(NETWORK.path + ".proxy"),
 
     /**
      * Where the individual Minecraft instances are.
      */
-    SERVERS(NETWORK + ".live");
+    SERVERS(NETWORK.path + ".live"),
+
+    /**
+     * Where we store static content.
+     */
+    STORAGE(BASE.path + ".storage"),
+
+    /**
+     * Where our plugins are located.
+     */
+    PLUGIN(STORAGE.path + ".plugin");
 
     /** The actual file system path */
     public final String path;

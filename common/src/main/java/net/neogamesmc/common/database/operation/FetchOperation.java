@@ -1,13 +1,19 @@
 package net.neogamesmc.common.database.operation;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.database.api.Operation;
-import net.neogamesmc.common.database.result.SQLResult;
+import net.neogamesmc.common.database.mutate.Mutators;
+import net.neogamesmc.common.database.result.ResultTools;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.concurrent.Future;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -25,14 +31,39 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author Ben (OutdatedVersion)
  * @since May/20/2017 (1:50 AM)
  */
-public class FetchOperation extends Operation<SQLResult>
+public class FetchOperation<V> extends Operation<V>
 {
+
+    /**
+     * Stores the {@link Field}s in a {@link Class}. From reading I don't
+     * believe this sort of reflection is cached by the JVM - so we'll do it.
+     * <p>
+     * Also, we take into account that we may only benefit from fields with
+     * a select set of annotations.
+     */
+    private static final LoadingCache<Class<?>, Field[]> FIELD_CACHE = CacheBuilder.newBuilder()
+            .weakKeys()
+            .build(new CacheLoader<Class<?>, Field[]>()
+            {
+                @Override
+                public Field[] load(Class<?> key) throws Exception
+                {
+                    return Stream.of(key.getDeclaredFields())
+                                 .peek(field -> field.setAccessible(true))
+                                 .filter(ResultTools::canUseField).toArray(Field[]::new);
+                }
+            });
 
     /**
      * Let's us know that we don't require
      * any value on {@link #data}.
      */
-    private boolean requireNoData;
+    private boolean requireNoData = true;
+
+    /**
+     * Type of our type-parameter.
+     */
+    private Class<V> clazz;
 
     /**
      * {@inheritDoc}
@@ -43,26 +74,27 @@ public class FetchOperation extends Operation<SQLResult>
     }
 
     /**
-     * Sometimes a query will not require any
-     * sort of parameters. Though we do still
-     * need some sort of indicator that we don't
-     * actually need that for the execution.
-     *
-     * @return This operation for chaining
+     * {@inheritDoc}
      */
-    public FetchOperation noData()
+    @Override
+    public FetchOperation<V> data(Object... data)
     {
-        this.requireNoData = true;
+        this.requireNoData = false;
+        this.data = data;
         return this;
     }
 
     /**
-     * {@inheritDoc}
+     * Updates the underlying class for this operation.
+     * <p>
+     * It should match the type-parameter.
+     *
+     * @param clazz The class
+     * @return This operation; for chaining
      */
-    @Override
-    public FetchOperation data(Object... data)
+    public FetchOperation<V> type(Class<V> clazz)
     {
-        this.data = data;
+        this.clazz = clazz;
         return this;
     }
 
@@ -73,7 +105,8 @@ public class FetchOperation extends Operation<SQLResult>
      * @throws Exception In the event that something goes wrong
      */
     @Override
-    public SQLResult call() throws Exception
+    @SuppressWarnings ( "unchecked" )
+    public V call() throws Exception
     {
         stateCheck();
 
@@ -87,20 +120,45 @@ public class FetchOperation extends Operation<SQLResult>
             ResultSet result = statement.executeQuery()
         )
         {
-            // probs gonna prematurely close
-            return new SQLResult(result, this.database);
+            final V instance = clazz == null ? null : clazz.newInstance();
+
+            if (result.next())
+            {
+                for (Field field : FIELD_CACHE.get(clazz))
+                {
+                    field.set(instance, Mutators.of(field.getType()).from(ResultTools.columnNameFromField(field), result));
+                }
+
+                return instance;
+            }
+            else
+            {
+                return null;
+            }
         }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        throw new RuntimeException("Unknown issue occurred whilst processing request.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public SQLResult sync(Database database) throws Exception
+    public V sync(Database database) throws Exception
     {
         this.database = database;
         return call();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Future<SQLResult> async(Database database) throws Exception
+    public Future<V> async(Database database) throws Exception
     {
         this.database = database;
         return database.submitTask(this);

@@ -13,22 +13,29 @@ public enum Role
 
     OWNER(ChatColor.GOLD),
     DEV(ChatColor.DARK_PURPLE),
-    ADMIN(ChatColor.DARK_PURPLE),
+    ADMIN(ChatColor.RED),
     MOD(ChatColor.DARK_GREEN),
+    VIP(ChatColor.YELLOW),
     BUILDER(ChatColor.DARK_AQUA),
     // ^ staff
 
     YOUTUBE(ChatColor.RED),
-    YT(ChatColor.DARK_PURPLE),
+    YT(ChatColor.DARK_RED),
     // ^ media
 
+    PAL(ChatColor.YELLOW),
     FAM(ChatColor.DARK_AQUA),
     HOMIE(ChatColor.LIGHT_PURPLE),
+    BRO(ChatColor.BLUE),
     DUDE(ChatColor.GREEN),
-    BRO(ChatColor.YELLOW),
     // ^ donator
 
-    DEFAULT(ChatColor.GRAY);
+    PLAYER(ChatColor.GRAY);
+
+    /**
+     * Common array holding every possible {@link Role}.
+     */
+    public static final Role[] VALUES = values();
 
     /**
      * Color of the role publicly displayed.
@@ -49,6 +56,30 @@ public enum Role
     {
         this.color = color;
         this.name = this.name().toLowerCase().replaceAll("_", "");
+    }
+
+    /**
+     * Grab the display name for this role.
+     * <p>
+     * You must handle color resetting.
+     *
+     * @return The display
+     */
+    public String toName()
+    {
+        return this.color + "" + ChatColor.BOLD + this.name.toUpperCase();
+    }
+
+    /**
+     * Check whether or not the provided role
+     * is of a higher position than this one.
+     *
+     * @param other The other role
+     * @return Yes or no
+     */
+    public boolean compare(Role other)
+    {
+        return this.ordinal() <= other.ordinal();
     }
 
 }

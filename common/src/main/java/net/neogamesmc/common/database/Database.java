@@ -2,19 +2,27 @@ package net.neogamesmc.common.database;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.inject.Inject;
-import net.neogamesmc.common.account.Account;
-import net.neogamesmc.common.config.ConfigurationProvider;
+import com.google.inject.Singleton;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.val;
+import net.neogamesmc.common.account.Account;
+import net.neogamesmc.common.config.ConfigurationProvider;
+import net.neogamesmc.common.database.operation.FetchOperation;
+import net.neogamesmc.common.inject.ParallelStartup;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.logging.Logger;
 
 /**
  * Handle distributed player data.
@@ -25,8 +33,17 @@ import java.util.concurrent.Future;
  * @author Ben (OutdatedVersion)
  * @since May/17/2017 (9:26 PM)
  */
+@Singleton
+@ParallelStartup
 public class Database
 {
+
+    /**
+     * SQL query to retrieve player data.
+     * <p>
+     * The {@code WHERE} clause is appended later on.
+     */
+    private static final String SQL_FIND_PLAYER_BASE = "SELECT * FROM accounts WHERE ";
 
     /**
      * Properly pool database connections.
@@ -36,7 +53,7 @@ public class Database
     /**
      * Run database operations async.
      */
-    private ExecutorService executor;
+    private ListeningExecutorService executor;
 
     /**
      * In-memory store for player's data.
@@ -52,19 +69,22 @@ public class Database
      * @return The fresh database instance
      */
     @Inject
-    public Database init(ConfigurationProvider provider)
+    public Database init(Logger logger, ConfigurationProvider provider)
     {
         final DatabaseConfig config = provider.read("database/standard", DatabaseConfig.class);
         final HikariConfig hikariConfig = new HikariConfig();
 
-        hikariConfig.setJdbcUrl(DatabaseConfig.FORMAT_JDBC_URL.apply(config));
         hikariConfig.setUsername(config.auth.username);
         hikariConfig.setPassword(config.auth.password);
+        hikariConfig.setJdbcUrl(DatabaseConfig.FORMAT_JDBC_URL.apply(config));
+
+        logger.info("[Database] JDBC URL: " + hikariConfig.getJdbcUrl());
 
         hikari = new HikariDataSource(hikariConfig);
-        executor = Executors.newCachedThreadPool();
+        executor = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
         cache = CacheBuilder.newBuilder().build();
 
+        logger.info("[Database] Opened connection to MySQL instance");
         return this;
     }
 
@@ -80,7 +100,6 @@ public class Database
 
     /**
      * Grabs a connection from our pool.
-     *
      * <p>
      * Be sure you are closing these after use!!
      *
@@ -98,9 +117,9 @@ public class Database
      *
      * @param task The task
      * @param <R> Return type
-     * @return A {@link Future} wrapping the return value
+     * @return A {@link ListenableFuture} wrapping the return value
      */
-    public <R> Future<R> submitTask(Callable<R> task)
+    public <R> ListenableFuture<R> submitTask(Callable<R> task)
     {
         return executor.submit(task);
     }
@@ -134,7 +153,7 @@ public class Database
      */
     public Account cacheFetch(String name)
     {
-        return cache.asMap().values().stream().filter(acc -> acc.name.equals(name)).findFirst().orElse(null);
+        return cache.asMap().values().stream().filter(acc -> acc.name().equals(name)).findFirst().orElse(null);
     }
 
     /**
@@ -145,7 +164,7 @@ public class Database
      */
     public Account cacheCommit(Account account)
     {
-        cache.put(account.uuid, account);
+        cache.put(account.uuid(), account);
         return account;
     }
 
@@ -159,6 +178,99 @@ public class Database
     {
         cache.invalidate(uuid);
         return this;
+    }
+
+    /**
+     * Grab an account from our database(/cache) via a username.
+     *
+     * @param username Name of the player we're looking for
+     * @return The account we're requesting wrapped in an {@link Optional}.
+     */
+    public ListenableFuture<Optional<Account>> fetchAccount(String username)
+    {
+        return fetchAccountInternal(null, username, true, true);
+    }
+
+    /**
+     * Grab an account from our database(/cache) via a username.
+     *
+     * @param uuid UUID of the player we're looking for
+     * @return The account we're requesting wrapped in an {@link Optional}
+     */
+    public ListenableFuture<Optional<Account>> fetchAccount(UUID uuid)
+    {
+        return fetchAccountInternal(uuid, null, true, true);
+    }
+
+    /**
+     * Grab an account from our database synchronously.
+     * <p>
+     * Probably only ever going to be used when someone is
+     * logging into a server.
+     *
+     * @param uuid the UUID of the player
+     * @return The account we've requested
+     *         wrapped in an {@link Optional}
+     */
+    public Optional<Account> fetchAccountSync(UUID uuid)
+    {
+        return fetchAccountInternal(uuid, null, true, false);
+    }
+
+    /**
+     * Locally used method to fetch player data.
+     *
+     * @param uuid The player's UUID if required
+     * @param name If we're requesting via a name, the player's username
+     * @param useCache Whether or not we allow cache hits
+     * @param async Whether or not to execute this request asynchronously
+     * @param <R> Type-parameter for our return value
+     * @return Whatever it is that we requested
+     */
+    @SuppressWarnings ( "unchecked" )
+    private <R> R fetchAccountInternal(UUID uuid, String name, boolean useCache, boolean async)
+    {
+        try
+        {
+            val useName = uuid == null;
+
+            final Callable<Optional<Account>> transaction = () ->
+            {
+                // Respect request to use local caching
+                if (useCache)
+                {
+                    Account hit;
+
+                    if (useName)
+                        hit = cacheFetch(name);
+                    else
+                        hit = cacheFetch(uuid);
+
+                    if (hit != null)
+                        return Optional.of(hit);
+                }
+
+
+                val fetch = new FetchOperation<Account>(SQL_FIND_PLAYER_BASE + (useName ? "name=?;" : "uuid=?;"))
+                                        .data(useName ? name : uuid)
+                                        .type(Account.class)
+                                        .sync(this);
+
+                return fetch == null ? Optional.empty()
+                                     : Optional.of(fetch);
+            };
+
+
+            if (async)
+                return (R) executor.submit(transaction);
+            else
+                return (R) Futures.immediateFuture(transaction.call()).get();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
     }
 
 }

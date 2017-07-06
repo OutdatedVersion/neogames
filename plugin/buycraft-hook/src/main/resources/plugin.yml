@@ -1,0 +1,9 @@
+name: ${plugin.name}
+main: ${plugin.main}
+author: OutdatedVersion
+version: git-${git.commit.id.abbrev}
+depend: [BuycraftX]
+
+commands:
+  hook:
+    usage: /<command>

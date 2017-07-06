@@ -17,6 +17,8 @@
     <modules>
         <module>core</module>
         <module>lobby</module>
+        <module>bungee</module>
+        <module>buycraft-hook</module>
     </modules>
 
 
@@ -26,7 +28,6 @@
 
         <version.paper>1.11.2-R1</version.paper>
         <version.waterfall>1.11-R1</version.waterfall>
-        <version.common>1.0</version.common>
         <version.core>1.0</version.core>
     </properties>
 
@@ -45,6 +46,7 @@
             <groupId>com.destroystokyo</groupId>
             <artifactId>paper</artifactId>
             <version>${version.paper}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Apache: Random utilities related to language stuff -->
