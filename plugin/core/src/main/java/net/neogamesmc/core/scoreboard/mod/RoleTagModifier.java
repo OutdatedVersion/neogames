@@ -93,12 +93,6 @@ public class RoleTagModifier implements ScoreboardModifier
         team(player, scoreboard).removeEntry(player.getName());
     }
 
-    @Override
-    public ScoreboardModifier clone()
-    {
-        return new RoleTagModifier();
-    }
-
     /**
      * Grab a {@link Team} for the role the provided player has.
      *
