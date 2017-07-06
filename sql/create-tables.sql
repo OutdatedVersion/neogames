@@ -37,13 +37,15 @@ CREATE TABLE IF NOT EXISTS assigned_permissions (
 CREATE TABLE IF NOT EXISTS punishments (
   `id` INT NOT NULL AUTO_INCREMENT,
   `target` VARCHAR(40) NOT NULL,
+  `target_id` INT NOT NULL,
   `issued_by` VARCHAR(40) NOT NULL,
   `type` VARCHAR(10) NOT NULL,
   `reason` VARCHAR(260) NOT NULL,
   `revoked` BOOL NOT NULL DEFAULT FALSE,
   `revoked_by` VARCHAR(40) DEFAULT NULL,
   `expires_at` TIMESTAMP NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`target_id`) REFERENCES accounts(`iid`)
 );
 
 
