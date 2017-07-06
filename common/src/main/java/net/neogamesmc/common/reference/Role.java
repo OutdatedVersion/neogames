@@ -33,6 +33,11 @@ public enum Role
     DEFAULT(ChatColor.GRAY);
 
     /**
+     * Common array holding every possible {@link Role}.
+     */
+    public static final Role[] VALUES = values();
+
+    /**
      * Color of the role publicly displayed.
      */
     public ChatColor color;
@@ -51,6 +56,18 @@ public enum Role
     {
         this.color = color;
         this.name = this.name().toLowerCase().replaceAll("_", "");
+    }
+
+    /**
+     * Grab the display name for this role.
+     * <p>
+     * You must handle color resetting.
+     *
+     * @return The display
+     */
+    public String toName()
+    {
+        return this.color + "" + ChatColor.BOLD + this.name.toUpperCase();
     }
 
     /**

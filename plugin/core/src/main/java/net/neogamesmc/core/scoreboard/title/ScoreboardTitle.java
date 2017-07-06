@@ -1,4 +1,4 @@
-package net.neogamesmc.core.scoreboard;
+package net.neogamesmc.core.scoreboard.title;
 
 /**
  * @author Ben (OutdatedVersion)

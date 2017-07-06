@@ -1,9 +1,9 @@
 package net.neogamesmc.lobby;
 
-import com.destroystokyo.paper.event.server.ServerExceptionEvent;
 import com.google.inject.Binder;
 import com.google.inject.Injector;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
+import lombok.val;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.payload.SwitchServerPayload;
@@ -17,6 +17,7 @@ import net.neogamesmc.core.hotbar.HotbarItem;
 import net.neogamesmc.core.inventory.ItemBuilder;
 import net.neogamesmc.core.issue.Issues;
 import net.neogamesmc.core.scheduler.Scheduler;
+import net.neogamesmc.core.scoreboard.PlayerSidebarManager;
 import net.neogamesmc.core.text.Colors;
 import net.neogamesmc.lobby.news.News;
 import org.bukkit.*;
@@ -25,6 +26,7 @@ import org.bukkit.craftbukkit.v1_11_R1.entity.CraftSkeleton;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftVillager;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -56,10 +58,6 @@ import static org.bukkit.Material.COMPASS;
 public class Lobby extends Plugin implements Listener
 {
 
-    // small magma cube : blast off - red green bold Join
-    // green villager : chunk runner - green
-    // skeleton w/ bow : bow plinko - purple
-
     /**
      * Where players are sent when joining.
      */
@@ -70,11 +68,15 @@ public class Lobby extends Plugin implements Listener
      */
     private Database database;
 
+    /**
+     * Maintain our lobby scoreboard.
+     */
+    private LobbyScoreboard scoreboard;
+
     @Override
     public void setupInjector(Binder binder)
     {
         binder.requestStaticInjection(Scheduler.class);
-        binder.requestStaticInjection(LobbyScoreboard.class);
     }
 
     @Override
@@ -86,16 +88,24 @@ public class Lobby extends Plugin implements Listener
         get(RedisHandler.class).subscribe(RedisChannel.DEFAULT);
         register(News.class);
         register(HotbarHandler.class);
-        register(CommandHandler.class).addProviders(CommandHandler.DEFAULT_PROVIDERS).registerInPackage("net.neogamesmc.core");
+        register(CommandHandler.class)
+                .addProviders(CommandHandler.DEFAULT_PROVIDERS)
+                .registerInPackage("net.neogamesmc.core");
+
+        register(PlayerSidebarManager.class);
+        scoreboard = register(LobbyScoreboard.class);
 
         System.out.println("Beginning class-path scan..");
 
-        new FastClasspathScanner("net.neogamesmc").addClassLoader(getClassLoader()).matchClassesWithAnnotation(ParallelStartup.class, this::register).scan();
+        new FastClasspathScanner("net.neogamesmc")
+                .addClassLoader(getClassLoader())
+                .matchClassesWithAnnotation(ParallelStartup.class, this::register)
+                .scan();
 
         getServer().getPluginManager().registerEvents(this, this);
 
 
-        final World lobby = Bukkit.getWorld("lobby");
+        val lobby = Bukkit.getWorld("lobby");
         this.spawnLocation = new Location(lobby, 10.5, 64.5, 5.5, 162.6f, 0f);
         lobby.loadChunk(-1, 0);
         lobby.loadChunk(-1, -1);
@@ -172,13 +182,7 @@ public class Lobby extends Plugin implements Listener
         throw new RuntimeException("An unknown issue occurred during injection.");
     }
 
-    @EventHandler
-    public void exception(ServerExceptionEvent event)
-    {
-        event.getException().printStackTrace();
-    }
-
-    @EventHandler
+    @EventHandler ( priority = EventPriority.LOWEST )
     public void movePlayer(PlayerJoinEvent event)
     {
         event.setJoinMessage(null);
@@ -189,13 +193,13 @@ public class Lobby extends Plugin implements Listener
                 .action(Action.RIGHT_CLICK_AIR, this::openNavigationMenu)
                 .add(get(HotbarHandler.class));
 
-        LobbyScoreboard.create(event.getPlayer());
+        scoreboard.create(event.getPlayer());
     }
 
     @EventHandler
     public void cleanup(PlayerQuitEvent event)
     {
-        LobbyScoreboard.destroy(event.getPlayer());
+        scoreboard.destroy(event.getPlayer());
     }
 
     @EventHandler

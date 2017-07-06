@@ -73,8 +73,11 @@ public class LoginHandler implements Listener
 
                 new InsertUpdateOperation(SQL_RECORD_PLAYER)
                         .data(creating.uuid(), creating.name(), creating.ip())
-                        .keys(result -> creating.id = result.getInt(1))
-                        .sync(database);
+                        .keys(result ->
+                        {
+                            if (result.next())
+                                creating.id = result.getInt(1);
+                        }).sync(database);
 
                 database.cacheCommit(creating);
             }

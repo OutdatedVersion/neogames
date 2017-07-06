@@ -30,7 +30,7 @@ public class RequestHandler
     @HandlesType ( RequestServerCreationPayload.class )
     public void handle(RequestServerCreationPayload payload)
     {
-        coeus.deploy(DeployType.valueOf(payload.type), payload.data);
+        coeus.deploy(DeployType.valueOf(payload.group), payload.data);
     }
 
 }

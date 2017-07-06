@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 public class DeployServerCommand
 {
 
-    // /deploy new game chunk_runner
+    // /deploy game chunk_runner
 
     /**
      * Work with our Redis instance
@@ -25,9 +25,11 @@ public class DeployServerCommand
 
     @Command ( executor = "deploy" )
     @Permission ( Role.ADMIN )
-    public void run(Player player, @Necessary("You missed the type") String type, @Necessary("Please provide a network group") String group)
+    public void run(Player player,
+                    @Necessary ( "Please provide a network group" ) String group,
+                    @Necessary ( "Be sure to provide a server type" ) String type)
     {
-        new RequestServerCreationPayload(player.getName(), type, group).publish(redis);
+        new RequestServerCreationPayload(player.getName(), group, type).publish(redis);
     }
 
 }

@@ -302,10 +302,18 @@ public class CommandHandler implements Listener
                 // make sure if we need something & it doesn't exist that we fail
                 final Necessary necessary = working.getDeclaredAnnotation(Necessary.class);
 
-                if (necessary != null && args.remainingElements() == 0)
+                if (args.remainingElements() == 0)
                 {
-                    prefix("Commands").content(necessary.value(), ChatColor.RED).send(player);
-                    return;
+                    if (necessary != null)
+                    {
+                        prefix("Commands").content(necessary.value(), ChatColor.RED).send(player);
+                        return;
+                    }
+                    else
+                    {
+                        invokingWith[i] = null;
+                        // todo
+                    }
                 }
 
                 // if there's an annotation present we'll handle

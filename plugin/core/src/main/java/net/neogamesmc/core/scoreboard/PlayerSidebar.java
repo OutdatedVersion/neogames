@@ -1,17 +1,25 @@
 package net.neogamesmc.core.scoreboard;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
+import net.neogamesmc.core.scoreboard.mod.ScoreboardModifier;
+import org.apache.commons.lang3.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -19,19 +27,6 @@ import java.util.UUID;
  */
 public class PlayerSidebar
 {
-
-    /**
-     * Objective title management instance.
-     * <p>
-     * Titles are shared across every client connected to this server.
-     */
-    @Getter
-    private static ScoreboardTitle title;
-
-    public static ScoreboardTitle title(ScoreboardTitle title)
-    {
-        return PlayerSidebar.title = title;
-    }
 
     /**
      * The scoreboard associated with this sidebar.
@@ -49,27 +44,77 @@ public class PlayerSidebar
     private Map<Integer, String> lines;
 
     /**
+     *
+     */
+    private String[] stagingLines = new String[15];
+
+    /**
+     *
+     */
+    private byte counter;
+
+    /**
+     * A set of modifiers being used with this scoreboard.
+     */
+    @Getter
+    private Set<ScoreboardModifier> activeModifiers;
+
+    /**
      * Class Constructor
      */
     public PlayerSidebar()
     {
-        this(Bukkit.getScoreboardManager().getNewScoreboard(), title);
+        this(Bukkit.getScoreboardManager().getNewScoreboard());
     }
 
     /**
      * Class Constructor
      *
      * @param scoreboard Scoreboard associated with this
-     * @param title The title of the scoreboard
      */
-    public PlayerSidebar(@NonNull Scoreboard scoreboard, @NonNull ScoreboardTitle title)
+    public PlayerSidebar(@NonNull Scoreboard scoreboard)
     {
         this.lines = Maps.newHashMap();
         this.scoreboard = scoreboard;
 
-        this.objective = scoreboard.registerNewObjective(UUID.randomUUID().toString().substring(0, 8), "dummy");
-        this.objective.setDisplayName(title.current());
+        this.objective = scoreboard.registerNewObjective(UUID.randomUUID().toString().substring(0, 8), ScoreboardConstants.DUMMY_OBJECTIVE);
         this.objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+    }
+
+    public PlayerSidebar add(String line)
+    {
+        checkState((counter + 1) <= ScoreboardConstants.MAX_LINES, "You've reached the line cap on this scoreboard.");
+
+        stagingLines[counter++] = line;
+        return this;
+    }
+
+    public PlayerSidebar blank()
+    {
+        return add(" ");
+    }
+
+    /**
+     * Send out the lines currently in-queue to be sent out.
+     *
+     * @return This sidebar
+     */
+    public PlayerSidebar draw()
+    {
+        // Entries are added top-to-bottom; To display lines 1 to (entry count)
+        // we need to set them bottom-to-top
+        ArrayUtils.reverse(stagingLines);
+
+        // Allow duplicate lines
+        duplicationFix();
+
+        byte score = 1;
+
+        for (String entry : stagingLines)
+            if (entry != null)
+                objective.getScore(entry).setScore(score++);
+
+        return this;
     }
 
     /**
@@ -79,25 +124,10 @@ public class PlayerSidebar
      * @param text The text
      * @return This sidebar
      */
-    public PlayerSidebar set(int line, String text)
+    private PlayerSidebar set(int line, String text)
     {
-        text = duplicationFix(text);
         this.objective.getScore(text).setScore(line);
         this.lines.put(line, text);
-        return this;
-    }
-
-    /**
-     * Replace the line by removing one line then adding one.
-     *
-     * @param line The line
-     * @param text The text
-     * @return This sidebar
-     */
-    public PlayerSidebar replace(int line, String text)
-    {
-        remove(line);
-        set(line, text);
         return this;
     }
 
@@ -164,31 +194,82 @@ public class PlayerSidebar
 
     /**
      * Iterate over every line and check whether or not it
-     * matches the line being inserted. Adding an empty chat
-     * character to allow the duplication to occur.
-     *
-     * @param textIn The text to check over
-     * @return The fixed text
+     * matches a currently existing line. If it does an empty chat
+     * character is added to allow the "duplication" to occur.
      */
-    private String duplicationFix(String textIn)
+    private void duplicationFix()
     {
-        boolean unique = false;
-
-        while (!unique)
+        for (byte i = 0; i < stagingLines.length; i++)
         {
-            unique = true;
+            String working = stagingLines[i];
 
-            for (String line : lines.values())
+            if (working == null)
+                continue;
+
+            boolean unique = false;
+
+            while (!unique)
             {
-                if (line.equals(textIn))
+                unique = true;
+
+                for (String entry : stagingLines)
                 {
-                    textIn += ChatColor.RESET;
-                    unique = false;
+                    if (entry != null)
+                    {
+                        if (entry.equals(working))
+                        {
+                            working += ChatColor.RESET;
+                            unique = false;
+                        }
+                    }
                 }
             }
-        }
 
-        return textIn;
+            stagingLines[i] = working;
+        }
+    }
+
+    /**
+     * Perform cleanup on this sidebar instance.
+     */
+    public void cleanup()
+    {
+        if (activeModifiers != null)
+            activeModifiers.forEach(modifier -> modifier.end(scoreboard));
+    }
+
+    public PlayerSidebar registerModifier(ScoreboardModifier modifier)
+    {
+        if (activeModifiers == null)
+            activeModifiers = Sets.newHashSet();
+
+        modifier.start(scoreboard);
+        activeModifiers.add(modifier);
+        activeModifiers.forEach(m -> System.out.println(m.toString()));
+        return this;
+    }
+
+    public PlayerSidebar removeModifier(ScoreboardModifier modifier)
+    {
+        modifierCheck();
+
+        modifier.end(scoreboard);
+        activeModifiers.remove(modifier);
+        return this;
+    }
+
+    public PlayerSidebar registerWith(PlayerSidebarManager manager, Player player)
+    {
+        manager.add(player, this);
+        return this;
+    }
+
+    /**
+     * Verify that we have initiated our modifier set.
+     */
+    private void modifierCheck()
+    {
+        checkNotNull(activeModifiers, "Modifiers have yet to be initialized.");
     }
 
 }

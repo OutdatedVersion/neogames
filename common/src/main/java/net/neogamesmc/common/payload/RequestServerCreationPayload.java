@@ -26,7 +26,7 @@ public class RequestServerCreationPayload implements Payload
     /**
      * The type of server to create.
      */
-    public String type;
+    public String group;
 
     /**
      * Any extra data for our manager to use.
@@ -38,7 +38,7 @@ public class RequestServerCreationPayload implements Payload
     {
         return new JSONBuilder()
                 .add("player", player)
-                .add("type", type)
+                .add("group", group)
                 .add("data", data)
                 .done();
     }
