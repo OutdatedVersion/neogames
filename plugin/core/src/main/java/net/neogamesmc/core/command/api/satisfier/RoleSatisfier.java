@@ -5,8 +5,8 @@ import net.neogamesmc.core.command.api.ArgumentSatisfier;
 import net.neogamesmc.core.command.api.Arguments;
 import org.bukkit.entity.Player;
 
-import static org.bukkit.ChatColor.GRAY;
-import static org.bukkit.ChatColor.GREEN;
+import static org.bukkit.ChatColor.RED;
+import static org.bukkit.ChatColor.YELLOW;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -31,7 +31,7 @@ public class RoleSatisfier implements ArgumentSatisfier<Role>
     @Override
     public String fail(String provided)
     {
-        return "No role matching [" + GREEN + provided.toUpperCase() + GRAY + "].";
+        return "No role found matching [" + YELLOW + provided.toUpperCase() + RED + "]";
     }
 
     @Override

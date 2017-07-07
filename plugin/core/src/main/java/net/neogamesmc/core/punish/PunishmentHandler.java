@@ -2,6 +2,7 @@ package net.neogamesmc.core.punish;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import net.neogamesmc.common.payload.SendDiscordMessagePayload;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.database.mutate.Mutator;
 import net.neogamesmc.common.database.mutate.Mutators;
@@ -11,9 +12,8 @@ import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.redis.api.FromChannel;
 import net.neogamesmc.common.redis.api.HandlesType;
-import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.issue.Issues;
-import net.neogamesmc.core.punish.payload.PunishmentPayload;
+import net.neogamesmc.common.payload.PunishmentPayload;
 import net.neogamesmc.core.scheduler.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -23,8 +23,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static net.neogamesmc.core.punish.PunishmentType.valueOf;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -32,15 +33,18 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Singleton
 @ParallelStartup
-public class PunishHandler
+public class PunishmentHandler
 {
-
-    public static final String SQL_FETCH_RECORD = "";
 
     /**
      * SQL statement to insert punishments.
      */
-    public static final String SQL_RECORD_PUNISHMENT = "INSERT INTO punishments (target_id, issued_by, type, reason, expires_at) VALUES ((SELECT iid FROM accounts WHERE name=?), ?, ?, ?, ?);";
+    private static final String SQL_RECORD_PUNISHMENT = "INSERT INTO punishments (target, issued_by, type, reason, expires_at) VALUES ((SELECT uuid FROM accounts WHERE name=?), ?, ?, ?, ?);";
+
+    /**
+     * Discord channel ID for sending tracking messages.
+     */
+    private static final long CHANNEL_ID = 330950197368848397L;
 
     /**
      * Our Redis instance.
@@ -53,7 +57,7 @@ public class PunishHandler
     private Database database;
 
     @Inject
-    public PunishHandler(Database database, RedisHandler redis)
+    public PunishmentHandler(Database database, RedisHandler redis)
     {
         this.database = database;
         this.redis = redis.registerHook(this);
@@ -63,7 +67,7 @@ public class PunishHandler
             @Override
             public PunishmentType from(String fieldName, ResultSet result) throws SQLException
             {
-                return PunishmentType.valueOf(result.getString(fieldName));
+                return valueOf(result.getString(fieldName));
             }
 
             @Override
@@ -82,38 +86,39 @@ public class PunishHandler
 
         if (target != null)
         {
-            Scheduler.sync(() -> payload.type.performAction(target, payload));
+            Scheduler.sync(() -> valueOf(payload.type).performAction(target, payload));
         }
     }
 
     /**
+     * Issue a punishment using the provided data.
      *
-     * @param issuedBy
-     * @param target
-     * @param type
-     * @param duration
-     * @param reason
+     * @param issuedBy The player who issued this punishment
+     * @param target Who it is against
+     * @param type Punishment type
+     * @param duration Punishment length
+     * @param reason The reason for doing this
      */
-    public void issue(UUID issuedBy, String target, PunishmentType type, long duration, String... reason)
+    public void issue(Player issuedBy, String target, PunishmentType type, String durationText, long duration, String reason)
     {
-        System.out.println("Duration: " + duration);
-
         Scheduler.async(() ->
         {
             try
             {
-                final Instant adjustedTime = Instant.now().plus(duration, ChronoUnit.MILLIS);
+                final Instant adjustedTime = duration == -1 ? null : Instant.now().plus(duration, ChronoUnit.MILLIS);
                 final AtomicInteger id = new AtomicInteger();
 
                 new InsertUpdateOperation(SQL_RECORD_PUNISHMENT)
-                        .data(target, issuedBy, type, Text.convertArray(reason), adjustedTime)
+                        .data(target, issuedBy.getUniqueId(), type, reason, adjustedTime)
                         .keys(result ->
                         {
                             if (result.next())
-                                id.lazySet(result.getInt(1));
+                                id.set(result.getInt(1));
                         }).sync(database);
 
-                new PunishmentPayload(id.get(), type, target, adjustedTime.toEpochMilli(), reason).publish(redis);
+                PunishmentPayload payload = new PunishmentPayload(id.get(), type.name(), target, duration == -1 ? -1 : adjustedTime.toEpochMilli(), reason);
+                payload.publish(redis);
+                new SendDiscordMessagePayload(CHANNEL_ID, type.message(payload, issuedBy.getName())).publish(redis);
             }
             catch (Exception ex)
             {

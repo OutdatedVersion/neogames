@@ -1,11 +1,11 @@
-package net.neogamesmc.core.punish.payload;
+package net.neogamesmc.common.payload;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.AllArgsConstructor;
 import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
-import net.neogamesmc.core.punish.PunishmentType;
 import org.json.simple.JSONObject;
 
 /**
@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
  * @since Jun/30/2017 (6:41 AM)
  */
 @Focus ( "punishment" )
+@AllArgsConstructor
 public class PunishmentPayload implements Payload
 {
 
@@ -24,12 +25,7 @@ public class PunishmentPayload implements Payload
     /**
      * The type of punishment this is referencing.
      */
-    public PunishmentType type;
-
-    /**
-     * The reason behind issuing this punishment.
-     */
-    public String[] reason;
+    public String type;
 
     /**
      * The name of the player it's being issued against.
@@ -44,28 +40,15 @@ public class PunishmentPayload implements Payload
     public long expiresAt;
 
     /**
-     * Class Constructor
-     *
-     * @param id The ID
-     * @param type The type
-     * @param reason The reason
-     * @param targetPlayer The target
-     * @param expiresAt When it expires
+     * The reason behind issuing this punishment.
      */
-    public PunishmentPayload(int id, PunishmentType type, String targetPlayer, long expiresAt, String[] reason)
-    {
-        this.id = id;
-        this.type = type;
-        this.reason = reason;
-        this.targetPlayer = targetPlayer;
-        this.expiresAt = expiresAt;
-    }
+    public String reason;
 
     @Override
     public JSONObject asJSON()
     {
         return new JSONBuilder().add("id", id)
-                                .add("type", type.name())
+                                .add("type", type)
                                 .add("reason", reason)
                                 .add("target", targetPlayer)
                                 .add("expires_at", expiresAt)

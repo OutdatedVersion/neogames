@@ -1,7 +1,5 @@
 package net.neogamesmc.common.database;
 
-import net.neogamesmc.common.annotation.Data;
-
 import java.util.function.Function;
 
 import static java.lang.String.format;
@@ -12,7 +10,6 @@ import static java.lang.String.format;
  * @author Ben (OutdatedVersion)
  * @since May/17/2017 (9:54 PM)
  */
-@Data
 public class DatabaseConfig
 {
 

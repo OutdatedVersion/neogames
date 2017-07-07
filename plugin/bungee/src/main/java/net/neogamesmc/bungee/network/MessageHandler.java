@@ -3,8 +3,8 @@ package net.neogamesmc.bungee.network;
 import com.google.inject.Inject;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.neogamesmc.common.backend.SwitchServerPayload;
-import net.neogamesmc.common.backend.UpdateNetworkServersPayload;
+import net.neogamesmc.common.payload.SwitchServerPayload;
+import net.neogamesmc.common.payload.UpdateNetworkServersPayload;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.redis.api.FromChannel;
@@ -83,6 +83,7 @@ public class MessageHandler
         }
         else
         {
+            System.out.println("[Network] Removing server by name: " + payload.name);
             proxy.getServers().remove(payload.name);
         }
     }

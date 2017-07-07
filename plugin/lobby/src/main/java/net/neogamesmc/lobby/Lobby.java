@@ -1,12 +1,14 @@
 package net.neogamesmc.lobby;
 
-import com.destroystokyo.paper.event.server.ServerExceptionEvent;
+import com.destroystokyo.paper.Title;
 import com.google.inject.Binder;
 import com.google.inject.Injector;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
-import net.neogamesmc.common.backend.SwitchServerPayload;
+import lombok.val;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.inject.ParallelStartup;
+import net.neogamesmc.common.payload.SwitchServerPayload;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.reference.Role;
@@ -17,18 +19,22 @@ import net.neogamesmc.core.hotbar.HotbarItem;
 import net.neogamesmc.core.inventory.ItemBuilder;
 import net.neogamesmc.core.issue.Issues;
 import net.neogamesmc.core.scheduler.Scheduler;
+import net.neogamesmc.core.scoreboard.PlayerSidebarManager;
 import net.neogamesmc.core.text.Colors;
+import net.neogamesmc.lobby.news.News;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftMagmaCube;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftSkeleton;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftVillager;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -40,6 +46,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static net.md_5.bungee.api.ChatColor.*;
+import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
 import static net.neogamesmc.core.text.Colors.bold;
 import static org.bukkit.Material.COMPASS;
 
@@ -52,9 +60,12 @@ import static org.bukkit.Material.COMPASS;
 public class Lobby extends Plugin implements Listener
 {
 
-    // small magma cube : blast off - red green bold Join
-    // green villager : chunk runner - green
-    // skeleton w/ bow : bow plinko - purple
+    /**
+     * The beginning of the role.
+     */
+    private static final Title.Builder BUILDER = new Title.Builder()
+            .title(new ComponentBuilder("Neo").bold(true).color(YELLOW).append("Games").color(GOLD).create())
+            .stay(20 * 3);
 
     /**
      * Where players are sent when joining.
@@ -65,6 +76,12 @@ public class Lobby extends Plugin implements Listener
      * Local instance
      */
     private Database database;
+
+    /**
+     * Maintain our lobby scoreboard.
+     */
+    private LobbyScoreboard scoreboard;
+
 
     @Override
     public void setupInjector(Binder binder)
@@ -78,19 +95,28 @@ public class Lobby extends Plugin implements Listener
         // Forcefully start database first
         this.database = register(Database.class);
 
+        get(RedisHandler.class).subscribe(RedisChannel.DEFAULT);
+        register(News.class);
         register(HotbarHandler.class);
-        register(RedisHandler.class).init().subscribe(RedisChannel.DEFAULT);
-        register(CommandHandler.class).addProviders(CommandHandler.DEFAULT_PROVIDERS).registerInPackage("net.neogamesmc.core");
+        register(CommandHandler.class)
+                .addProviders(CommandHandler.DEFAULT_PROVIDERS)
+                .registerInPackage("net.neogamesmc.core");
+
+        register(PlayerSidebarManager.class);
+        scoreboard = register(LobbyScoreboard.class);
 
         System.out.println("Beginning class-path scan..");
 
-        new FastClasspathScanner("net.neogamesmc").addClassLoader(getClassLoader()).matchClassesWithAnnotation(ParallelStartup.class, this::register).scan();
+        new FastClasspathScanner("net.neogamesmc")
+                .addClassLoader(getClassLoader())
+                .matchClassesWithAnnotation(ParallelStartup.class, this::register)
+                .scan();
 
         getServer().getPluginManager().registerEvents(this, this);
 
 
-        final World lobby = Bukkit.getWorld("lobby");
-        this.spawnLocation = new Location(lobby, 10.5, 64.5, 5.5, 162.6f, 0f);
+        val lobby = Bukkit.getWorld("lobby");
+        this.spawnLocation = new Location(lobby, 10.5, 64, 5.5, 162.6f, 0f);
         lobby.loadChunk(-1, 0);
         lobby.loadChunk(-1, -1);
 
@@ -166,22 +192,27 @@ public class Lobby extends Plugin implements Listener
         throw new RuntimeException("An unknown issue occurred during injection.");
     }
 
-    @EventHandler
-    public void exception(ServerExceptionEvent event)
-    {
-        event.getException().printStackTrace();
-    }
-
-    @EventHandler
+    @EventHandler ( priority = EventPriority.LOWEST )
     public void movePlayer(PlayerJoinEvent event)
     {
         event.setJoinMessage(null);
         event.getPlayer().teleport(spawnLocation);
 
-        new HotbarItem(event.getPlayer(), new ItemBuilder(COMPASS).name(bold(net.md_5.bungee.api.ChatColor.DARK_GREEN) + "Game Selection").build())
+        new HotbarItem(event.getPlayer(), new ItemBuilder(COMPASS).name(bold(DARK_GREEN) + "Game Selection").build())
                 .location(0)
                 .action(Action.RIGHT_CLICK_AIR, this::openNavigationMenu)
                 .add(get(HotbarHandler.class));
+
+        scoreboard.create(event.getPlayer());
+
+        event.getPlayer().sendTitle(BUILDER.subtitle(new ComponentBuilder("Welcome back, ")
+                .append(event.getPlayer().getName()).color(DARK_GREEN).append("!", NONE).create()).build());
+    }
+
+    @EventHandler
+    public void cleanup(PlayerQuitEvent event)
+    {
+        scoreboard.destroy(event.getPlayer());
     }
 
     @EventHandler
@@ -205,10 +236,7 @@ public class Lobby extends Plugin implements Listener
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event)
     {
-        if (!event.getEntity().hasMetadata("send-server"))
-            return;
-
-        event.setCancelled(true);
+        event.setCancelled(event.getEntity().hasMetadata("send-server"));
     }
 
     @EventHandler
@@ -248,6 +276,13 @@ public class Lobby extends Plugin implements Listener
     }
 
     @EventHandler
+    public void disallowDamage(EntityDamageByEntityEvent event)
+    {
+        if (event.getEntityType() == EntityType.PLAYER)
+            event.setCancelled(true);
+    }
+
+    @EventHandler
     public void disallowWeatherUpdate(WeatherChangeEvent event)
     {
         event.setCancelled(event.toWeatherState());
@@ -257,7 +292,7 @@ public class Lobby extends Plugin implements Listener
     @EventHandler
     public void roleWhitelist(PlayerLoginEvent event)
     {
-        if (database.cacheFetch(event.getPlayer().getUniqueId()).role.compareTo(Role.YOUTUBE) >= 0)
+        if (database.cacheFetch(event.getPlayer().getUniqueId()).role().compareTo(Role.YOUTUBE) >= 0)
             event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ChatColor.YELLOW + "You are not permitted to join the network yet.");
     }
 
@@ -272,9 +307,9 @@ public class Lobby extends Plugin implements Listener
     }
 
     @EventHandler
-    public void preventEntityBurn(EntityCombustEvent event)
+    public void keepEntityFromCatchingOnFire(EntityCombustEvent event)
     {
-        event.setCancelled(event.getEntity().hasMetadata("send-server"));
+        event.setCancelled(true);
     }
 
 
@@ -283,8 +318,8 @@ public class Lobby extends Plugin implements Listener
         Inventory inventory = Bukkit.createInventory(null, 27, ChatColor.GREEN + "Join Game");
 
         ItemBuilder chunkRunnerItemBuilder = new ItemBuilder(Material.GRASS);
-        chunkRunnerItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.GREEN) + "Chunk Runner");
-        chunkRunnerItemBuilder.lore(ChatColor.DARK_GRAY + "Parkour/Challenge", "", ChatColor.GRAY + "Run along a parkour course that", ChatColor.GRAY + "generates in one direction and", ChatColor.GRAY + "crumbles away behind you at an", ChatColor.GRAY + "increasing speed!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMC", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky & FantomLX", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "1 - 24 Players");
+        chunkRunnerItemBuilder.name(Colors.bold(GREEN) + "Chunk Runner");
+        chunkRunnerItemBuilder.lore(ChatColor.DARK_GRAY + "Parkour/Challenge", "", ChatColor.GRAY + "Run along a parkour course that", ChatColor.GRAY + "generates in one direction and", ChatColor.GRAY + "crumbles away behind you at an", ChatColor.GRAY + "increasing speed!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky & FantomLX", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "1 - 24 Players");
 
 
         inventory.setItem(11, chunkRunnerItemBuilder.build());
@@ -319,7 +354,7 @@ public class Lobby extends Plugin implements Listener
         if (inventory.getName() == null)
             return;
 
-        if (inventory.getName().equalsIgnoreCase(ChatColor.GREEN + "Join Game"))
+        if (inventory.getName().equals(ChatColor.GREEN + "Join Game"))
         {
             event.setCancelled(true);
 

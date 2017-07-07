@@ -13,7 +13,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.concurrent.Future;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -49,7 +48,9 @@ public class FetchOperation<V> extends Operation<V>
                 @Override
                 public Field[] load(Class<?> key) throws Exception
                 {
-                    return Stream.of(key.getFields()).filter(ResultTools::canUseField).toArray(Field[]::new);
+                    return Stream.of(key.getDeclaredFields())
+                                 .peek(field -> field.setAccessible(true))
+                                 .filter(ResultTools::canUseField).toArray(Field[]::new);
                 }
             });
 
@@ -58,13 +59,6 @@ public class FetchOperation<V> extends Operation<V>
      * any value on {@link #data}.
      */
     private boolean requireNoData = true;
-
-    /**
-     * In the event that our {@link ResultSet} doesn't
-     * contain anything we'll execute this alternate
-     * operation then use it's return value as our own.
-     */
-    private Supplier<InsertUpdateOperation> fallback;
 
     /**
      * Type of our type-parameter.
@@ -77,23 +71,6 @@ public class FetchOperation<V> extends Operation<V>
     public FetchOperation(String sql)
     {
         super(sql);
-    }
-
-    /**
-     * In the event that we weren't able
-     * to fetch any sort of data from
-     * the query we'll run this code instead
-     * of attempting a conversion.
-     *
-     * @param supplier The code to execute
-     * @return This result for chaining
-     *
-     * @see #fallback Some more info
-     */
-    public FetchOperation<V> orElseInsert(Supplier<InsertUpdateOperation> supplier)
-    {
-        this.fallback = supplier;
-        return this;
     }
 
     /**
@@ -143,7 +120,7 @@ public class FetchOperation<V> extends Operation<V>
             ResultSet result = statement.executeQuery()
         )
         {
-            final V instance = clazz.newInstance();
+            final V instance = clazz == null ? null : clazz.newInstance();
 
             if (result.next())
             {
@@ -156,9 +133,7 @@ public class FetchOperation<V> extends Operation<V>
             }
             else
             {
-                checkNotNull(fallback, "Missing required operation fallback");
-                fallback.get().sync(this.database);
-                return (V) fallback.get().object().get();
+                return null;
             }
         }
         catch (Exception ex)
@@ -169,6 +144,9 @@ public class FetchOperation<V> extends Operation<V>
         throw new RuntimeException("Unknown issue occurred whilst processing request.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public V sync(Database database) throws Exception
     {
@@ -176,6 +154,9 @@ public class FetchOperation<V> extends Operation<V>
         return call();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Future<V> async(Database database) throws Exception
     {

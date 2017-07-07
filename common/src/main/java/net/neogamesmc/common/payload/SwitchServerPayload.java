@@ -1,4 +1,4 @@
-package net.neogamesmc.common.backend;
+package net.neogamesmc.common.payload;
 
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;

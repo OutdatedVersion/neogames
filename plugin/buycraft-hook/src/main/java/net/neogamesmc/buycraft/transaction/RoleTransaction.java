@@ -1,7 +1,7 @@
 package net.neogamesmc.buycraft.transaction;
 
 import net.neogamesmc.buycraft.TransactionProcessor;
-import net.neogamesmc.common.backend.TransactionNoticePayload;
+import net.neogamesmc.common.payload.TransactionNoticePayload;
 import net.neogamesmc.common.database.operation.InsertUpdateOperation;
 
 /**
@@ -33,7 +33,7 @@ public class RoleTransaction extends Transaction
     {
         // Persistent data update
         processor.database(new InsertUpdateOperation(SQL_UPDATE_ROLE)
-                                    .data(data[0], uuid.replaceAll("-", "")));
+                                    .data(data[0], uuid));
 
         // Allow real-time in-game update if the player is online
         processor.publish(new TransactionNoticePayload(name, type, data));

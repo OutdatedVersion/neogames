@@ -2,7 +2,7 @@ package net.neogamesmc.core.display;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import net.md_5.bungee.api.chat.BaseComponent;
+import lombok.val;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.inject.ParallelStartup;
@@ -61,7 +61,7 @@ public class Chat implements Listener
     {
         event.setCancelled(true);
 
-        final Role role = database.cacheFetch(event.getPlayer().getUniqueId()).role;
+        val role = database.cacheFetch(event.getPlayer().getUniqueId()).role();
 
         if (isSilenced && !role.compare(Role.ADMIN))
         {
@@ -69,15 +69,15 @@ public class Chat implements Listener
             return;
         }
 
-        final String name = event.getPlayer().getName();
+        val name = event.getPlayer().getName();
 
-        final BaseComponent[] message = new ComponentBuilder
-                                            // start with the player's display role
-                                            (role == Role.DEFAULT ? "" : role.name.toUpperCase() + " ").color(role.color).bold(true)
-                                            // username -- gray w/o role, green if present
-                                            .append(name, NONE).color(role == Role.DEFAULT ? GRAY : GREEN)
-                                            // the message
-                                            .append(" " + event.getMessage()).color(WHITE).create();
+        val message = new ComponentBuilder
+                            // start with the player's display role
+                            (role == Role.DEFAULT ? "" : role.name.toUpperCase() + " ").color(role.color).bold(true)
+                            // username -- gray w/o role, green if present
+                            .append(name, NONE).color(role == Role.DEFAULT ? GRAY : GREEN)
+                            // the message
+                            .append(" " + event.getMessage()).color(WHITE).create();
 
 
         Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(message));

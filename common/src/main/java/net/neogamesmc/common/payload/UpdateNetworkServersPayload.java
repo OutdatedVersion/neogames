@@ -1,4 +1,4 @@
-package net.neogamesmc.common.backend;
+package net.neogamesmc.common.payload;
 
 import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
@@ -33,6 +33,17 @@ public class UpdateNetworkServersPayload implements Payload
      * one following the property of: {@link #name}
      */
     public boolean add;
+
+    /**
+     * Request to remove a server from the network.
+     *
+     * @param name Name of the server.
+     */
+    public UpdateNetworkServersPayload(String name)
+    {
+        this.name = name;
+        this.add = false;
+    }
 
     /**
      * Class Constructor

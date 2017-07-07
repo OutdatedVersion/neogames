@@ -32,8 +32,8 @@ public class Ping implements Listener
     private static final ComponentBuilder FIRST_LINE = new ComponentBuilder
                                     ("                 ")
                              .append("!").color(AQUA).obfuscated(true)
-                             .append(" NeoGames", NONE).color(ChatColor.GOLD).obfuscated(false).append(" Network ").color(ChatColor.YELLOW)
-                             .append("!\n").obfuscated(true).color(AQUA);
+                             .append(" NeoGames", NONE).color(ChatColor.GOLD).bold(true).append(" Network ").color(ChatColor.YELLOW)
+                             .append("!\n", NONE).obfuscated(true).color(AQUA);
 
     /**
      * The top-bound to the amount of players
@@ -48,7 +48,7 @@ public class Ping implements Listener
      * It may be "hot-swapped" at any point.
      */
     private volatile BaseComponent responseText = updateResponse(builder ->
-                builder.append("✜ ", NONE).color(DARK_AQUA).bold(true)
+                builder.append("  ✜ ", NONE).color(DARK_AQUA).bold(true)
                        .append("We are live!", NONE).color(GREEN)
                        .append(" Chunk Runner").color(DARK_GREEN)
                        .append(",").color(GREEN)

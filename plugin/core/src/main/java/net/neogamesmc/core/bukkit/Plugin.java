@@ -1,9 +1,17 @@
 package net.neogamesmc.core.bukkit;
 
+import com.google.gson.Gson;
 import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import lombok.val;
+import net.neogamesmc.common.backend.ServerData;
+import net.neogamesmc.common.payload.UpdateNetworkServersPayload;
+import net.neogamesmc.common.redis.RedisHandler;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.FileReader;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -58,21 +66,46 @@ public abstract class Plugin extends JavaPlugin
     @Override
     public void onEnable()
     {
-        this.injector = Guice.createInjector(binder ->
+        try (FileReader reader = new FileReader(ServerData.DATA_FILE))
         {
-            binder.bind(Plugin.class).toInstance(this);
-            binder.bind(JavaPlugin.class).toInstance(this);
+            val data = new Gson().fromJson(reader, ServerData.class);
+            val redis = new RedisHandler().init();
 
-            setupInjector(binder);
-        });
+            this.injector = Guice.createInjector(binder ->
+            {
+                binder.bind(Plugin.class).toInstance(this);
+                binder.bind(JavaPlugin.class).toInstance(this);
 
-        enable(this.injector);
+                binder.bind(ServerData.class).toInstance(data);
+                binder.bind(RedisHandler.class).toInstance(redis);
+
+                setupInjector(binder);
+            });
+
+            enable(this.injector);
+
+            // Add to network
+            if (data.interactWithNetwork)
+                new UpdateNetworkServersPayload(data.name, Bukkit.getPort()).publish(redis);
+        }
+        catch (Exception ex)
+        {
+            throw new RuntimeException("Unable to startup server.", ex);
+        }
     }
 
     @Override
     public void onDisable()
     {
+        val redis = get(RedisHandler.class).init();
+        val data = get(ServerData.class);
+
+        // Remove from proxy now
+        if (data.interactWithNetwork)
+            new UpdateNetworkServersPayload(data.name).publish(redis);
+
         disable();
+        redis.release();
     }
 
 }

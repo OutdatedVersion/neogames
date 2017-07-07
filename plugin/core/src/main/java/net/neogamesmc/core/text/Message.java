@@ -18,6 +18,16 @@ public class Message
      */
     public static Message PERMISSION_MESSAGE = prefix("Permissions").content("You are lacking the permission to do this.", ChatColor.RED);
 
+    /**
+     * The default message to send players if we couldn't run a command.
+     */
+    public static Message FAILED_TO_EXECUTE = prefix("Commands").content("Failed to execute command", ChatColor.RED);
+
+    public static void noAccount(Player player, String provided)
+    {
+        prefix("Fetch").content("Failed to find player by name:", ChatColor.RED).content(provided, ChatColor.YELLOW).send(player);
+    }
+
     /** The builder backing this message */
     private ComponentBuilder builder;
 
@@ -116,6 +126,28 @@ public class Message
     }
 
     /**
+     * Append a player's name to this builder.
+     *
+     * @param player The player itself
+     * @return This builder
+     */
+    public Message player(Player player)
+    {
+        return player(player.getName());
+    }
+
+    /**
+     * Append a player's name to this builder.
+     *
+     * @param name The name of this player
+     * @return This builder
+     */
+    public Message player(String name)
+    {
+        return content(name, ChatColor.GREEN);
+    }
+
+    /**
      * @param player the player to send
      *               the message (at it's
      *               current state) to
@@ -154,6 +186,16 @@ public class Message
     {
         final BaseComponent[] message = builder.create();
         Players.stream().forEach(player -> player.sendMessage(message));
+    }
+
+    /**
+     * Grab the raw content behind this builder.
+     *
+     * @return The components to this message
+     */
+    public BaseComponent[] create()
+    {
+        return builder.create();
     }
 
 }

@@ -1,12 +1,10 @@
 package net.neogamesmc.core.punish;
 
-import net.neogamesmc.core.punish.payload.PunishmentPayload;
-import org.ocpsoft.prettytime.PrettyTime;
+import net.neogamesmc.common.time.TimeFormatting;
+import net.neogamesmc.common.payload.PunishmentPayload;
 
-import java.util.Date;
-import java.util.Locale;
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -26,21 +24,16 @@ class PunishTools
     private static final long MONTH_TO_MS = 2629746000L;
 
     /**
-     * Format time in a pretty way.
+     * Returns a pretty-format of when the
+     * represented punishment expires.
+     *
+     * @param payload Payload of the punishment
+     * @return The formatted text
      */
-    static final PrettyTime PRETTY_TIME = new PrettyTime(Locale.ENGLISH);
-
-    /**
-     * Format the time until a {@link Punishment} expires.
-     */
-    static final Function<PunishmentPayload, String> FORMAT_LENGTH = data -> PRETTY_TIME.format(new Date(data.expiresAt));
-
-    /**
-     * Format the time until a {@link Punishment} expires; the long way.
-     * <p>
-     * Quite a bit of code with this, so wanted to hold it here.
-     */
-    static final Function<PunishmentPayload, String> FORMAT_LENGTH_FULL = data -> PRETTY_TIME.format(PRETTY_TIME.calculatePreciseDuration(new Date(data.expiresAt)));
+    static String format(PunishmentPayload payload)
+    {
+        return TimeFormatting.format(Instant.ofEpochMilli(payload.expiresAt));
+    }
 
     /**
      * Figure out the proper time via the

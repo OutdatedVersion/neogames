@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS accounts (
   `name` VARCHAR(20) NOT NULL,
   `role` VARCHAR(16) NOT NULL DEFAULT 'DEFAULT',
   `address` VARCHAR(42) NOT NULL,
-  `first_login` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `last_login` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `first_login` TIMESTAMP NOT NULL DEFAULT NOW(),
+  `last_login` TIMESTAMP NOT NULL DEFAULT NOW(),
   PRIMARY KEY (`iid`),
   UNIQUE KEY (`uuid`)
 );
@@ -27,11 +27,27 @@ CREATE TABLE IF NOT EXISTS assigned_permissions (
 # Punishment storage
 CREATE TABLE IF NOT EXISTS punishments (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `target_id` INT NOT NULL,
+  `target` VARCHAR(40) NOT NULL,
   `issued_by` VARCHAR(40) NOT NULL,
   `type` VARCHAR(10) NOT NULL,
   `reason` VARCHAR(260) NOT NULL,
-  `expires_at` TIMESTAMP DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`target_id`) REFERENCES accounts(`iid`)
+  `revoked` BOOL NOT NULL DEFAULT FALSE,
+  `revoked_by` VARCHAR(40) DEFAULT NULL,
+  `expires_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
 );
+
+
+# Lobby news bar table
+CREATE TABLE IF NOT EXISTS news (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `val` VARCHAR(280) NOT NULL,
+  `updated_by` INT NOT NULL,
+  `last_updated_at` TIMESTAMP NOT NULL,
+  FOREIGN KEY (`updated_by`) REFERENCES accounts(`iid`),
+  PRIMARY KEY (`id`)
+);
+
+
+# Create index on punishments
+# CREATE INDEX full_uuid ON punishments ()

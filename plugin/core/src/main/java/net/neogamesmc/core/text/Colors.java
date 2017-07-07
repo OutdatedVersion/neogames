@@ -22,4 +22,15 @@ public class Colors
         return color + ChatColor.BOLD.toString();
     }
 
+    /**
+     * Colorize the provided text.
+     *
+     * @param in The raw text
+     * @return The colorful text
+     */
+    public static String colorize(String in)
+    {
+        return ChatColor.translateAlternateColorCodes('&', in);
+    }
+
 }

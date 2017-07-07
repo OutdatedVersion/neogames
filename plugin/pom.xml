@@ -28,7 +28,6 @@
 
         <version.paper>1.11.2-R1</version.paper>
         <version.waterfall>1.11-R1</version.waterfall>
-        <version.common>1.0</version.common>
         <version.core>1.0</version.core>
     </properties>
 

@@ -8,6 +8,7 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.neogamesmc.bungee.handle.ConnectionHandler;
 import net.neogamesmc.bungee.handle.Ping;
+import net.neogamesmc.bungee.handle.PunishmentProcessor;
 import net.neogamesmc.bungee.network.MessageHandler;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
@@ -32,8 +33,8 @@ public class NeoGames extends Plugin
     {
         injector = Guice.createInjector(binder -> binder.bind(ProxyServer.class).toInstance(ProxyServer.getInstance()));
 
-        injector.getInstance(RedisHandler.class).init().subscribe(RedisChannel.NETWORK);
-        inject(Ping.class, ConnectionHandler.class, MessageHandler.class);
+        injector.getInstance(RedisHandler.class).init().subscribe(RedisChannel.DEFAULT, RedisChannel.NETWORK);
+        inject(Ping.class, PunishmentProcessor.class, ConnectionHandler.class, MessageHandler.class);
     }
 
     /**
@@ -58,6 +59,16 @@ public class NeoGames extends Plugin
         }
 
         return this;
+    }
+
+    /**
+     * Run a task asynchronously.
+     *
+     * @param runnable The task to run
+     */
+    public void async(Runnable runnable)
+    {
+        ProxyServer.getInstance().getScheduler().runAsync(this, runnable);
     }
 
 }

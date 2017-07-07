@@ -3,20 +3,19 @@ package net.neogamesmc.core.login;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import lombok.val;
 import net.neogamesmc.common.account.Account;
 import net.neogamesmc.common.database.Database;
-import net.neogamesmc.common.database.operation.FetchOperation;
 import net.neogamesmc.common.database.operation.InsertUpdateOperation;
 import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.login.LoginHook;
-import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.issue.Issues;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.time.Instant;
 import java.util.Set;
 
 /**
@@ -31,14 +30,9 @@ public class LoginHandler implements Listener
 {
 
     /**
-     * SQL query to retrieve player data.
-     */
-    public static final String SQL_FIND_PLAYER = "SELECT iid,uuid,name,role,first_login,last_login,address FROM accounts WHERE uuid=?;";
-
-    /**
      * SQL statement to insert player data.
      */
-    public static final String SQL_RECORD_PLAYER = "INSERT INTO accounts (uuid, name, role, address, first_login, last_login) VALUES(?, ?, ?, ?, ?, ?);";
+    private static final String SQL_RECORD_PLAYER = "INSERT INTO accounts (uuid, name, address) VALUES(?, ?, ?);";
 
     /**
      * Bridge to player data.
@@ -67,37 +61,43 @@ public class LoginHandler implements Listener
     {
         try
         {
-            final Account account = new FetchOperation<Account>(SQL_FIND_PLAYER)
-                                            .type(Account.class)
-                                            .data(event.getUniqueId())
-                                            .orElseInsert(() -> new InsertUpdateOperation(SQL_RECORD_PLAYER)
-                                                                      .data(event.getUniqueId(), event.getName(), Role.DEFAULT,
-                                                                            event.getAddress().getHostAddress(), Instant.now(), Instant.now())
-                                                                      .object(() -> new Account().fromLogin(event.getUniqueId(), event.getName(), event.getAddress().getHostAddress())))
-                                            .sync(database);
+            val account = database.fetchAccountSync(event.getUniqueId());
 
-            if (account == null)
-                deny(event);
-            else
-                database.cacheCommit(account);
-
-            /*
-            final LoginRequest request = new LoginRequest(event.getUniqueId(), event.getName(), event.getAddress().getHostAddress());
-
-            for (LoginHook hook : loginHooks)
+            if (account.isPresent())
             {
-                hook.processLogin(request);
+                database.cacheCommit(account.get().updateData(database));
             }
+            else
+            {
+                val creating = new Account().fromLogin(event.getUniqueId(), event.getName(), event.getAddress().getHostAddress());
 
-            if (request.isDenied())
-                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, request.denyReason());
-            */
+                new InsertUpdateOperation(SQL_RECORD_PLAYER)
+                        .data(creating.uuid(), creating.name(), creating.ip())
+                        .keys(result ->
+                        {
+                            if (result.next())
+                                creating.id = result.getInt(1);
+                        }).sync(database);
+
+                database.cacheCommit(creating);
+            }
         }
         catch (Exception ex)
         {
             deny(event);
             Issues.handle("Player Login", ex);
         }
+    }
+
+    /**
+     * Remove players from our local cache.
+     *
+     * @param event The event
+     */
+    @EventHandler
+    public void cleanup(PlayerQuitEvent event)
+    {
+        database.cacheInvalidate(event.getPlayer().getUniqueId());
     }
 
     /**

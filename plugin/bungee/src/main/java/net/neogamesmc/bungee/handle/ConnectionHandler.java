@@ -10,6 +10,7 @@ import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 import net.md_5.bungee.protocol.ProtocolConstants;
 import net.neogamesmc.bungee.NeoGames;
 
@@ -46,18 +47,14 @@ public class ConnectionHandler implements Listener
             event.setTarget(proxy.getServerInfo("lobby1"));
     }
 
-    @EventHandler
+    @EventHandler ( priority = EventPriority.LOWEST )
     public void forceProtocol(PreLoginEvent event)
     {
-        event.registerIntent(plugin);
-
         if (ProtocolConstants.MINECRAFT_1_11_1 > event.getConnection().getVersion())
         {
             event.setCancelled(true);
             event.setCancelReason(DISALLOW_MESSAGE);
         }
-
-        event.completeIntent(plugin);
     }
 
 }

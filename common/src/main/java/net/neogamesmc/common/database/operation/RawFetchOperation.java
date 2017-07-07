@@ -20,7 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author Ben (OutdatedVersion)
  * @since Jun/28/2017 (5:12 PM)
  */
-public class RawFetchOperation extends Operation<ResultSet>
+public class RawFetchOperation extends Operation<Void>
 {
 
     /**
@@ -73,7 +73,7 @@ public class RawFetchOperation extends Operation<ResultSet>
      * @throws Exception In the event that something goes wrong
      */
     @Override
-    public ResultSet call() throws Exception
+    public Void call() throws Exception
     {
         stateCheck();
 
@@ -83,22 +83,24 @@ public class RawFetchOperation extends Operation<ResultSet>
         try
         (
             Connection connection = this.database.reserve();
-            PreparedStatement statement = OperationTools.statement(connection, this.sql, this.data)
+            PreparedStatement statement = OperationTools.statement(connection, this.sql, this.data);
+            ResultSet result = statement.executeQuery()
         )
         {
-            return statement.executeQuery();
+            this.task.accept(result);
+            return null;
         }
     }
 
     @Override
-    public ResultSet sync(Database database) throws Exception
+    public Void sync(Database database) throws Exception
     {
         this.database = database;
         return call();
     }
 
     @Override
-    public Future<ResultSet> async(Database database) throws Exception
+    public Future<Void> async(Database database) throws Exception
     {
         this.database = database;
         return database.submitTask(this);
