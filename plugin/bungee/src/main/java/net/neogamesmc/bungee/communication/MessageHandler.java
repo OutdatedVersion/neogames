@@ -1,9 +1,13 @@
 package net.neogamesmc.bungee.network;
 
 import com.google.inject.Inject;
+import lombok.val;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.config.ServerInfo;
-import net.neogamesmc.common.payload.SwitchServerPayload;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.neogamesmc.bungee.distribution.DistributionMethod;
+import net.neogamesmc.bungee.distribution.PlayerDirector;
+import net.neogamesmc.common.payload.FindAndSwitchServerPayload;
+import net.neogamesmc.common.payload.RawSwitchServerPayload;
 import net.neogamesmc.common.payload.UpdateNetworkServersPayload;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
@@ -11,6 +15,7 @@ import net.neogamesmc.common.redis.api.FromChannel;
 import net.neogamesmc.common.redis.api.HandlesType;
 
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 
 import static java.util.UUID.fromString;
 
@@ -27,6 +32,11 @@ public class MessageHandler
      * Our BungeeCord proxy instance.
      */
     @Inject private ProxyServer proxy;
+
+    /**
+     * Send players out to different servers by their request.
+     */
+    @Inject private PlayerDirector director;
 
     /**
      * Class Constructor
@@ -46,10 +56,10 @@ public class MessageHandler
      * @param payload The payload
      */
     @FromChannel ( RedisChannel.NETWORK )
-    @HandlesType ( SwitchServerPayload.class )
-    public void switchServers(SwitchServerPayload payload)
+    @HandlesType ( RawSwitchServerPayload.class )
+    public void switchServers(RawSwitchServerPayload payload)
     {
-        final ServerInfo server = proxy.getServerInfo(payload.server);
+        val server = proxy.getServerInfo(payload.server);
 
         if (server != null)
         {
@@ -61,6 +71,16 @@ public class MessageHandler
                 else
                     proxy.getPlayer(target).connect(server);
             }
+        }
+    }
+
+    @FromChannel ( RedisChannel.NETWORK )
+    @HandlesType ( FindAndSwitchServerPayload.class )
+    public void switchServers(FindAndSwitchServerPayload payload)
+    {
+        for (String target : payload.targets)
+        {
+            director.sendPlayer(ProxyServer.getInstance().getPlayer(fromString(target)), payload.group);
         }
     }
 

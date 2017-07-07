@@ -9,38 +9,29 @@ import org.json.simple.JSONObject;
 
 /**
  * @author Ben (OutdatedVersion)
- * @since Jul/01/2017 (7:05 AM)
+ * @since Jul/07/2017 (5:48 AM)
  */
-@Focus ( "req-create-server" )
-@AllArgsConstructor ()
-public class RequestServerCreationPayload implements Payload
+@Focus ( "req-server-change" )
+@AllArgsConstructor
+public class FindAndSwitchServerPayload implements Payload
 {
 
     /**
-     * The name of the player who requested this.
-     * <p>
-     * {@code null} if the system did so.
+     * UUIDs of the players to switch out.
      */
-    public String player;
+    public String[] targets;
 
     /**
-     * The type of server to create.
+     * The group the player is requesting.
      */
     public String group;
-
-    /**
-     * Any extra data for our manager to use.
-     */
-    public String data;
 
     @Override
     public JSONObject asJSON()
     {
         return new JSONBuilder()
-                .add("type", "ADD_SERVER")
-                .add("player", player)
+                .add("targets", targets)
                 .add("group", group)
-                .add("data", data)
                 .done();
     }
 

@@ -3,7 +3,6 @@ package net.neogamesmc.bungee.handle;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.event.PreLoginEvent;
@@ -13,6 +12,8 @@ import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 import net.md_5.bungee.protocol.ProtocolConstants;
 import net.neogamesmc.bungee.NeoGames;
+import net.neogamesmc.bungee.distribution.DistributionMethod;
+import net.neogamesmc.bungee.distribution.PlayerDirector;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -34,17 +35,15 @@ public class ConnectionHandler implements Listener
     @Inject private NeoGames plugin;
 
     /**
-     * Our BungeeCord proxy instance.
+     * Send players certain places.
      */
-    @Inject private ProxyServer proxy;
+    @Inject private PlayerDirector director;
 
     @EventHandler
     public void directLogin(ServerConnectEvent event)
     {
-        // TODO(Ben): does not scale, need to switch out with network manager
-
         if (event.getTarget().getName().equals("Internal-Routing-Server"))
-            event.setTarget(proxy.getServerInfo("lobby1"));
+            director.sendPlayer(event.getPlayer(), "lobby", DistributionMethod.ROUND_ROBBIN);
     }
 
     @EventHandler ( priority = EventPriority.LOWEST )

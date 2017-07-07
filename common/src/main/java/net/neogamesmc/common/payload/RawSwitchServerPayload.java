@@ -15,8 +15,8 @@ import java.util.Collections;
  * @author Ben (OutdatedVersion)
  * @since Jun/29/2017 (1:51 AM)
  */
-@Focus ( "switch-server" )
-public class SwitchServerPayload implements Payload
+@Focus ( "req-server-change-raw" )
+public class RawSwitchServerPayload implements Payload
 {
 
     /**
@@ -45,7 +45,7 @@ public class SwitchServerPayload implements Payload
      * @param server The nam,e
      * @param targets The players to send
      */
-    public SwitchServerPayload(String server, String... targets)
+    public RawSwitchServerPayload(String server, String... targets)
     {
         this.server = server;
         this.targets = targets;

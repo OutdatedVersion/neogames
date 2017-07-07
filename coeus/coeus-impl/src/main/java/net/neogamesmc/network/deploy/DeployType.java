@@ -1,8 +1,7 @@
 package net.neogamesmc.network.deploy;
 
-import net.neogamesmc.common.payload.UpdateNetworkServersPayload;
 import net.neogamesmc.common.reference.Paths;
-import net.neogamesmc.network.data.ServerData;
+import net.neogamesmc.network.api.ConnectedServer;
 import net.neogamesmc.network.task.*;
 
 import java.util.function.Function;
@@ -22,8 +21,7 @@ public enum DeployType
     ADD_PROXY(data -> null),
 
     /**
-     * Creates a Minecraft server instance, and adds
-     * it to our BungeeCord proxy.
+     * Creates a Minecraft server instance.
      */
     ADD_SERVER(data -> new Task[] {
             new CopyDirectoryTask(Paths.STORAGE.fileAt("server-template")),
@@ -31,21 +29,20 @@ public enum DeployType
             new ReplaceVariablesTask("start.sh", of("ID", data.id)),
             new ReplaceVariablesTask("server.properties", of("PORT", data.port)),
             new WriteToFileTask("server_data.json", data),
-            new ExecuteScriptTask("start.sh"),
-            new PublishPayloadTask(new UpdateNetworkServersPayload(data.name, data.port))
+            new ExecuteScriptTask("start.sh")
     });
 
     /**
      * Return a set of tasks to execute using the provided data.
      */
-    private Function<ServerData, Task[]> function;
+    private Function<ConnectedServer, Task[]> function;
 
     /**
      * Constructor
      *
      * @param function The function
      */
-    DeployType(Function<ServerData, Task[]> function)
+    DeployType(Function<ConnectedServer, Task[]> function)
     {
         this.function = function;
     }
@@ -56,7 +53,7 @@ public enum DeployType
      * @param data The data
      * @return The tasks
      */
-    public Task[] tasks(ServerData data)
+    public Task[] tasks(ConnectedServer data)
     {
         return function.apply(data);
     }

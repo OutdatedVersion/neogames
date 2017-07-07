@@ -18,6 +18,9 @@ import net.neogamesmc.network.deploy.DeployType;
 public class RequestHandler
 {
 
+    /**
+     * Network manager core instance.
+     */
     @Inject private Coeus coeus;
 
     @Inject
@@ -26,11 +29,16 @@ public class RequestHandler
         redis.registerHook(this);
     }
 
+    /**
+     * Handle requests to deploy data.
+     *
+     * @param payload The payload
+     */
     @FromChannel ( RedisChannel.DEFAULT )
     @HandlesType ( RequestServerCreationPayload.class )
     public void handle(RequestServerCreationPayload payload)
     {
-        coeus.deploy(DeployType.valueOf(payload.group), payload.data);
+        coeus.deploy(DeployType.ADD_SERVER, payload.group);
     }
 
 }

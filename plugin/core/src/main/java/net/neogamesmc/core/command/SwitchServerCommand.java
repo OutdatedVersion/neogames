@@ -1,8 +1,8 @@
 package net.neogamesmc.core.command;
 
 import com.google.inject.Inject;
-import net.neogamesmc.common.backend.ServerData;
-import net.neogamesmc.common.payload.SwitchServerPayload;
+import net.neogamesmc.common.backend.ServerConfiguration;
+import net.neogamesmc.common.payload.RawSwitchServerPayload;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.command.api.Command;
@@ -28,7 +28,7 @@ public class SwitchServerCommand
     /**
      * Data associated with this server.
      */
-    @Inject private ServerData data;
+    @Inject private ServerConfiguration data;
 
     @Command ( executor = "server" )
     @Permission ( value = Role.MOD, note = "Sorry, you're not permitted to use this! Try the menus/NPCs to get around! :)" )
@@ -36,7 +36,7 @@ public class SwitchServerCommand
     {
         // TODO(Ben): move this
         Message.prefix("Network").content("You are being connected to:").content(server, YELLOW).send(player);
-        new SwitchServerPayload(server, player.getUniqueId().toString()).publish(redis);
+        new RawSwitchServerPayload(server, player.getUniqueId().toString()).publish(redis);
     }
 
     @Command ( executor = { "current", "where", "whereami" } )

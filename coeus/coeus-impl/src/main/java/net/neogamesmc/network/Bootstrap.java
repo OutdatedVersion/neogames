@@ -53,7 +53,7 @@ public class Bootstrap
 
         while (true)
         {
-            // keep app up
+            // need to keep thread up here
         }
     }
 

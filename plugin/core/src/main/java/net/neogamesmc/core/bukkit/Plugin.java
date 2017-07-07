@@ -5,7 +5,7 @@ import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import lombok.val;
-import net.neogamesmc.common.backend.ServerData;
+import net.neogamesmc.common.backend.ServerConfiguration;
 import net.neogamesmc.common.payload.UpdateNetworkServersPayload;
 import net.neogamesmc.common.redis.RedisHandler;
 import org.bukkit.Bukkit;
@@ -66,9 +66,9 @@ public abstract class Plugin extends JavaPlugin
     @Override
     public void onEnable()
     {
-        try (FileReader reader = new FileReader(ServerData.DATA_FILE))
+        try (FileReader reader = new FileReader(ServerConfiguration.DATA_FILE))
         {
-            val data = new Gson().fromJson(reader, ServerData.class);
+            val data = new Gson().fromJson(reader, ServerConfiguration.class);
             val redis = new RedisHandler().init();
 
             this.injector = Guice.createInjector(binder ->
@@ -76,7 +76,7 @@ public abstract class Plugin extends JavaPlugin
                 binder.bind(Plugin.class).toInstance(this);
                 binder.bind(JavaPlugin.class).toInstance(this);
 
-                binder.bind(ServerData.class).toInstance(data);
+                binder.bind(ServerConfiguration.class).toInstance(data);
                 binder.bind(RedisHandler.class).toInstance(redis);
 
                 setupInjector(binder);
@@ -98,7 +98,7 @@ public abstract class Plugin extends JavaPlugin
     public void onDisable()
     {
         val redis = get(RedisHandler.class).init();
-        val data = get(ServerData.class);
+        val data = get(ServerConfiguration.class);
 
         // Remove from proxy now
         if (data.interactWithNetwork)

@@ -1,10 +1,15 @@
-package net.neogamesmc.network.data;
+package net.neogamesmc.network.api;
+
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Ben (OutdatedVersion)
- * @since Jul/01/2017 (4:00 AM)
+ * @since Jul/06/2017 (11:31 PM)
  */
-public class ServerData
+@AllArgsConstructor
+@NoArgsConstructor
+public class ConnectedServer
 {
 
     /**
@@ -35,5 +40,15 @@ public class ServerData
      * The ID of the server group we're in.
      */
     public String group;
+
+    /**
+     * The total amount of players currently on this server.
+     */
+    public int onlinePlayers;
+
+    /**
+     * The top-bound to players allowed on this server.
+     */
+    public int maxPlayers;
 
 }

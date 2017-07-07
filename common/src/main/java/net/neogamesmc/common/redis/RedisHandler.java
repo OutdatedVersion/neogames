@@ -66,7 +66,9 @@ public class RedisHandler
     /** collection of hooks to our redis system */
     private ConcurrentHashMap<String, HookData> hooks;
 
-    /** run redis requests async */
+    /**
+     * Run requests asynchronously.
+     */
     private ExecutorService executor;
 
     /**
@@ -83,17 +85,23 @@ public class RedisHandler
     }
 
     /**
-     * Disconnect all of our stuff
-     *
-     * @return this handler
+     * Disconnect all of our stuff.
      */
-    public RedisHandler release()
+    public void release()
     {
         pool.close();
         executor.shutdown();
         subscriber.close();
+    }
 
-        return this;
+    /**
+     * Grab a (R/)Jedis connection from our pool.
+     *
+     * @return The client
+     */
+    public Jedis client()
+    {
+        return pool.getResource();
     }
 
     /**

@@ -10,10 +10,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>coeus</artifactId>
+    <packaging>pom</packaging>
 
-    <properties>
-        <app.main>net.neogamesmc.network.Bootstrap</app.main>
-    </properties>
+    <modules>
+        <module>coeus-api</module>
+        <module>coeus-impl</module>
+    </modules>
 
     <dependencies>
 

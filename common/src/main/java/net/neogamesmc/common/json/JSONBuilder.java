@@ -1,13 +1,12 @@
 package net.neogamesmc.common.json;
 
-import com.google.gson.JsonObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.Collections;
 
 /**
- * Allows a chaining approach to creating {@link JsonObject}s.
+ * Allows a chaining approach to creating {@link JSONObject}s.
  *
  * @author Ben (OutdatedVersion)
  * @since Jun/29/2017 (2:06 AM)

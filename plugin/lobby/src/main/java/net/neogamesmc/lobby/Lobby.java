@@ -8,7 +8,7 @@ import lombok.val;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.inject.ParallelStartup;
-import net.neogamesmc.common.payload.SwitchServerPayload;
+import net.neogamesmc.common.payload.FindAndSwitchServerPayload;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.reference.Role;
@@ -43,8 +43,6 @@ import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 import static net.md_5.bungee.api.ChatColor.*;
 import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
@@ -303,7 +301,7 @@ public class Lobby extends Plugin implements Listener
             return;
 
         event.setCancelled(true);
-        new SwitchServerPayload(event.getRightClicked().getMetadata("send-server").get(0).asString() + ThreadLocalRandom.current().nextInt(1, 2), event.getPlayer().getUniqueId().toString()).publish(get(RedisHandler.class));
+        sendTo(event.getPlayer(), event.getRightClicked().getMetadata("send-server").get(0).asString());
     }
 
     @EventHandler
@@ -361,16 +359,21 @@ public class Lobby extends Plugin implements Listener
             switch (event.getSlot())
             {
                 case 11:
-                    player.sendMessage("You pressed on Chuck Runner");
+                    sendTo(player, "chunkrunner");
                     break;
                 case 13:
-                    player.sendMessage("You pressed on Blast Off");
+                    sendTo(player, "blastoff");
                     break;
                 case 15:
-                    player.sendMessage("You pressed on Bowplinko");
+                    sendTo(player, "bowplinko");
                     break;
             }
         }
+    }
+
+    private void sendTo(Player player, String group)
+    {
+        new FindAndSwitchServerPayload(new String[]{player.getUniqueId().toString()}, group).publish(get(RedisHandler.class));
     }
 
     /**

@@ -3,37 +3,21 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>plugin-parent</artifactId>
+        <artifactId>coeus</artifactId>
         <groupId>net.neogamesmc</groupId>
         <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>bungee</artifactId>
+    <artifactId>coeus-impl</artifactId>
 
     <properties>
-        <plugin.name>NeoGames-Proxy</plugin.name>
-        <plugin.main>net.neogamesmc.bungee.NeoGames</plugin.main>
+        <app.main>net.neogamesmc.network.Bootstrap</app.main>
     </properties>
 
     <dependencies>
 
-        <!-- Proxy API -->
-        <dependency>
-            <groupId>com.destroystokyo</groupId>
-            <artifactId>waterfall</artifactId>
-            <version>${version.waterfall}</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Our stuff -->
-        <dependency>
-            <groupId>net.neogamesmc</groupId>
-            <artifactId>common</artifactId>
-            <version>${version.common}</version>
-        </dependency>
-
-        <!-- Network API -->
         <dependency>
             <groupId>net.neogamesmc</groupId>
             <artifactId>coeus-api</artifactId>
@@ -41,6 +25,5 @@
         </dependency>
 
     </dependencies>
-
 
 </project>

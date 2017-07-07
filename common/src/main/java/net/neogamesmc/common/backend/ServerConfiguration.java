@@ -10,7 +10,7 @@ import java.io.File;
  * @since Jul/03/2017 (2:16 AM)
  */
 @Data
-public class ServerData
+public class ServerConfiguration
 {
 
     /**
