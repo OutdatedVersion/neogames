@@ -17,7 +17,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import java.util.function.Function;
 
 import static net.md_5.bungee.api.ChatColor.GREEN;
-import static net.neogamesmc.common.reference.Role.DEFAULT;
+import static net.neogamesmc.common.reference.Role.PLAYER;
 
 /**
  * Adds formatting to the player-list.
@@ -73,7 +73,7 @@ public class PlayerList implements Listener
      */
     private void playerList(Player player, Role role)
     {
-        player.setPlayerListName((role == DEFAULT ? DEFAULT.color.toString() : LIST_FORMAT.apply(role)) + GREEN + player.getName());
+        player.setPlayerListName((role == PLAYER ? PLAYER.color.toString() : LIST_FORMAT.apply(role)) + GREEN + player.getName());
     }
 
 }

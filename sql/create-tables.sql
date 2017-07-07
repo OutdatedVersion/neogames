@@ -7,12 +7,21 @@ CREATE TABLE IF NOT EXISTS accounts (
   `iid` INT NOT NULL AUTO_INCREMENT,
   `uuid` VARCHAR(40) NOT NULL,
   `name` VARCHAR(20) NOT NULL,
-  `role` VARCHAR(16) NOT NULL DEFAULT 'DEFAULT',
+  `role` VARCHAR(16) NOT NULL DEFAULT 'PLAYER',
+  `coins` INT NOT NULL DEFAULT 100,
   `address` VARCHAR(42) NOT NULL,
   `first_login` TIMESTAMP NOT NULL DEFAULT NOW(),
   `last_login` TIMESTAMP NOT NULL DEFAULT NOW(),
   PRIMARY KEY (`iid`),
   UNIQUE KEY (`uuid`)
+);
+
+
+# Create preferences table
+CREATE TABLE IF NOT EXISTS settings (
+  `account_id` INT NOT NULL,
+  `lobby_flight` BOOL NOT NULL DEFAULT FALSE,
+  FOREIGN KEY (`account_id`) REFERENCES accounts(`iid`)
 );
 
 
@@ -28,13 +37,15 @@ CREATE TABLE IF NOT EXISTS assigned_permissions (
 CREATE TABLE IF NOT EXISTS punishments (
   `id` INT NOT NULL AUTO_INCREMENT,
   `target` VARCHAR(40) NOT NULL,
+  `target_id` INT NOT NULL,
   `issued_by` VARCHAR(40) NOT NULL,
   `type` VARCHAR(10) NOT NULL,
   `reason` VARCHAR(260) NOT NULL,
   `revoked` BOOL NOT NULL DEFAULT FALSE,
   `revoked_by` VARCHAR(40) DEFAULT NULL,
   `expires_at` TIMESTAMP NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`target_id`) REFERENCES accounts(`iid`)
 );
 
 

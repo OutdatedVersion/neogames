@@ -30,7 +30,7 @@ public enum Role
     DUDE(ChatColor.GREEN),
     // ^ donator
 
-    DEFAULT(ChatColor.GRAY);
+    PLAYER(ChatColor.GRAY);
 
     /**
      * Common array holding every possible {@link Role}.

@@ -273,7 +273,7 @@ public class CommandHandler implements Listener
         try
         {
             // verify the player can actually execute this command
-            if (info.role != Role.DEFAULT)
+            if (info.role != Role.PLAYER)
             {
                 val account = database.cacheFetch(player.getUniqueId());
 
@@ -386,7 +386,7 @@ public class CommandHandler implements Listener
         }
         else
         {
-            info.role = Role.DEFAULT;
+            info.role = Role.PLAYER;
             info.permissionMessage = Message.PERMISSION_MESSAGE;
         }
     }

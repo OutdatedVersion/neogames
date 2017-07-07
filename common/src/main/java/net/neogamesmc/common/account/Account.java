@@ -63,6 +63,12 @@ public class Account
     private Role role;
 
     /**
+     * The amount of currency this player possesses.
+     */
+    @InheritColumn
+    private int coins;
+
+    /**
      * When the player was first seen here.
      */
     @Column ( "first_login" )
@@ -91,7 +97,7 @@ public class Account
     public Account fromLogin(UUID uuid, String name, String ip)
     {
         // NEED TO ASSIGN ID
-        this.role = Role.DEFAULT;
+        this.role = Role.PLAYER;
         this.firstLogin = Instant.now();
         this.lastLogin = Instant.now();
         this.name = name;
@@ -113,7 +119,7 @@ public class Account
         try
         {
             new InsertUpdateOperation(SQL_UPDATE_ACCOUNT)
-                    .data(name, ip, lastLogin)
+                    .data(name, ip, lastLogin, id)
                     .async(database);
         }
         catch (Exception ex)

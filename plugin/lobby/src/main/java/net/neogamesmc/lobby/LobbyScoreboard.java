@@ -1,13 +1,16 @@
 package net.neogamesmc.lobby;
 
 import com.google.inject.Inject;
+import lombok.val;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.event.UpdatePlayerRoleEvent;
+import net.neogamesmc.core.player.Players;
 import net.neogamesmc.core.scoreboard.PlayerSidebar;
 import net.neogamesmc.core.scoreboard.PlayerSidebarManager;
 import net.neogamesmc.core.scoreboard.mod.RoleTagModifier;
+import net.neogamesmc.core.scoreboard.title.StaticTitle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,8 +38,8 @@ public class LobbyScoreboard implements Listener
     @Inject
     public void init(Plugin plugin, PlayerSidebarManager manager)
     {
-        System.out.println("LobbyScoreboard#init");
-        this.manager = manager.addDefaultModifier(plugin.get(RoleTagModifier.class));
+        this.manager = manager.addDefaultModifier(plugin.get(RoleTagModifier.class))
+                              .title(new StaticTitle(bold(YELLOW) + "Neo" + bold(GOLD) + "Games"));
     }
 
     /**
@@ -53,7 +56,7 @@ public class LobbyScoreboard implements Listener
                             .add(roleFor(player))
                             .blank()
                             .add(bold(YELLOW) + "Coins")
-                            .add("100")
+                            .add(coinsFor(player))
                             .blank()
                             .add(bold(GREEN) + "Players")
                             .add("0")
@@ -75,7 +78,12 @@ public class LobbyScoreboard implements Listener
     @EventHandler
     public void updateScoreboardText(UpdatePlayerRoleEvent event)
     {
-        // todo
+        val sidebar = manager.sidebar(event.player);
+
+        // sidebar.remove(10);
+        // sidebar.set(9, roleFor(event.player));
+
+        sidebar.modifier(RoleTagModifier.class).ifPresent(mod -> Players.stream().forEach(player -> mod.playerRefresh(player, sidebar.scoreboard())));
     }
 
     /**
@@ -87,6 +95,17 @@ public class LobbyScoreboard implements Listener
     private String roleFor(Player player)
     {
         return Text.fromEnum(database.cacheFetch(player.getUniqueId()).role());
+    }
+
+    /**
+     * Returns formatted currency for a player.
+     *
+     * @param player The player
+     * @return The formatted text
+     */
+    private String coinsFor(Player player)
+    {
+        return Text.fromCurreny(database.cacheFetch(player.getUniqueId()).coins());
     }
 
 }

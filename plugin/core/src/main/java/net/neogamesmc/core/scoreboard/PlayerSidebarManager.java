@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.google.inject.Singleton;
 import lombok.Getter;
 import lombok.Setter;
+import net.neogamesmc.core.player.Players;
 import net.neogamesmc.core.scoreboard.mod.ScoreboardModifier;
 import net.neogamesmc.core.scoreboard.title.ScoreboardTitle;
 import org.bukkit.entity.Player;
@@ -119,15 +120,17 @@ public class PlayerSidebarManager implements Listener
     @EventHandler ( priority = EventPriority.HIGHEST )
     public void handleJoin(PlayerJoinEvent event)
     {
-        System.out.println("PlayerSidebarManager#handleJoin");
-        sidebars.values().forEach(board -> board.activeModifiers().forEach(mod -> mod.playerAdd(event.getPlayer(), board.scoreboard())));
+        sidebars.values().forEach(board -> board.activeModifiers().forEach(mod ->
+            Players.stream().forEach(player -> mod.playerAdd(player, board.scoreboard()))
+        ));
     }
 
     @EventHandler ( priority = EventPriority.HIGHEST )
     public void handleQuit(PlayerQuitEvent event)
     {
-        System.out.println("PlayerSidebarManager#handleQuit");
-        sidebars.values().forEach(board -> board.activeModifiers().forEach(mod -> mod.playerRemove(event.getPlayer(), board.scoreboard())));
+        sidebars.values().forEach(board -> board.activeModifiers().forEach(mod ->
+            Players.stream().forEach(player -> mod.playerRemove(player, board.scoreboard()))
+        ));
     }
 
 }

@@ -39,7 +39,7 @@ public class PunishmentHandler
     /**
      * SQL statement to insert punishments.
      */
-    private static final String SQL_RECORD_PUNISHMENT = "INSERT INTO punishments (target, issued_by, type, reason, expires_at) VALUES ((SELECT uuid FROM accounts WHERE name=?), ?, ?, ?, ?);";
+    private static final String SQL_RECORD_PUNISHMENT = "INSERT INTO punishments (target, target_id, issued_by, type, reason, expires_at) VALUES ((SELECT uuid FROM accounts WHERE name=?), (SELECT iid FROM accounts WHERE name=?), ?, ?, ?);";
 
     /**
      * Discord channel ID for sending tracking messages.
@@ -109,7 +109,7 @@ public class PunishmentHandler
                 final AtomicInteger id = new AtomicInteger();
 
                 new InsertUpdateOperation(SQL_RECORD_PUNISHMENT)
-                        .data(target, issuedBy.getUniqueId(), type, reason, adjustedTime)
+                        .data(target, target, issuedBy.getUniqueId(), type, reason, adjustedTime)
                         .keys(result ->
                         {
                             if (result.next())
