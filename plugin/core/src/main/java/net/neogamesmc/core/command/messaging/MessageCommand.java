@@ -46,7 +46,7 @@ public class MessageCommand {
     public void run(Player player,
                     @Necessary("Invalid usage! Valid usage: /r (message)") String[] message) {
 
-        if (replies.containsKey(player)) {
+        if (replies.containsKey(player.getUniqueId())) {
             Player targetPlayer = Bukkit.getPlayer(replies.get(player));
 
             if (targetPlayer == null) {
@@ -69,13 +69,13 @@ public class MessageCommand {
                 ("To ").color(ChatColor.AQUA)
                 .append(recipientRole.name.toUpperCase()).color(recipientRole.color)
                 .append(" " + target.getName()).bold(true)
-                .append(" " + combine(message)).color(ChatColor.WHITE).create();
+                .append(" " + combine(message)).color(ChatColor.WHITE).bold(false).create();
 
         BaseComponent[] fromComponent = new ComponentBuilder
                 ("From ").color(ChatColor.AQUA)
                 .append(senderRole.name.toUpperCase()).color(senderRole.color)
                 .append(" " + player.getName()).bold(true)
-                .append(" " + combine(message)).color(ChatColor.WHITE).create();
+                .append(" " + combine(message)).color(ChatColor.WHITE).bold(false).create();
 
         player.sendMessage(toComponent);
         target.sendMessage(fromComponent);
