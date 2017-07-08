@@ -6,9 +6,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import lombok.val;
 import net.neogamesmc.common.backend.ServerConfiguration;
-import net.neogamesmc.common.payload.UpdateNetworkServersPayload;
+import net.neogamesmc.common.payload.NotifyNetworkOfServerPayload;
 import net.neogamesmc.common.redis.RedisHandler;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.FileReader;
@@ -84,9 +83,11 @@ public abstract class Plugin extends JavaPlugin
 
             enable(this.injector);
 
+            System.out.println("[Local Configuration]: " + data.toString());
+
             // Add to network
             if (data.interactWithNetwork)
-                new UpdateNetworkServersPayload(data.name, Bukkit.getPort()).publish(redis);
+                new NotifyNetworkOfServerPayload(data.name, data.group, true).publish(redis);
         }
         catch (Exception ex)
         {
@@ -102,7 +103,7 @@ public abstract class Plugin extends JavaPlugin
 
         // Remove from proxy now
         if (data.interactWithNetwork)
-            new UpdateNetworkServersPayload(data.name).publish(redis);
+            new NotifyNetworkOfServerPayload(data.name, data.group, false).publish(redis);
 
         disable();
         redis.release();

@@ -1,13 +1,14 @@
 package net.neogamesmc.bungee.distribution;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import lombok.val;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.neogamesmc.bungee.connection.DataHandler;
+import net.neogamesmc.bungee.dynamic.ServerCreator;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -18,22 +19,32 @@ public class PlayerDirector
 {
 
     /**
-     * Work with server data.
+     * Our server creator
      */
-    @Inject private DataHandler data;
+    @Inject private ServerCreator creator;
 
-    private List<ProxiedPlayer> currentlySending = Lists.newCopyOnWriteArrayList();
+    /**
+     * A list containing every player currently being worked on.
+     */
+    private Set<ProxiedPlayer> currentlySending = Sets.newConcurrentHashSet();
 
+    /**
+     * Sends a player to a server in the provided group.
+     *
+     * @param player The player
+     * @param group The group
+     */
     public void sendPlayer(ProxiedPlayer player, String group)
     {
-        sendPlayer(player, group, data.methodFor(group));
+        sendPlayer(player, group, DistributionMethod.FILL_TO_CAPACITY);
     }
 
     /**
+     * Sends a player to a server in the provided group via the supplied method.
      *
-     * @param player
-     * @param group
-     * @param method
+     * @param player The player
+     * @param group The group
+     * @param method The method to use
      */
     public void sendPlayer(ProxiedPlayer player, String group, DistributionMethod method)
     {
@@ -41,7 +52,7 @@ public class PlayerDirector
         {
             currentlySending.add(player);
 
-            val info = method.get().apply(group, data);
+            val info = info(group, method);
 
             if (info != null)
             {
@@ -51,6 +62,18 @@ public class PlayerDirector
                 currentlySending.remove(player);
             }
         }
+    }
+
+    /**
+     * Grab the {@link ServerInfo} for the provided request.
+     *
+     * @param group The group
+     * @param method Method to distribute by
+     * @return The info
+     */
+    public ServerInfo info(String group, DistributionMethod method)
+    {
+        return method.get().apply(group, creator);
     }
 
 }

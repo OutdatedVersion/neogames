@@ -4,8 +4,8 @@ import com.google.common.collect.Maps;
 import lombok.val;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.neogamesmc.bungee.connection.DataHandler;
-import net.neogamesmc.network.api.ConnectedServer;
+import net.neogamesmc.bungee.dynamic.ServerCreator;
+import net.neogamesmc.bungee.dynamic.ServerData;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,10 +25,13 @@ public enum DistributionMethod implements PlayerDistribution
         private Map<String, AtomicInteger> counters = Maps.newHashMap();
 
         @Override
-        public ServerInfo apply(String group, DataHandler data)
+        public ServerInfo apply(String group, ServerCreator creator)
         {
             val counter = counters.computeIfAbsent(group, ignored -> new AtomicInteger());
-            long id = data.groupServerCount(group) > counter.get() + 1 ? counter.getAndSet(1) : counter.getAndIncrement();
+
+            System.out.println("Servers in group " + group + ": " + creator.serverCountInGroup(group));
+            int id = creator.serverCountInGroup(group) < (counter.get() + 1) ? counter.getAndSet(1) : counter.getAndIncrement();
+            System.out.println("Round robbin sending to ID: " + id);
 
             return ProxyServer.getInstance().getServerInfo(group + id);
         }
@@ -40,23 +43,32 @@ public enum DistributionMethod implements PlayerDistribution
     FILL_TO_CAPACITY
     {
         @Override
-        public ServerInfo apply(String group, DataHandler data)
+        public ServerInfo apply(String group, ServerCreator creator)
         {
-            val servers = data.serversInGroup(group);
-            ConnectedServer best = null;
+            val servers = creator.serversInGroup(group);
+            ServerInfo best = null;
 
-            for (ConnectedServer server : servers)
+            for (ServerData current : servers)
             {
-                if (best == null)
-                    best = server;
+                val currentData = ProxyServer.getInstance().getServerInfo(current.name);
 
-                if (server.onlinePlayers > best.onlinePlayers)
+                // First time
+                if (best == null)
                 {
-                    best = server;
+                    best = currentData;
+                    continue;
                 }
+
+                // Check if it's already full
+                if (currentData.getPlayers().size() >= current.maxPlayers)
+                    continue;
+
+                // Better than our current?
+                if (currentData.getPlayers().size() > best.getPlayers().size())
+                    best = currentData;
             }
 
-            return ProxyServer.getInstance().getServerInfo(best.name);
+            return best;
         }
     };
 

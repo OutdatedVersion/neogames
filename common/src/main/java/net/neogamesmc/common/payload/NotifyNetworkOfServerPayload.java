@@ -9,39 +9,33 @@ import org.json.simple.JSONObject;
 
 /**
  * @author Ben (OutdatedVersion)
- * @since Jul/01/2017 (7:05 AM)
+ * @since Jun/29/2017 (1:51 AM)
  */
-@Focus ( "req-create-server" )
+@Focus ( "notify-network-of-server" )
 @AllArgsConstructor
-public class RequestServerCreationPayload implements Payload
+public class NotifyNetworkOfServerPayload implements Payload
 {
 
     /**
-     * The name of the player who requested this.
-     * <p>
-     * {@code null} if the system did so.
+     * The server name.
      */
-    public String player;
+    public String name;
 
     /**
-     * The type of server to create.
+     * The group this server is in.
      */
     public String group;
 
     /**
-     * Any extra data for our manager to use.
+     * If {@code true} then we'll add the desired server to the proxy. If not,
+     * we'll assume that we will be removing one following the property of: {@link #name}
      */
-    public String data;
+    public boolean add;
 
     @Override
     public JSONObject asJSON()
     {
-        return new JSONBuilder()
-                .add("type", "ADD_SERVER")
-                .add("player", player)
-                .add("group", group)
-                .add("data", data)
-                .done();
+        return new JSONBuilder().add("name", name).add("group", group).add("add", add).done();
     }
 
     @Override

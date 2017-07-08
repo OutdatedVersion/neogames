@@ -5,13 +5,16 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.inject.Singleton;
 import lombok.val;
 import net.neogamesmc.common.reference.Paths;
 import net.neogamesmc.network.api.ConnectedServer;
 import net.neogamesmc.network.data.GroupData;
 import net.neogamesmc.network.deploy.DeployType;
+import net.neogamesmc.network.task.CopyFileTask;
 import net.neogamesmc.network.task.Task;
 import net.neogamesmc.network.util.PortProvider;
+import org.pmw.tinylog.Logger;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;
@@ -24,6 +27,7 @@ import static org.pmw.tinylog.Logger.error;
  * @author Ben (OutdatedVersion)
  * @since Jun/27/2017 (3:53 PM)
  */
+@Singleton
 public class Coeus
 {
 
@@ -58,6 +62,8 @@ public class Coeus
 
     public Coeus deploy(DeployType type, String group)
     {
+        Logger.info("Coeus#deploy");
+
         executor.submit(() ->
         {
             try
@@ -65,13 +71,18 @@ public class Coeus
                 val internal = new ConnectedServer();
 
                 internal.id = serverID.getAndIncrement();
+                Logger.info("Assigned ID: {}", internal.id);
+
                 internal.port = provider.get();
+                Logger.info("Assigned Port: {}", internal.port);
+
                 internal.group = group;
 
                 val data = groupData.computeIfAbsent(group, ignored -> new GroupData());
 
                 internal.name = group.replaceAll("_", "") + data.serverCount.getAndIncrement();
                 internal.dir = Paths.SERVERS.fileAt(String.valueOf(internal.id)).getAbsolutePath();
+                Logger.info("Name: {} || Dir: {}", internal.name, internal.dir);
 
                 switch (group)
                 {
@@ -93,7 +104,17 @@ public class Coeus
                 for (Task task : type.tasks(internal))
                     task.target(internal.dir).execute();
 
+                if (group.equalsIgnoreCase("lobby"))
+                {
+                    new CopyFileTask(Paths.PLUGIN.fileAt("bukkit/Lobby.jar")).target(internal.dir).execute();
+                }
+                else
+                {
+                    new CopyFileTask(Paths.PLUGIN.fileAt("bukkit/Game-Server.jar")).target(internal.dir).execute();
+                }
+
                 broker.record(internal);
+                Logger.info("[Deploy] Deployed {} to main-network", internal.name);
             }
             catch (Exception ex)
             {

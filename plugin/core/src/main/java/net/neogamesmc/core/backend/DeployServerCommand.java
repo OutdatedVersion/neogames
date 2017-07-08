@@ -31,7 +31,7 @@ public class DeployServerCommand
                     @Necessary ( "Please provide a network group" ) String group)
     {
         new RequestServerCreationPayload(player.getName(), group, "").publish(redis);
-        Message.prefix("Network").content("Sent out request to provision server in group: ").content(group, ChatColor.GREEN).send(player);
+        Message.prefix("Network").content("Sent out request to provision server in group:").content(group, ChatColor.GREEN).send(player);
     }
 
 }

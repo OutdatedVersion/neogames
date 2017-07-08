@@ -6,10 +6,12 @@ import com.google.inject.Singleton;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.neogamesmc.bungee.communication.MessageHandler;
 import net.neogamesmc.bungee.handle.ConnectionHandler;
 import net.neogamesmc.bungee.handle.Ping;
 import net.neogamesmc.bungee.handle.PunishmentProcessor;
-import net.neogamesmc.bungee.network.MessageHandler;
+import net.neogamesmc.bungee.handle.ReconnectHandler;
+import net.neogamesmc.common.payload.RequestServerCreationPayload;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
 
@@ -31,10 +33,16 @@ public class NeoGames extends Plugin
     @Override
     public void onEnable()
     {
-        injector = Guice.createInjector(binder -> binder.bind(ProxyServer.class).toInstance(ProxyServer.getInstance()));
+        injector = Guice.createInjector(binder ->
+        {
+            binder.bind(ProxyServer.class).toInstance(ProxyServer.getInstance());
+            binder.bind(NeoGames.class).toInstance(this);
+        });
 
         injector.getInstance(RedisHandler.class).init().subscribe(RedisChannel.DEFAULT, RedisChannel.NETWORK);
-        inject(Ping.class, PunishmentProcessor.class, ConnectionHandler.class, MessageHandler.class);
+        inject(Ping.class, PunishmentProcessor.class, ConnectionHandler.class, MessageHandler.class, ReconnectHandler.class);
+
+        injector.getInstance(MessageHandler.class).createServer(new RequestServerCreationPayload(null, "lobby", null));
     }
 
     /**
@@ -44,9 +52,8 @@ public class NeoGames extends Plugin
      * then register it to the proxies' system.
      *
      * @param classes All of the classes
-     * @return This plugin instance
      */
-    public NeoGames inject(Class... classes)
+    public void inject(Class... classes)
     {
         for (Class clazz : classes)
         {
@@ -57,8 +64,6 @@ public class NeoGames extends Plugin
             if (obj instanceof Listener)
                 getProxy().getPluginManager().registerListener(this, (Listener) obj);
         }
-
-        return this;
     }
 
     /**

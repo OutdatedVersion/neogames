@@ -24,6 +24,17 @@ public class ServerConfiguration
     public final String name;
 
     /**
+     * The group this server is in.
+     */
+    public final String group;
+
+    /**
+     * The maximum amount of players allowed on this server.
+     */
+    @SerializedName ( "max_players" )
+    public final int maxPlayers;
+
+    /**
      * Whether or not to automatically add/remove this server to/from the network.
      */
     @SerializedName ( "interact_with_network" )

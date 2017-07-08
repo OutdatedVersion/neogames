@@ -313,7 +313,7 @@ public class Lobby extends Plugin implements Listener
 
     public void openNavigationMenu(Player player)
     {
-        Inventory inventory = Bukkit.createInventory(null, 27, ChatColor.GREEN + "Join Game");
+        Inventory inventory = Bukkit.createInventory(null, 27, bold(DARK_GREEN) + "Join Game");
 
         ItemBuilder chunkRunnerItemBuilder = new ItemBuilder(Material.GRASS);
         chunkRunnerItemBuilder.name(Colors.bold(GREEN) + "Chunk Runner");
@@ -326,7 +326,7 @@ public class Lobby extends Plugin implements Listener
 
         ItemBuilder blastOffItemBuilder = new ItemBuilder(Material.FIREBALL);
         blastOffItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.RED) + "Blast Off");
-        blastOffItemBuilder.lore(ChatColor.DARK_GRAY + "Minigame/PvP", "", ChatColor.GRAY + "Use your arsenal of exploding weapons", ChatColor.GRAY + "and tons of powerups to blast apart", ChatColor.GRAY + "the map! Be the last player standing", ChatColor.GRAY + "to win!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky, Falcinspire, Dennisbuilds,", ChatColor.BLUE + "ItsZender, Jayjo, Corey977, JacobRuby,", ChatColor.BLUE + "Team Dracolyte & StainMine", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 12 Players");
+        blastOffItemBuilder.lore(ChatColor.DARK_GRAY + "Mini-game/PvP", "", ChatColor.GRAY + "Use your arsenal of exploding weapons", ChatColor.GRAY + "and tons of powerups to blast apart", ChatColor.GRAY + "the map! Be the last player standing", ChatColor.GRAY + "to win!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky, Falcinspire, Dennisbuilds,", ChatColor.BLUE + "ItsZender, Jayjo, Corey977, JacobRuby,", ChatColor.BLUE + "Team Dracolyte & StainMine", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 12 Players");
 
         inventory.setItem(13, blastOffItemBuilder.build());
         inventory.setItem(4, glass(1));
@@ -334,7 +334,7 @@ public class Lobby extends Plugin implements Listener
 
         ItemBuilder bowplinkoItemBuilder = new ItemBuilder(Material.BOW);
         bowplinkoItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.DARK_PURPLE) + "Bowplinko");
-        bowplinkoItemBuilder.lore(ChatColor.DARK_GRAY + "Minigame/Archery", "", ChatColor.GRAY + "A fast-paced archery war between", ChatColor.GRAY + "two teams, but with a twist.", ChatColor.GRAY + "If you get hit, you fall down", ChatColor.GRAY + "a plinko board!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 24 Players");
+        bowplinkoItemBuilder.lore(ChatColor.DARK_GRAY + "Mini-game/Archery", "", ChatColor.GRAY + "A fast-paced archery war between", ChatColor.GRAY + "two teams, but with a twist.", ChatColor.GRAY + "If you get hit, you fall down", ChatColor.GRAY + "a plinko board!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 24 Players");
 
         inventory.setItem(15, bowplinkoItemBuilder.build());
         inventory.setItem(6, glass(10));
@@ -352,9 +352,10 @@ public class Lobby extends Plugin implements Listener
         if (inventory.getName() == null)
             return;
 
-        if (inventory.getName().equals(ChatColor.GREEN + "Join Game"))
+        if (inventory.getName().equals(bold(DARK_GREEN) + "Join Game"))
         {
             event.setCancelled(true);
+            player.closeInventory();
 
             switch (event.getSlot())
             {

@@ -8,6 +8,7 @@ import net.neogamesmc.network.communication.RequestHandler;
 import net.neogamesmc.network.task.PublishPayloadTask;
 import net.neogamesmc.network.util.Constant;
 import org.pmw.tinylog.Configurator;
+import org.pmw.tinylog.Level;
 import org.pmw.tinylog.labelers.TimestampLabeler;
 import org.pmw.tinylog.policies.DailyPolicy;
 import org.pmw.tinylog.writers.ConsoleWriter;
@@ -37,6 +38,7 @@ public class Bootstrap
                     .writer(new ConsoleWriter())
                     .addWriter(new RollingFileWriter("network-manager.log.txt", 2, new TimestampLabeler(), new DailyPolicy()))
                     .writingThread(true)
+                    .level(Level.DEBUG)
                     .activate();
 
         info("Coeus");
@@ -45,16 +47,11 @@ public class Bootstrap
 
         val injector = Guice.createInjector(binder ->
         {
-            binder.bind(RedisHandler.class).toInstance(new RedisHandler().init().subscribe(RedisChannel.NETWORK));
+            binder.bind(RedisHandler.class).toInstance(new RedisHandler().init().subscribe(RedisChannel.DEFAULT, RedisChannel.NETWORK));
             binder.requestStaticInjection(PublishPayloadTask.class);
         });
 
         injector.getInstance(RequestHandler.class);
-
-        while (true)
-        {
-            // need to keep thread up here
-        }
     }
 
 }
