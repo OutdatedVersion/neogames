@@ -6,6 +6,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.reference.Role;
+import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.command.api.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.text.Message;
@@ -47,7 +48,7 @@ public class MessageCommand {
                     @Necessary("Invalid usage! Valid usage: /r (message)") String[] message) {
 
         if (replies.containsKey(player.getUniqueId())) {
-            Player targetPlayer = Bukkit.getPlayer(replies.get(player));
+            Player targetPlayer = Bukkit.getPlayer(replies.get(player.getUniqueId()));
 
             if (targetPlayer == null) {
                 player.sendMessage(Message.prefix("Messaging").content("Player is no longer online.", ChatColor.RED).create());
@@ -67,27 +68,19 @@ public class MessageCommand {
         Role recipientRole = database.cacheFetch(target.getUniqueId()).role();
         BaseComponent[] toComponent = new ComponentBuilder
                 ("To ").color(ChatColor.AQUA)
-                .append(recipientRole.name.toUpperCase()).color(recipientRole.color)
-                .append(" " + target.getName()).bold(true)
-                .append(" " + combine(message)).color(ChatColor.WHITE).bold(false).create();
+                .append(recipientRole.name.toUpperCase()).color(recipientRole.color).bold(true)
+                .append(" " + target.getName())
+                .append(" " + Text.convertArray(message)).color(ChatColor.WHITE).bold(false).create();
 
         BaseComponent[] fromComponent = new ComponentBuilder
                 ("From ").color(ChatColor.AQUA)
-                .append(senderRole.name.toUpperCase()).color(senderRole.color)
-                .append(" " + player.getName()).bold(true)
-                .append(" " + combine(message)).color(ChatColor.WHITE).bold(false).create();
+                .append(senderRole.name.toUpperCase()).color(senderRole.color).bold(true)
+                .append(" " + player.getName())
+                .append(" " + Text.convertArray(message)).color(ChatColor.WHITE).bold(false).create();
 
         player.sendMessage(toComponent);
         target.sendMessage(fromComponent);
     }
 
-    private String combine(String[] array) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String string : array) {
-            stringBuilder.append(string);
-            stringBuilder.append(" ");
-        }
-        return stringBuilder.toString().trim();
-    }
 
 }
