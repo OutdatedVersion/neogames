@@ -49,7 +49,7 @@ public class BugCommand {
             DateFormat formatter = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss.SSS");
             String dateFormatted = formatter.format(date);
 
-            String message = ":bug:  New bug reported in server **" + serverData.name + "**, using build **" + data.build + "**\n  **Description: **" + Text.convertArray(desc) + " -" + player.getName() + "\n**Server Time:** " + dateFormatted;
+            String message = ":bug:  New bug reported in server **" + serverData.name + "**, using build **" + data.build + "**\n**Description: **" + Text.convertArray(desc) + " -" + player.getName() + "\n**Server Time:** " + dateFormatted;
             Message.prefix("Bug").content("Bug report sent to developers, thank you", ChatColor.GREEN).send(player);
             new SendDiscordMessagePayload(CHANNEL_ID, message).publish(redisHandler);
 
