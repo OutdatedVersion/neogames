@@ -234,7 +234,7 @@ public class Lobby extends Plugin implements Listener
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event)
     {
-        event.setCancelled(event.getEntity().hasMetadata("send-server"));
+        event.setCancelled(event.getEntity().hasMetadata("send-server") || event.getEntityType() == EntityType.PLAYER);
     }
 
     @EventHandler

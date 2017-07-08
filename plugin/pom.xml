@@ -19,6 +19,7 @@
         <module>lobby</module>
         <module>bungee</module>
         <module>buycraft-hook</module>
+        <module>game-connector</module>
     </modules>
 
 

@@ -1,0 +1,4 @@
+name: ${plugin.name}
+main: ${plugin.main}
+version: git-${git.commit.id.abbrev}
+author: OutdatedVersion

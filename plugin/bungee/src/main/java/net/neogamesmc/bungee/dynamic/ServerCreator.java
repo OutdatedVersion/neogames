@@ -130,6 +130,8 @@ public class ServerCreator
 
                 // Waiting to add
                 waitingToAdd.put(name, new ServerData(assignedID, name, group, assignedPort, maxPlayers));
+                // Update map with changes
+                groups.put(group, groupData);
 
                 System.out.println("[Network Provisioning] Deployed " + name + " [" + assignedID + ":" + assignedPort + "]");
 
