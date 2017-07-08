@@ -68,13 +68,21 @@ public class ServerCreator
      */
     private Map<String, ServerData> waitingToAdd = Maps.newConcurrentMap();
 
-    // group: lobby
-    public ListenableFuture<String> createServer(String group)
+    /**
+     * Provision a server in the provided group.
+     *
+     * @param groupRaw The group
+     * @return The path to the start up script
+     */
+    public ListenableFuture<String> createServer(String groupRaw)
     {
         return service.submit(() ->
         {
             try
             {
+                System.out.println("Before anything :: " + groups.toString());
+
+                val group = groupRaw.toLowerCase();
                 val groupData = groups.computeIfAbsent(group, ignored -> new GroupData());
 
                 // The server number in this group
@@ -85,7 +93,7 @@ public class ServerCreator
                 val name = group + groupNumber;
 
                 // Check if we already have a server under this name
-                if (proxy.getServers().containsKey(name))
+                if (proxy.getServersCopy().containsKey(name))
                 {
                     System.out.println("[Network] Skipping server provision :: Already has " + name);
                     groupData.serverCount().decrementAndGet();
@@ -115,7 +123,7 @@ public class ServerCreator
                 if (group.equals("lobby"))
                     FileUtils.copyFileToDirectory(Paths.PLUGIN.fileAt("bukkit/Lobby.jar"), new File(path + "/plugins"));
                 else
-                    FileUtils.copyFileToDirectory(Paths.PLUGIN.fileAt("bukkit/Game-Server.jar"), new File(path + "/plugins"));
+                    FileUtils.copyFileToDirectory(Paths.PLUGIN.fileAt("bukkit/Game-Connector.jar"), new File(path + "/plugins"));
 
                 // Copy map
                 // TODO(Ben): Move Bukkit side
@@ -130,8 +138,11 @@ public class ServerCreator
 
                 // Waiting to add
                 waitingToAdd.put(name, new ServerData(assignedID, name, group, assignedPort, maxPlayers));
+
                 // Update map with changes
+                System.out.println("Pre #put :: " + groups.toString());
                 groups.put(group, groupData);
+                System.out.println("Post #put :: " + groups.toString());
 
                 System.out.println("[Network Provisioning] Deployed " + name + " [" + assignedID + ":" + assignedPort + "]");
 

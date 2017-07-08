@@ -6,13 +6,11 @@ import lombok.val;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.event.PreLoginEvent;
-import net.md_5.bungee.api.event.ServerConnectEvent;
+import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 import net.md_5.bungee.protocol.ProtocolConstants;
-import net.neogamesmc.bungee.NeoGames;
 import net.neogamesmc.bungee.distribution.DistributionMethod;
 import net.neogamesmc.bungee.distribution.PlayerDirector;
 
@@ -38,11 +36,6 @@ public class ConnectionHandler implements Listener
      */
     private static final BaseComponent[] NO_SERVERS_MESSAGE = new ComponentBuilder("Empty Pool.").color(ChatColor.YELLOW).bold(true)
             .append(" We have no online servers to serve your request.", NONE).color(ChatColor.RED).append(" :(").color(ChatColor.GRAY).create();
-
-    /**
-     * Our plugin instance.
-     */
-    @Inject private NeoGames plugin;
 
     /**
      * Send players certain places.
@@ -71,6 +64,42 @@ public class ConnectionHandler implements Listener
             event.setCancelled(true);
             event.setCancelReason(DISALLOW_MESSAGE);
         }
+    }
+
+    @EventHandler
+    public void moveToLobbyOnServerStop(ServerKickEvent event)
+    {
+        System.out.println("ServerKickEvent | " + event.getCause().name() + " | " + event.getState().name());
+    }
+
+    @EventHandler
+    public void disconnectEvent(ServerDisconnectEvent event)
+    {
+        System.out.println("ServerDisconnectEvent | " + event.getPlayer().getName() + " -> " + event.getTarget().getName());
+    }
+
+    @EventHandler
+    public void playerDisconnectEvent(PlayerDisconnectEvent event)
+    {
+        System.out.println("PlayerDisconnectEvent | " + event.getPlayer().getName());
+    }
+
+    @EventHandler
+    public void switchEvent(ServerSwitchEvent event)
+    {
+        System.out.println("ServerSwitchEvent | " + event.getPlayer().getName());
+    }
+
+    @EventHandler
+    public void connectEvent(ServerConnectEvent event)
+    {
+        System.out.println("ServerConnectEvent | " + event.getPlayer().getName());
+    }
+
+    @EventHandler
+    public void connectedEvent(ServerConnectedEvent event)
+    {
+        System.out.println("ServerConnectEvent | " + event.getPlayer().getName());
     }
 
 }

@@ -10,7 +10,6 @@ import net.neogamesmc.bungee.communication.MessageHandler;
 import net.neogamesmc.bungee.handle.ConnectionHandler;
 import net.neogamesmc.bungee.handle.Ping;
 import net.neogamesmc.bungee.handle.PunishmentProcessor;
-import net.neogamesmc.bungee.handle.ReconnectHandler;
 import net.neogamesmc.common.payload.RequestServerCreationPayload;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
@@ -40,7 +39,7 @@ public class NeoGames extends Plugin
         });
 
         injector.getInstance(RedisHandler.class).init().subscribe(RedisChannel.DEFAULT, RedisChannel.NETWORK);
-        inject(Ping.class, PunishmentProcessor.class, ConnectionHandler.class, MessageHandler.class, ReconnectHandler.class);
+        inject(Ping.class, PunishmentProcessor.class, ConnectionHandler.class, MessageHandler.class);
 
         injector.getInstance(MessageHandler.class).createServer(new RequestServerCreationPayload(null, "lobby", null));
     }

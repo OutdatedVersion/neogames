@@ -27,7 +27,7 @@ public enum DistributionMethod implements PlayerDistribution
         @Override
         public ServerInfo apply(String group, ServerCreator creator)
         {
-            val counter = counters.computeIfAbsent(group, ignored -> new AtomicInteger());
+            val counter = counters.computeIfAbsent(group, ignored -> new AtomicInteger(1));
             int count = creator.serverCountInGroup(group);
 
             System.out.println("Counters: " + counters.toString());

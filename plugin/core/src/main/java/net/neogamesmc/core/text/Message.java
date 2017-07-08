@@ -109,7 +109,7 @@ public class Message
      * @param text the text
      * @return this builder
      */
-    public Message content(String text)
+    public Message content(Object text)
     {
         return content(text, ChatColor.GRAY);
     }
@@ -119,9 +119,9 @@ public class Message
      * @param color color of the text
      * @return this builder
      */
-    public Message content(String text, ChatColor color)
+    public Message content(Object text, ChatColor color)
     {
-        builder.append(" ").append(text).color(color);
+        builder.append(" ").append(String.valueOf(text)).color(color);
         return this;
     }
 
