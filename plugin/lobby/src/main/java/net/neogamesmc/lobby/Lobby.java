@@ -268,10 +268,12 @@ public class Lobby extends Plugin implements Listener
     {
         if (event.getEntityType() == EntityType.PLAYER)
         {
+
+            event.setCancelled(true);
+
             if (event.getCause() == EntityDamageEvent.DamageCause.VOID)
                 event.getEntity().teleport(spawnLocation);
 
-            event.setCancelled(true);
         }
     }
 
