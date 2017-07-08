@@ -43,7 +43,7 @@ public class Database
      * <p>
      * The {@code WHERE} clause is appended later on.
      */
-    private static final String SQL_FIND_PLAYER_BASE = "SELECT * FROM accounts WHERE ";
+    private static final String SQL_FIND_PLAYER_BASE = "SELECT accounts.iid,accounts.name,accounts.uuid,accounts.role,accounts.coins,accounts.last_login,accounts.first_login,accounts.address,settings.lobby_flight,settings.private_messages FROM accounts INNER JOIN settings ON accounts.iid=settings.account_id WHERE ";
 
     /**
      * Properly pool database connections.
@@ -251,7 +251,7 @@ public class Database
                 }
 
 
-                val fetch = new FetchOperation<Account>(SQL_FIND_PLAYER_BASE + (useName ? "name=?;" : "uuid=?;"))
+                val fetch = new FetchOperation<Account>(SQL_FIND_PLAYER_BASE + (useName ? "name=?" : "uuid=?") + " LIMIT 1;")
                                         .data(useName ? name : uuid)
                                         .type(Account.class)
                                         .sync(this);

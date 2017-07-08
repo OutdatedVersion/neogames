@@ -12,7 +12,9 @@ import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.payload.NotifyNetworkOfServerPayload;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.core.command.api.CommandHandler;
+import net.neogamesmc.core.scheduler.Scheduler;
 import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -89,6 +91,23 @@ public abstract class Plugin extends JavaPlugin implements Listener
     }
 
     /**
+     * Unregister the provided listener.
+     *
+     * @param clazz The class
+     * @param <T> Type-parameter for this item
+     * @return Instance of that listener
+     */
+    public <T> T unregister(Class<T> clazz)
+    {
+        T obj = get(clazz);
+
+        if (obj instanceof Listener)
+            HandlerList.unregisterAll((Listener) obj);
+
+        return obj;
+    }
+
+    /**
      * Load up modules in our core/commons.
      */
     public void loadCore()
@@ -145,6 +164,8 @@ public abstract class Plugin extends JavaPlugin implements Listener
 
                 binder.bind(ServerConfiguration.class).toInstance(data);
                 binder.bind(RedisHandler.class).toInstance(redis);
+
+                binder.requestStaticInjection(Scheduler.class);
 
                 setupInjector(binder);
             });

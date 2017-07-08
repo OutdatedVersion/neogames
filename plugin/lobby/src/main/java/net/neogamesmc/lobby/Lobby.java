@@ -1,7 +1,6 @@
 package net.neogamesmc.lobby;
 
 import com.destroystokyo.paper.Title;
-import com.google.inject.Binder;
 import com.google.inject.Injector;
 import lombok.val;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -11,11 +10,11 @@ import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.bukkit.Plugin;
+import net.neogamesmc.core.command.api.CommandHandler;
 import net.neogamesmc.core.hotbar.HotbarHandler;
 import net.neogamesmc.core.hotbar.HotbarItem;
 import net.neogamesmc.core.inventory.ItemBuilder;
 import net.neogamesmc.core.issue.Issues;
-import net.neogamesmc.core.scheduler.Scheduler;
 import net.neogamesmc.core.scoreboard.PlayerSidebarManager;
 import net.neogamesmc.core.text.Colors;
 import net.neogamesmc.lobby.news.News;
@@ -77,13 +76,6 @@ public class Lobby extends Plugin
      */
     private LobbyScoreboard scoreboard;
 
-
-    @Override
-    public void setupInjector(Binder binder)
-    {
-        binder.requestStaticInjection(Scheduler.class);
-    }
-
     @Override
     public void enable(Injector injector)
     {
@@ -101,6 +93,8 @@ public class Lobby extends Plugin
         setupCommands();
         registerAsListener();
 
+        // Manually add lobby command
+        get(CommandHandler.class).registerObject(register(FlyCommand.class));
 
         val lobby = Bukkit.getWorld("lobby");
         this.spawnLocation = new Location(lobby, 10.5, 64, 5.5, 162.6f, 0f);
@@ -363,7 +357,7 @@ public class Lobby extends Plugin
 
     private void sendTo(Player player, String group)
     {
-        new FindAndSwitchServerPayload(new String[]{player.getUniqueId().toString()}, group).publish(get(RedisHandler.class));
+        new FindAndSwitchServerPayload(new String[] { player.getUniqueId().toString() }, group).publish(get(RedisHandler.class));
     }
 
     /**
@@ -374,7 +368,7 @@ public class Lobby extends Plugin
      */
     private String currentlyPlaying(String group)
     {
-        return ChatColor.GREEN + "" + ChatColor.UNDERLINE + "Join " + ChatColor.GOLD + "0" + ChatColor.GREEN + " people now!";
+        return ChatColor.GREEN + "" + ChatColor.UNDERLINE + "Join" + ChatColor.GOLD + " 0" + ChatColor.GREEN + " people now!";
     }
 
     /**

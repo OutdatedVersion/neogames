@@ -20,6 +20,16 @@ public class Players
 {
 
     /**
+     * Grab the amount of players on this server.
+     *
+     * @return The total online player count
+     */
+    public static int count()
+    {
+        return Bukkit.getOnlinePlayers().size();
+    }
+
+    /**
      * Grabs a {@link Stream} of every online player.
      *
      * @return The stream of players

@@ -21,7 +21,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
+/**
+ * @author Shahar (Nokoa)
+ * @since Jul/7/2017
+ */
 public class BugCommand {
     @Inject
     private Database database;

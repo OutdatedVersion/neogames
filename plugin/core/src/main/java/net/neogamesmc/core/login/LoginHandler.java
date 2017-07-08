@@ -66,7 +66,7 @@ public class LoginHandler implements Listener
 
             if (account.isPresent())
             {
-                database.cacheCommit(account.get().updateData(database));
+                database.cacheCommit(account.get().updateData(database, event.getName(), event.getAddress().getHostAddress()));
             }
             else
             {
@@ -95,7 +95,7 @@ public class LoginHandler implements Listener
      *
      * @param event The event
      */
-    @EventHandler ( priority = EventPriority.LOWEST )
+    @EventHandler ( priority = EventPriority.HIGHEST )
     public void cleanup(PlayerQuitEvent event)
     {
         database.cacheInvalidate(event.getPlayer().getUniqueId());
@@ -108,7 +108,7 @@ public class LoginHandler implements Listener
      */
     private static void deny(AsyncPlayerPreLoginEvent event)
     {
-        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ChatColor.RED + "Issue encountered whilst processing login request.");
+        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ChatColor.YELLOW + "Issue encountered whilst processing login request.");
     }
 
 }

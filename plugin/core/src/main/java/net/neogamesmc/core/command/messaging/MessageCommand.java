@@ -16,7 +16,10 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.UUID;
 
-
+/**
+ * @author Shahar (Nokoa)
+ * @since Jul/7/2017
+ */
 public class MessageCommand {
     @Inject
     private Database database;

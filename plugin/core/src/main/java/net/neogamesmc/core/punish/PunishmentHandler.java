@@ -39,7 +39,7 @@ public class PunishmentHandler
     /**
      * SQL statement to insert punishments.
      */
-    private static final String SQL_RECORD_PUNISHMENT = "INSERT INTO punishments (target, target_id, issued_by, type, reason, expires_at) VALUES ((SELECT uuid FROM accounts WHERE name=?), (SELECT iid FROM accounts WHERE name=?), ?, ?, ?);";
+    private static final String SQL_RECORD_PUNISHMENT = "INSERT INTO punishments (target, target_id, issued_by, type, reason, expires_at) VALUES ((SELECT uuid FROM accounts WHERE name=?), (SELECT iid FROM accounts WHERE name=?), ?, ?, ?, ?);";
 
     /**
      * Discord channel ID for sending tracking messages.

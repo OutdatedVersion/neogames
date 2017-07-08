@@ -86,6 +86,21 @@ public class Account
     @Column ( "address" )
     private String ip;
 
+    // ---------------------------
+    // Preferences
+
+    /**
+     * Whether or not the player has lobby flight enabled.
+     */
+    @Column ( "lobby_flight" )
+    private boolean lobbyFlight;
+
+    /**
+     * Whether or not the player has private messaging enabled.
+     */
+    @Column ( "private_messages" )
+    private boolean messages;
+
     /**
      * Create a new account from the provided login data.
      *
@@ -112,14 +127,16 @@ public class Account
      * with data formed when logging in.
      *
      * @param database An instance of our database
+     * @param name The new name
+     * @param ip The new IP address
      * @return This account
      */
-    public Account updateData(Database database)
+    public Account updateData(Database database, String name, String ip)
     {
         try
         {
             new InsertUpdateOperation(SQL_UPDATE_ACCOUNT)
-                    .data(name, ip, lastLogin, id)
+                    .data(this.name = name, this.ip = ip, lastLogin = Instant.now(), id)
                     .async(database);
         }
         catch (Exception ex)
@@ -145,6 +162,36 @@ public class Account
         new UpdatePlayerRolePayload(name, role).publish(redis);
 
         return unsafeRole(role);
+    }
+
+    /**
+     * Update whether or not a player has lobby flight toggled.
+     *
+     * @param nowEnabled If it is now enabled
+     * @param database Our database instance
+     * @return This account
+     */
+    @SneakyThrows
+    public Account lobbyFlight(boolean nowEnabled, Database database)
+    {
+        new InsertUpdateOperation("UPDATE settings SET lobby_flight=? WHERE account_id=?;").data(lobbyFlight = nowEnabled, id).async(database);
+
+        return this;
+    }
+
+    /**
+     * Update whether or not a player has private messaging toggled.
+     *
+     * @param nowEnabled If it is now enabled
+     * @param database Our database instance
+     * @return This account
+     */
+    @SneakyThrows
+    public Account message(boolean nowEnabled, Database database)
+    {
+        new InsertUpdateOperation("UPDATE settings SET private_messages=? WHERE account_id=?;").data(messages = nowEnabled, id).async(database);
+
+        return this;
     }
 
     /**

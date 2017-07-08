@@ -52,7 +52,7 @@ public class SendPlayersCommand
 
         // Inform
         Message.prefix("Send").content("Forcing").content(target.length, ChatColor.GREEN)
-        .content("player" + (target.length > 1 ? "s" : "") + " to").content(config.name, ChatColor.YELLOW).send(player);
+        .content("player" + (target.length > 1 ? "s" : "") + " to").content(server, ChatColor.YELLOW).send(player);
     }
 
     /**

@@ -71,6 +71,21 @@ public class Mutators
     // populate
     static
     {
+        DEFAULT.put(boolean.class, new Mutator<Boolean>()
+        {
+            @Override
+            public void to(Boolean data, int index, PreparedStatement statement) throws SQLException
+            {
+                statement.setBoolean(index, data);
+            }
+
+            @Override
+            public Boolean from(String fieldName, ResultSet result) throws SQLException
+            {
+                return result.getBoolean(fieldName);
+            }
+        });
+
         DEFAULT.put(String.class, new Mutator<String>()
         {
             @Override
