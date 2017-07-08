@@ -155,6 +155,9 @@ public class ServerCreator
     {
         val data = groups.get(group);
 
+        System.out.println("Groups: " + groups.toString());
+        System.out.println("data = " + (data == null ? null : data.toString()));
+
         return data == null ? 0 : data.serverCount.get();
     }
 
