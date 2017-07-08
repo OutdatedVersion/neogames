@@ -36,6 +36,11 @@ public class Ping implements Listener
                              .append("!\n", NONE).obfuscated(true).color(AQUA);
 
     /**
+     * Name of the "protocol" object sent out by the proxy.
+     */
+    private static final String PROTOCOL_NAME = "NeoGames (1.11.2+)";
+
+    /**
      * The top-bound to the amount of players
      * that may be online concurrently.
      */
@@ -90,6 +95,7 @@ public class Ping implements Listener
     {
         event.getResponse().setDescriptionComponent(responseText);
         event.getResponse().getPlayers().setMax(maxPlayerCount);
+        event.getResponse().getVersion().setName(PROTOCOL_NAME);
     }
 
 }

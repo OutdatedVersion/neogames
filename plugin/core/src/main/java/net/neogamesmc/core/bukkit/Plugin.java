@@ -4,10 +4,16 @@ import com.google.gson.Gson;
 import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
+import lombok.SneakyThrows;
 import lombok.val;
 import net.neogamesmc.common.backend.ServerConfiguration;
+import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.payload.NotifyNetworkOfServerPayload;
 import net.neogamesmc.common.redis.RedisHandler;
+import net.neogamesmc.core.command.api.CommandHandler;
+import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.FileReader;
@@ -16,7 +22,7 @@ import java.io.FileReader;
  * @author Ben (OutdatedVersion)
  * @since Jun/29/2017 (5:12 PM)
  */
-public abstract class Plugin extends JavaPlugin
+public abstract class Plugin extends JavaPlugin implements Listener
 {
 
     /**
@@ -57,9 +63,71 @@ public abstract class Plugin extends JavaPlugin
      * @param <T> Type-parameter for that class
      * @return The fresh instance
      */
+    @SneakyThrows
     public <T> T get(Class<T> clazz)
     {
         return injector.getInstance(clazz);
+    }
+
+    /**
+     * Grab an instance of the provided class and
+     * if it's a {@link Listener} register it.
+     *
+     * @param clazz The class
+     * @param <T> Type-parameter for that class
+     * @return The fresh instance
+     */
+    @SneakyThrows
+    public <T> T register(Class<T> clazz)
+    {
+        T obj = get(clazz);
+
+        if (obj instanceof Listener)
+            Bukkit.getPluginManager().registerEvents((Listener) obj, this);
+
+        return obj;
+    }
+
+    /**
+     * Load up modules in our core/commons.
+     */
+    public void loadCore()
+    {
+        System.out.println("[Core] Beginning class-path traversal and class injection");
+
+        new FastClasspathScanner("net.neogamesmc")
+                    .addClassLoader(getClassLoader())
+                    .matchClassesWithAnnotation(ParallelStartup.class, this::register)
+                    .scan();
+    }
+
+    /**
+     * Setup our command handler and register core commands.
+     */
+    public void setupCommands()
+    {
+        setupCommands(true);
+    }
+
+    /**
+     * Setup our command handler and optionally register core commands.
+     *
+     * @param registerCore Whether or not to register our core commands
+     */
+    public void setupCommands(boolean registerCore)
+    {
+        val handler = register(CommandHandler.class).addProviders(CommandHandler.DEFAULT_PROVIDERS);
+
+        if (registerCore)
+            handler.registerInPackage("net.neogamesmc.core");
+    }
+
+    /**
+     * Register this class as a listener.
+     */
+    public void registerAsListener()
+    {
+        Bukkit.getPluginManager().registerEvents(this, this);
     }
 
     @Override

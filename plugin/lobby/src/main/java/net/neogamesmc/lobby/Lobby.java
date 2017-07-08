@@ -3,17 +3,14 @@ package net.neogamesmc.lobby;
 import com.destroystokyo.paper.Title;
 import com.google.inject.Binder;
 import com.google.inject.Injector;
-import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import lombok.val;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.neogamesmc.common.database.Database;
-import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.payload.FindAndSwitchServerPayload;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.bukkit.Plugin;
-import net.neogamesmc.core.command.api.CommandHandler;
 import net.neogamesmc.core.hotbar.HotbarHandler;
 import net.neogamesmc.core.hotbar.HotbarItem;
 import net.neogamesmc.core.inventory.ItemBuilder;
@@ -55,7 +52,7 @@ import static org.bukkit.Material.COMPASS;
  * @author Ben (OutdatedVersion)
  * @since Jun/19/2017 (3:30 AM)
  */
-public class Lobby extends Plugin implements Listener
+public class Lobby extends Plugin
 {
 
     /**
@@ -96,21 +93,13 @@ public class Lobby extends Plugin implements Listener
         get(RedisHandler.class).subscribe(RedisChannel.DEFAULT);
         register(News.class);
         register(HotbarHandler.class);
-        register(CommandHandler.class)
-                .addProviders(CommandHandler.DEFAULT_PROVIDERS)
-                .registerInPackage("net.neogamesmc.core");
 
         register(PlayerSidebarManager.class);
         scoreboard = register(LobbyScoreboard.class);
 
-        System.out.println("Beginning class-path scan..");
-
-        new FastClasspathScanner("net.neogamesmc")
-                .addClassLoader(getClassLoader())
-                .matchClassesWithAnnotation(ParallelStartup.class, this::register)
-                .scan();
-
-        getServer().getPluginManager().registerEvents(this, this);
+        loadCore();
+        setupCommands();
+        registerAsListener();
 
 
         val lobby = Bukkit.getWorld("lobby");
@@ -317,7 +306,7 @@ public class Lobby extends Plugin implements Listener
 
         ItemBuilder chunkRunnerItemBuilder = new ItemBuilder(Material.GRASS);
         chunkRunnerItemBuilder.name(Colors.bold(GREEN) + "Chunk Runner");
-        chunkRunnerItemBuilder.lore(ChatColor.DARK_GRAY + "Parkour/Challenge", "", ChatColor.GRAY + "Run along a parkour course that", ChatColor.GRAY + "generates in one direction and", ChatColor.GRAY + "crumbles away behind you at an", ChatColor.GRAY + "increasing speed!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky & FantomLX", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "1 - 24 Players");
+        chunkRunnerItemBuilder.lore(ChatColor.DARK_GRAY + "Parkour/Challenge", "", ChatColor.GRAY + "Run along a parkour course that", ChatColor.GRAY + "generates in one direction and", ChatColor.GRAY + "crumbles away behind you at an", ChatColor.GRAY + "increasing speed!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky & FantomLX", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "1 - 24 Players", "", currentlyPlaying("chunkrunner"));
 
 
         inventory.setItem(11, chunkRunnerItemBuilder.build());
@@ -326,7 +315,7 @@ public class Lobby extends Plugin implements Listener
 
         ItemBuilder blastOffItemBuilder = new ItemBuilder(Material.FIREBALL);
         blastOffItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.RED) + "Blast Off");
-        blastOffItemBuilder.lore(ChatColor.DARK_GRAY + "Mini-game/PvP", "", ChatColor.GRAY + "Use your arsenal of exploding weapons", ChatColor.GRAY + "and tons of powerups to blast apart", ChatColor.GRAY + "the map! Be the last player standing", ChatColor.GRAY + "to win!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky, Falcinspire, Dennisbuilds,", ChatColor.BLUE + "ItsZender, Jayjo, Corey977, JacobRuby,", ChatColor.BLUE + "Team Dracolyte & StainMine", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 12 Players");
+        blastOffItemBuilder.lore(ChatColor.DARK_GRAY + "Mini-game/PvP", "", ChatColor.GRAY + "Use your arsenal of exploding weapons", ChatColor.GRAY + "and tons of powerups to blast apart", ChatColor.GRAY + "the map! Be the last player standing", ChatColor.GRAY + "to win!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky, Falcinspire, Dennisbuilds,", ChatColor.BLUE + "ItsZender, Jayjo, Corey977, JacobRuby,", ChatColor.BLUE + "Team Dracolyte & StainMine", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 12 Players", "", currentlyPlaying("blastoff"));
 
         inventory.setItem(13, blastOffItemBuilder.build());
         inventory.setItem(4, glass(1));
@@ -334,7 +323,7 @@ public class Lobby extends Plugin implements Listener
 
         ItemBuilder bowplinkoItemBuilder = new ItemBuilder(Material.BOW);
         bowplinkoItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.DARK_PURPLE) + "Bowplinko");
-        bowplinkoItemBuilder.lore(ChatColor.DARK_GRAY + "Mini-game/Archery", "", ChatColor.GRAY + "A fast-paced archery war between", ChatColor.GRAY + "two teams, but with a twist.", ChatColor.GRAY + "If you get hit, you fall down", ChatColor.GRAY + "a plinko board!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 24 Players");
+        bowplinkoItemBuilder.lore(ChatColor.DARK_GRAY + "Mini-game/Archery", "", ChatColor.GRAY + "A fast-paced archery war between", ChatColor.GRAY + "two teams, but with a twist.", ChatColor.GRAY + "If you get hit, you fall down", ChatColor.GRAY + "a plinko board!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 24 Players", "", currentlyPlaying("bowplinko"));
 
         inventory.setItem(15, bowplinkoItemBuilder.build());
         inventory.setItem(6, glass(10));
@@ -375,6 +364,17 @@ public class Lobby extends Plugin implements Listener
     private void sendTo(Player player, String group)
     {
         new FindAndSwitchServerPayload(new String[]{player.getUniqueId().toString()}, group).publish(get(RedisHandler.class));
+    }
+
+    /**
+     * Grab the text for the "Join so and so players now" message on the selector.
+     *
+     * @param group The group this is for
+     * @return The text
+     */
+    private String currentlyPlaying(String group)
+    {
+        return ChatColor.GREEN + "" + ChatColor.UNDERLINE + "Join " + ChatColor.GOLD + "0" + ChatColor.GREEN + " people now!";
     }
 
     /**

@@ -13,7 +13,7 @@
     <modules>
         <module>common</module>
         <module>plugin</module>
-        <module>coeus</module>
+        <!--<module>coeus</module>-->
         <module>discord-bot</module>
     </modules>
 
