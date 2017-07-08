@@ -3,7 +3,7 @@ package net.neogamesmc.core.command;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import net.md_5.bungee.api.ChatColor;
-import net.neogamesmc.common.backend.ServerData;
+import net.neogamesmc.common.backend.ServerConfiguration;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.payload.SendDiscordMessagePayload;
 import net.neogamesmc.common.redis.RedisHandler;
@@ -33,7 +33,7 @@ public class BugCommand {
     private Plugin plugin;
 
     @Inject
-    private ServerData serverData;
+    private ServerConfiguration serverData;
 
     private final long CHANNEL_ID = 333088112471179264l;
 
