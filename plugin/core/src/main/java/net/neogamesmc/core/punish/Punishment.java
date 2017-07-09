@@ -9,9 +9,24 @@ import java.time.Instant;
 public class Punishment
 {
 
+    /**
+     * ID of the punishment.
+     */
     public int id;
+
+    /**
+     * Reason for this punishment being issued.
+     */
     public String reason;
+
+    /**
+     * When this punishment expires.
+     */
     public Instant expiresAt;
+
+    /**
+     * The type of this punishment.
+     */
     public PunishmentType type;
 
 }

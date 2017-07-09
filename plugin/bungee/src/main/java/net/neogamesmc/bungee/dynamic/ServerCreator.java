@@ -146,7 +146,9 @@ public class ServerCreator
                 val startFile = new File(path + "/start.sh");
                 val propertiesFile = new File(path + "/server.properties");
 
-                val replacedStart = FileUtils.readFileToString(startFile).replaceAll("ID", String.valueOf(assignedID));
+                val replacedStart = FileUtils.readFileToString(startFile).replaceAll("ID", String.valueOf(assignedID))
+                                                                         .replaceAll("MEM_MIN", "256M")
+                                                                         .replaceAll("MEM_MAX", memMax(group) + "M");
                 val replacedProperties = FileUtils.readFileToString(propertiesFile).replaceAll("PORT", String.valueOf(assignedPort));
 
                 // Write changes
@@ -298,6 +300,24 @@ public class ServerCreator
 
             default:
                 return 50;
+        }
+    }
+
+    /**
+     * Grab the maximum amount of memory for a group.
+     *
+     * @param group The group name
+     * @return The value
+     */
+    private static short memMax(String group)
+    {
+        switch (group)
+        {
+            case "blastoff":
+                return 756;
+
+            default:
+                return 512;
         }
     }
 

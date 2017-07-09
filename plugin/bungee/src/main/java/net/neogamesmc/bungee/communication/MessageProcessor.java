@@ -108,6 +108,13 @@ public class MessageProcessor
         queue.queue(payload.group, payload.targets);
     }
 
+    @FromChannel ( RedisChannel.NETWORK )
+    @HandlesType ( RemoveFromQueuePayload.class )
+    public void removedQueuedPlayers(RemoveFromQueuePayload payload)
+    {
+        queue.removeFromQueue(payload.targets);
+    }
+
     /**
      * Respond to requests to add servers.
      *

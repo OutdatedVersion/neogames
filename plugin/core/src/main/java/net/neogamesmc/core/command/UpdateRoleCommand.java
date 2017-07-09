@@ -76,7 +76,7 @@ public class UpdateRoleCommand
 
                 if (role == null)
                 {
-                    Message.prefix("Account").player(account.name()).content("has")
+                    Message.prefix("Account").player(account.name()).content("currently possess")
                             .content(Text.fromEnum(account.role()), account.role().color).send(player);
                     return;
                 }

@@ -1,7 +1,11 @@
 package net.neogamesmc.core.player;
 
+import net.neogamesmc.common.database.Database;
+import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.text.Message;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -37,6 +41,32 @@ public class Players
     public static Stream<? extends Player> stream()
     {
         return Bukkit.getOnlinePlayers().stream();
+    }
+
+    /**
+     * Grabs a {@link Stream} of every player that has the provided role. (Or higher)
+     *
+     * @param role The role
+     * @param database Database instance
+     * @return The stream
+     */
+    public static Stream<? extends Pair<? extends Player, Role>> stream(Role role, Database database)
+    {
+        return Bukkit.getOnlinePlayers()
+                     .stream()
+                     .map(player -> Pair.of(player, database.cacheFetch(player.getUniqueId()).role()))
+                     .filter(entry -> entry.getRight().compare(role));
+    }
+
+    /**
+     * Play a sound to the provided player.
+     *
+     * @param player The player
+     * @param sound The sound
+     */
+    public static void sound(Player player, Sound sound)
+    {
+        player.playSound(player.getLocation(), sound, 0F, 100F);
     }
 
     /**

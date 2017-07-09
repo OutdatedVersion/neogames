@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS accounts (
   `first_login` TIMESTAMP NOT NULL DEFAULT NOW(),
   `last_login` TIMESTAMP NOT NULL DEFAULT NOW(),
   PRIMARY KEY (`iid`),
-  UNIQUE KEY (`uuid`)
+  UNIQUE KEY (`uuid`),
+  UNIQUE KEY (`name`)
 );
 
 

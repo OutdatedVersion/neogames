@@ -1,4 +1,4 @@
-package net.neogamesmc.core.backend;
+package net.neogamesmc.core.command;
 
 import com.google.inject.Inject;
 import net.md_5.bungee.api.ChatColor;

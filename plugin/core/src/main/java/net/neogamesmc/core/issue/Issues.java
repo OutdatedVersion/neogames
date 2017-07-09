@@ -1,7 +1,12 @@
 package net.neogamesmc.core.issue;
 
+import lombok.val;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.neogamesmc.common.exception.BugsnagHook;
+import net.neogamesmc.core.player.Players;
+import net.neogamesmc.core.scheduler.Scheduler;
+import org.bukkit.entity.Player;
 
 /**
  * Utility methods relating to the
@@ -27,8 +32,8 @@ public class Issues
         // console
         throwable.printStackTrace();
 
-
         final StackTraceElement head = throwable.getStackTrace()[0];
+
 
         // ex
         // x ERROR java.lang.NPE <friendly>
@@ -39,6 +44,13 @@ public class Issues
         builder.append(throwable.toString()).color(ChatColor.GRAY);
 
         builder.append(friendly).color(ChatColor.RED);
+        val message = builder.create();
+
+        // Inform in-game
+        Players.stream().filter(Player::isOp).forEach(player -> player.sendMessage(message));
+
+        // Send out to exception handler
+        Scheduler.async(() -> BugsnagHook.report(throwable));
     }
 
 }

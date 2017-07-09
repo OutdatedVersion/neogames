@@ -86,6 +86,16 @@ public class PlayerQueue implements Runnable, Listener
         }
     }
 
+    public void removeFromQueue(String... targets)
+    {
+        for (String target : targets)
+        {
+            val group = inQueue.remove(target);
+
+            groupQueues.get(group).removeIf(next -> Arrays.asList(next.targets).contains(target));
+        }
+    }
+
     @Override
     public void run()
     {
@@ -140,7 +150,11 @@ public class PlayerQueue implements Runnable, Listener
             });
         }
 
-        System.out.println("[Queue] Elapsed processing time: " + (System.currentTimeMillis() - startedAt) + "ms");
+        // Debug
+        long time = System.currentTimeMillis() - startedAt;
+
+        if (time >= 4)
+            System.out.println("[Queue] Elapsed processing time: " + time + "ms");
     }
 
     @EventHandler
@@ -150,11 +164,16 @@ public class PlayerQueue implements Runnable, Listener
     }
 
     @EventHandler
-    public void removeFromQueue(PlayerDisconnectEvent event)
+    public void fromOnDisconnect(PlayerDisconnectEvent event)
     {
         inQueue.remove(event.getPlayer().toString());
     }
 
+    /**
+     * Create a server in the provided group.
+     *
+     * @param group the group
+     */
     private void create(String group)
     {
         if (!alreadyCreating.contains(group))

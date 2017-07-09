@@ -135,8 +135,12 @@ public class Account
     {
         try
         {
+            this.name = name;
+            this.ip = ip;
+            this.lastLogin = Instant.now();
+
             new InsertUpdateOperation(SQL_UPDATE_ACCOUNT)
-                    .data(this.name = name, this.ip = ip, lastLogin = Instant.now(), id)
+                    .data(name, ip, lastLogin, id)
                     .async(database);
         }
         catch (Exception ex)
