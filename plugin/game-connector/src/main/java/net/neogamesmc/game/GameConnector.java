@@ -2,6 +2,7 @@ package net.neogamesmc.game;
 
 import com.google.inject.Injector;
 import net.neogamesmc.common.database.Database;
+import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.display.PlayerList;
 import net.neogamesmc.core.scheduler.Scheduler;
@@ -19,6 +20,9 @@ import static net.md_5.bungee.api.ChatColor.YELLOW;
 public class GameConnector extends Plugin
 {
 
+    /**
+     * Locally held database instance.
+     */
     private Database database;
 
     @Override
@@ -32,13 +36,14 @@ public class GameConnector extends Plugin
 
         unregister(PlayerList.class);
 
-        Scheduler.timer(new CapacityWatchdog(), 40);
+        Scheduler.timer(new CapacityWatchdog(), CapacityWatchdog.INTERVAL);
     }
 
     @Override
     public void disable()
     {
         database.release();
+        get(RedisHandler.class).release();
     }
 
     @EventHandler

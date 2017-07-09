@@ -57,9 +57,9 @@ public class LobbyScoreboard implements Listener
                             .blank()
                             .add(bold(YELLOW) + "Coins")
                             .add(coinsFor(player))
-                            .blank()
-                            .add(bold(GREEN) + "Players")
-                            .add("0")
+//                            .blank()
+//                            .add(bold(GREEN) + "Players")
+//                            .add("0")
                             .blank()
                             .add(GOLD + "play.neogamesmc.net")
                             .draw().registerWith(manager, player);

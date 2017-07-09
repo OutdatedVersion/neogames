@@ -312,7 +312,7 @@ public class CommandHandler implements Listener
                     else
                     {
                         invokingWith[i] = null;
-                        // todo
+                        continue;
                     }
                 }
 

@@ -7,9 +7,12 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import lombok.SneakyThrows;
 import lombok.val;
 import net.md_5.bungee.api.ProxyServer;
+import net.neogamesmc.bungee.NeoGames;
+import net.neogamesmc.bungee.event.AddServerEvent;
 import net.neogamesmc.bungee.util.NumberProvider;
 import net.neogamesmc.common.backend.ServerConfiguration;
 import net.neogamesmc.common.reference.Paths;
@@ -26,6 +29,7 @@ import java.util.concurrent.Executors;
  * @author Ben (OutdatedVersion)
  * @since Jul/07/2017 (6:15 PM)
  */
+@Singleton
 public class ServerCreator
 {
 
@@ -38,6 +42,11 @@ public class ServerCreator
      * Our proxy instance.
      */
     @Inject private ProxyServer proxy;
+
+    /**
+     * Local plugin instance.
+     */
+    @Inject private NeoGames plugin;
 
     /**
      * Service to run these requests.
@@ -69,6 +78,33 @@ public class ServerCreator
     private Map<String, ServerData> waitingToAdd = Maps.newConcurrentMap();
 
     /**
+     * Provision a server in the provided group and start it.
+     *
+     * @param group The group
+     * @return Future
+     */
+    public ListenableFuture<String> createAndStartServer(String group)
+    {
+        val future = createServer(group);
+
+        future.addListener(() ->
+        {
+            try
+            {
+                val path = future.get();
+
+                Runtime.getRuntime().exec(new String[] { "/bin/sh", path } );
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }, plugin::async);
+
+        return future;
+    }
+
+    /**
      * Provision a server in the provided group.
      *
      * @param groupRaw The group
@@ -80,8 +116,6 @@ public class ServerCreator
         {
             try
             {
-                System.out.println("Before anything :: " + groups.toString());
-
                 val group = groupRaw.toLowerCase();
                 val groupData = groups.computeIfAbsent(group, ignored -> new GroupData());
 
@@ -140,9 +174,7 @@ public class ServerCreator
                 waitingToAdd.put(name, new ServerData(assignedID, name, group, assignedPort, maxPlayers));
 
                 // Update map with changes
-                System.out.println("Pre #put :: " + groups.toString());
                 groups.put(group, groupData);
-                System.out.println("Post #put :: " + groups.toString());
 
                 System.out.println("[Network Provisioning] Deployed " + name + " [" + assignedID + ":" + assignedPort + "]");
 
@@ -165,9 +197,6 @@ public class ServerCreator
     public int serverCountInGroup(String group)
     {
         val data = groups.get(group);
-
-        System.out.println("Groups: " + groups.toString());
-        System.out.println("data = " + (data == null ? null : data.toString()));
 
         return data == null ? 0 : data.serverCount.get();
     }
@@ -199,6 +228,9 @@ public class ServerCreator
             proxy.getServers().put(name, proxy.constructServerInfo(name, new InetSocketAddress(data.port), null, false));
             groups.get(data.group).servers.add(data);
 
+            // send out notification to local code
+            proxy.getPluginManager().callEvent(new AddServerEvent(data));
+            // "log"
             System.out.println("[Network] Now tracking " + name);
         }
     }
@@ -245,6 +277,7 @@ public class ServerCreator
 
         // Remove from proxy
         proxy.getServers().remove(name);
+        System.out.println("[Network] No longer tracking " + name);
     }
 
     /**
@@ -252,7 +285,7 @@ public class ServerCreator
      *
      * @return max players
      */
-    private static int maxPlayersFromGroup(String group)
+    public static int maxPlayersFromGroup(String group)
     {
         switch (group)
         {
@@ -264,7 +297,7 @@ public class ServerCreator
                 return 12;
 
             default:
-                return 100;
+                return 50;
         }
     }
 

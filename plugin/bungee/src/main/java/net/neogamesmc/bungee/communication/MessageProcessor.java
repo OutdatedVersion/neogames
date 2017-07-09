@@ -6,10 +6,8 @@ import net.md_5.bungee.api.ProxyServer;
 import net.neogamesmc.bungee.NeoGames;
 import net.neogamesmc.bungee.distribution.PlayerDirector;
 import net.neogamesmc.bungee.dynamic.ServerCreator;
-import net.neogamesmc.common.payload.FindAndSwitchServerPayload;
-import net.neogamesmc.common.payload.NotifyNetworkOfServerPayload;
-import net.neogamesmc.common.payload.RawSwitchServerPayload;
-import net.neogamesmc.common.payload.RequestServerCreationPayload;
+import net.neogamesmc.bungee.queue.PlayerQueue;
+import net.neogamesmc.common.payload.*;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.redis.api.FromChannel;
@@ -23,7 +21,7 @@ import static java.util.UUID.fromString;
  * @author Ben (OutdatedVersion)
  * @since Jun/29/2017 (1:47 AM)
  */
-public class MessageHandler
+public class MessageProcessor
 {
 
     /**
@@ -47,15 +45,19 @@ public class MessageHandler
     @Inject private ServerCreator creator;
 
     /**
+     * Expose way to queue players to groups.
+     */
+    @Inject private PlayerQueue queue;
+
+    /**
      * Class Constructor
      *
      * @param redis Redis instance
      */
     @Inject
-    public MessageHandler(RedisHandler redis)
+    public MessageProcessor(RedisHandler redis)
     {
         redis.registerHook(this);
-        System.out.println("[Network] Registering message hook");
     }
 
     /**
@@ -96,21 +98,14 @@ public class MessageHandler
     @HandlesType ( RequestServerCreationPayload.class )
     public void createServer(RequestServerCreationPayload payload)
     {
-        val future = creator.createServer(payload.group);
+        creator.createAndStartServer(payload.group);
+    }
 
-        future.addListener(() ->
-        {
-            try
-            {
-                val path = future.get();
-
-                Runtime.getRuntime().exec(new String[] { "/bin/sh", path } );
-            }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-        }, plugin::async);
+    @FromChannel ( RedisChannel.NETWORK )
+    @HandlesType ( QueuePlayersForGroupPayload.class )
+    public void queuePlayers(QueuePlayersForGroupPayload payload)
+    {
+        queue.queue(payload.group, payload.targets);
     }
 
     /**

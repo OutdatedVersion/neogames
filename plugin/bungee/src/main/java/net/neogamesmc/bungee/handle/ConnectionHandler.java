@@ -66,40 +66,4 @@ public class ConnectionHandler implements Listener
         }
     }
 
-    @EventHandler
-    public void moveToLobbyOnServerStop(ServerKickEvent event)
-    {
-        System.out.println("ServerKickEvent | " + event.getCause().name() + " | " + event.getState().name());
-    }
-
-    @EventHandler
-    public void disconnectEvent(ServerDisconnectEvent event)
-    {
-        System.out.println("ServerDisconnectEvent | " + event.getPlayer().getName() + " -> " + event.getTarget().getName());
-    }
-
-    @EventHandler
-    public void playerDisconnectEvent(PlayerDisconnectEvent event)
-    {
-        System.out.println("PlayerDisconnectEvent | " + event.getPlayer().getName());
-    }
-
-    @EventHandler
-    public void switchEvent(ServerSwitchEvent event)
-    {
-        System.out.println("ServerSwitchEvent | " + event.getPlayer().getName());
-    }
-
-    @EventHandler
-    public void connectEvent(ServerConnectEvent event)
-    {
-        System.out.println("ServerConnectEvent | " + event.getPlayer().getName());
-    }
-
-    @EventHandler
-    public void connectedEvent(ServerConnectedEvent event)
-    {
-        System.out.println("ServerConnectEvent | " + event.getPlayer().getName());
-    }
-
 }

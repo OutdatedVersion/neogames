@@ -147,10 +147,11 @@ public class PunishmentProcessor implements Listener
         }
     }
 
-    // @HandlesType ( PunishmentPayload.class )
+    @HandlesType ( PunishmentPayload.class )
     public void updateCache(PunishmentPayload payload)
     {
-        // TODO(Ben): IMPORTANT. Handle cache invalidation on punishment revoke.
+        DATA_CACHE.invalidateAll();
+        // TODO(Ben): IMPORTANT. properly cache invalidation on punishment revoke.
     }
 
     @FromChannel ( RedisChannel.NETWORK )

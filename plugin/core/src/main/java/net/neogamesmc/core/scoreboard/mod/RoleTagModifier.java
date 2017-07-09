@@ -44,7 +44,7 @@ public class RoleTagModifier implements ScoreboardModifier
 
             // prefix
             if (role == Role.PLAYER)
-                scoreboard.registerNewTeam(id).setPrefix(ChatColor.RESET + " " + ChatColor.GRAY);
+                scoreboard.registerNewTeam(id).setPrefix(ChatColor.RESET + "" + ChatColor.GRAY);
             else
                 scoreboard.registerNewTeam(id).setPrefix(role.toName() + ChatColor.RESET + " " + ChatColor.GREEN);
         }
@@ -82,7 +82,7 @@ public class RoleTagModifier implements ScoreboardModifier
     @Override
     public void playerRemove(Player player, Scoreboard scoreboard)
     {
-        team(player, scoreboard).removeEntry(player.getName());
+        // team(player, scoreboard).removeEntry(player.getName());
     }
 
     /**

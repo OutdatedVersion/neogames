@@ -65,6 +65,11 @@ public class PlayerList implements Listener
         playerList(event.player, event.fresh);
     }
 
+    public void mode()
+    {
+
+    }
+
     /**
      * Update how a player is displayed in the player list.
      *
@@ -74,6 +79,11 @@ public class PlayerList implements Listener
     private void playerList(Player player, Role role)
     {
         player.setPlayerListName((role == PLAYER ? PLAYER.color.toString() : LIST_FORMAT.apply(role)) + GREEN + player.getName());
+    }
+
+    public enum Mode
+    {
+        ROLES, NO_ROLES
     }
 
 }

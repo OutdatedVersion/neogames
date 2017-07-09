@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS settings (
   `account_id` INT NOT NULL,
   `lobby_flight` BOOL NOT NULL DEFAULT FALSE,
   `private_messages` BOOL NOT NULL DEFAULT TRUE,
+  `incognito` BOOL NOT NULL DEFAULT FALSE,
   FOREIGN KEY (`account_id`) REFERENCES accounts(`iid`)
 );
 

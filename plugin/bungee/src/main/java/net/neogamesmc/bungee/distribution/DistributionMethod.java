@@ -28,11 +28,7 @@ public enum DistributionMethod implements PlayerDistribution
         public ServerInfo apply(String group, ServerCreator creator)
         {
             val counter = counters.computeIfAbsent(group, ignored -> new AtomicInteger(1));
-            int count = creator.serverCountInGroup(group);
-
-            System.out.println("Counters: " + counters.toString());
-            int id = count < (counter.get() + 1) ? counter.getAndSet(1) : counter.getAndIncrement();
-            System.out.println("Round robbin sending to ID: " + id);
+            int id = creator.serverCountInGroup(group) < (counter.get() + 1) ? counter.getAndSet(1) : counter.getAndIncrement();
 
             return ProxyServer.getInstance().getServerInfo(group + id);
         }
@@ -41,7 +37,7 @@ public enum DistributionMethod implements PlayerDistribution
     /**
      * FTC
      */
-    FILL_TO_CAPACITY
+    LOWEST_FILL_TO_CAPACITY
     {
         @Override
         public ServerInfo apply(String group, ServerCreator creator)

@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import lombok.val;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.neogamesmc.bungee.dynamic.ServerCreator;
@@ -28,6 +29,15 @@ public class PlayerDirector
      */
     private Set<ProxiedPlayer> currentlySending = Sets.newConcurrentHashSet();
 
+    public void connect(ProxiedPlayer player, ServerInfo info)
+    {
+        if (player != null && info != null)
+        {
+            player.connect(info);
+            player.sendMessage(new ComponentBuilder("You're being connected to " + info.getName()).create());
+        }
+    }
+
     /**
      * Sends a player to a server in the provided group.
      *
@@ -36,7 +46,7 @@ public class PlayerDirector
      */
     public void sendPlayer(ProxiedPlayer player, String group)
     {
-        sendPlayer(player, group, DistributionMethod.FILL_TO_CAPACITY);
+        sendPlayer(player, group, DistributionMethod.LOWEST_FILL_TO_CAPACITY);
     }
 
     /**

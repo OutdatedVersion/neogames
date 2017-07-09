@@ -5,10 +5,9 @@ import com.google.inject.Injector;
 import lombok.val;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.neogamesmc.common.database.Database;
-import net.neogamesmc.common.payload.FindAndSwitchServerPayload;
+import net.neogamesmc.common.payload.QueuePlayersForGroupPayload;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
-import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.command.api.CommandHandler;
 import net.neogamesmc.core.hotbar.HotbarHandler;
@@ -39,6 +38,7 @@ import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.util.Vector;
 
 import static net.md_5.bungee.api.ChatColor.*;
 import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
@@ -249,12 +249,15 @@ public class Lobby extends Plugin
     {
         if (event.getEntityType() == EntityType.PLAYER)
         {
-
             event.setCancelled(true);
 
             if (event.getCause() == EntityDamageEvent.DamageCause.VOID)
-                event.getEntity().teleport(spawnLocation);
+            {
+                Player player = ((Player) event.getEntity());
 
+                player.setVelocity(new Vector(0, 0, 0));
+                player.teleport(spawnLocation);
+            }
         }
     }
 
@@ -269,14 +272,6 @@ public class Lobby extends Plugin
     public void disallowWeatherUpdate(WeatherChangeEvent event)
     {
         event.setCancelled(event.toWeatherState());
-    }
-
-    // temp
-    @EventHandler
-    public void roleWhitelist(PlayerLoginEvent event)
-    {
-        if (database.cacheFetch(event.getPlayer().getUniqueId()).role().compareTo(Role.YOUTUBE) >= 0)
-            event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ChatColor.YELLOW + "You are not permitted to join the network yet.");
     }
 
     @EventHandler
@@ -295,14 +290,13 @@ public class Lobby extends Plugin
         event.setCancelled(true);
     }
 
-
     public void openNavigationMenu(Player player)
     {
         Inventory inventory = Bukkit.createInventory(null, 27, bold(DARK_GREEN) + "Join Game");
 
         ItemBuilder chunkRunnerItemBuilder = new ItemBuilder(Material.GRASS);
         chunkRunnerItemBuilder.name(Colors.bold(GREEN) + "Chunk Runner");
-        chunkRunnerItemBuilder.lore(ChatColor.DARK_GRAY + "Parkour/Challenge", "", ChatColor.GRAY + "Run along a parkour course that", ChatColor.GRAY + "generates in one direction and", ChatColor.GRAY + "crumbles away behind you at an", ChatColor.GRAY + "increasing speed!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky & FantomLX", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "1 - 24 Players", "", currentlyPlaying("chunkrunner"));
+        chunkRunnerItemBuilder.lore(ChatColor.DARK_GRAY + "Parkour/Challenge", "", ChatColor.GRAY + "Run along a parkour course that", ChatColor.GRAY + "generates in one direction and", ChatColor.GRAY + "crumbles away behind you at an", ChatColor.GRAY + "increasing speed!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky & FantomLX", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "1 - 24 Players");
 
 
         inventory.setItem(11, chunkRunnerItemBuilder.build());
@@ -311,7 +305,7 @@ public class Lobby extends Plugin
 
         ItemBuilder blastOffItemBuilder = new ItemBuilder(Material.FIREBALL);
         blastOffItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.RED) + "Blast Off");
-        blastOffItemBuilder.lore(ChatColor.DARK_GRAY + "Mini-game/PvP", "", ChatColor.GRAY + "Use your arsenal of exploding weapons", ChatColor.GRAY + "and tons of powerups to blast apart", ChatColor.GRAY + "the map! Be the last player standing", ChatColor.GRAY + "to win!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky, Falcinspire, Dennisbuilds,", ChatColor.BLUE + "ItsZender, Jayjo, Corey977, JacobRuby,", ChatColor.BLUE + "Team Dracolyte & StainMine", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 12 Players", "", currentlyPlaying("blastoff"));
+        blastOffItemBuilder.lore(ChatColor.DARK_GRAY + "Mini-game/PvP", "", ChatColor.GRAY + "Use your arsenal of exploding weapons", ChatColor.GRAY + "and tons of powerups to blast apart", ChatColor.GRAY + "the map! Be the last player standing", ChatColor.GRAY + "to win!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky, Falcinspire, Dennisbuilds,", ChatColor.BLUE + "ItsZender, Jayjo, Corey977, JacobRuby,", ChatColor.BLUE + "Team Dracolyte & StainMine", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 12 Players");
 
         inventory.setItem(13, blastOffItemBuilder.build());
         inventory.setItem(4, glass(1));
@@ -319,7 +313,7 @@ public class Lobby extends Plugin
 
         ItemBuilder bowplinkoItemBuilder = new ItemBuilder(Material.BOW);
         bowplinkoItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.DARK_PURPLE) + "Bowplinko");
-        bowplinkoItemBuilder.lore(ChatColor.DARK_GRAY + "Mini-game/Archery", "", ChatColor.GRAY + "A fast-paced archery war between", ChatColor.GRAY + "two teams, but with a twist.", ChatColor.GRAY + "If you get hit, you fall down", ChatColor.GRAY + "a plinko board!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 24 Players", "", currentlyPlaying("bowplinko"));
+        bowplinkoItemBuilder.lore(ChatColor.DARK_GRAY + "Mini-game/Archery", "", ChatColor.GRAY + "A fast-paced archery war between", ChatColor.GRAY + "two teams, but with a twist.", ChatColor.GRAY + "If you get hit, you fall down", ChatColor.GRAY + "a plinko board!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 24 Players");
 
         inventory.setItem(15, bowplinkoItemBuilder.build());
         inventory.setItem(6, glass(10));
@@ -359,7 +353,7 @@ public class Lobby extends Plugin
 
     private void sendTo(Player player, String group)
     {
-        new FindAndSwitchServerPayload(new String[] { player.getUniqueId().toString() }, group).publish(get(RedisHandler.class));
+        new QueuePlayersForGroupPayload(group, player.getUniqueId().toString()).publish(get(RedisHandler.class));
     }
 
     /**

@@ -56,7 +56,7 @@ public class UpdateRoleCommand
     @Permission ( Role.ADMIN )
     public void execute(Player player,
                         @Necessary ( "Please provide a target name" ) String targetName,
-                        @Necessary ( "You did not provide a role" ) Role role)
+                        Role role)
     {
         val fetch = database.fetchAccount(targetName);
 
@@ -73,6 +73,13 @@ public class UpdateRoleCommand
                 }
 
                 val account = optional.get();
+
+                if (role == null)
+                {
+                    Message.prefix("Account").player(account.name()).content("has")
+                            .content(Text.fromEnum(account.role()), account.role().color).send(player);
+                    return;
+                }
 
                 // role of the player who executed the command
                 val ourRole = database.cacheFetch(player.getUniqueId()).role();

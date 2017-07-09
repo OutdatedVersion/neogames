@@ -6,13 +6,16 @@ import com.google.inject.Singleton;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
-import net.neogamesmc.bungee.communication.MessageHandler;
+import net.neogamesmc.bungee.communication.MessageProcessor;
+import net.neogamesmc.bungee.dynamic.ServerCreator;
 import net.neogamesmc.bungee.handle.ConnectionHandler;
 import net.neogamesmc.bungee.handle.Ping;
 import net.neogamesmc.bungee.handle.PunishmentProcessor;
-import net.neogamesmc.common.payload.RequestServerCreationPayload;
+import net.neogamesmc.bungee.queue.PlayerQueue;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * BungeeCord plugin bootstrapping.
@@ -39,9 +42,11 @@ public class NeoGames extends Plugin
         });
 
         injector.getInstance(RedisHandler.class).init().subscribe(RedisChannel.DEFAULT, RedisChannel.NETWORK);
-        inject(Ping.class, PunishmentProcessor.class, ConnectionHandler.class, MessageHandler.class);
+        inject(Ping.class, PunishmentProcessor.class, ConnectionHandler.class, MessageProcessor.class, PlayerQueue.class);
 
-        injector.getInstance(MessageHandler.class).createServer(new RequestServerCreationPayload(null, "lobby", null));
+        injector.getInstance(ServerCreator.class).createAndStartServer("lobby");
+
+        getProxy().getScheduler().schedule(this, injector.getInstance(PlayerQueue.class), 0, 100, TimeUnit.MILLISECONDS);
     }
 
     /**

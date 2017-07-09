@@ -11,6 +11,13 @@ public class CapacityWatchdog implements Runnable
 {
 
     /**
+     * How often to run this task.
+     * <p>
+     * The default is {@code 5 seconds}.
+     */
+    static final int INTERVAL = 60;
+
+    /**
      * Whether or not we've already checked if someone has logged in.
      */
     private boolean alreadyChecked;

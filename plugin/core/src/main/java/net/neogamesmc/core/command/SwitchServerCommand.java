@@ -36,9 +36,6 @@ public class SwitchServerCommand
     @Permission ( value = Role.MOD, note = "Sorry, you're not permitted to use this! Try the menus/NPCs to get around! :)" )
     public void serverCommand(Player player, @Necessary ( "You missed the server's name" ) String server)
     {
-        // TODO(Ben): Move this somewhere we can actually be sure this is happening.
-        Message.prefix("Network").content("You are being connected to:").content(server, YELLOW).send(player);
-
         if (server.equalsIgnoreCase(data.name))
         {
             Message.prefix("Network").content("You are already connected to that server", RED).send(player);

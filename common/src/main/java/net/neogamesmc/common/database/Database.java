@@ -77,6 +77,7 @@ public class Database
         hikariConfig.setUsername(config.auth.username);
         hikariConfig.setPassword(config.auth.password);
         hikariConfig.setJdbcUrl(DatabaseConfig.FORMAT_JDBC_URL.apply(config));
+        hikariConfig.setMaximumPoolSize(4);
 
         logger.info("[Database] JDBC URL: " + hikariConfig.getJdbcUrl());
 
