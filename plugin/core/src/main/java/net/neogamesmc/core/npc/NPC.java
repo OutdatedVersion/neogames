@@ -141,6 +141,10 @@ public class NPC extends Reflections {
         setValue(packet, "e", location.getZ());
         setValue(packet, "f", getFixRotation(location.getYaw()));
         setValue(packet, "g", getFixRotation(location.getPitch()));
+        DataWatcher w = new DataWatcher(null);
+        w.register(new DataWatcherObject<>(6, DataWatcherRegistry.c), (byte)20);
+        w.register(new DataWatcherObject<>(10, DataWatcherRegistry.a),  (byte)127);
+        setValue(packet, "h", w);
 
 
         /*
