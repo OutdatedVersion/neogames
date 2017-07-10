@@ -117,6 +117,7 @@ public class NPC extends Reflections {
      * @param player
      */
     public void spawn(Player player) {
+        System.out.println("spawn method");
 
         /*
         Add player to viewers list so it can be respawned for the viewers when they go out of sight.
@@ -145,15 +146,19 @@ public class NPC extends Reflections {
 
         try
         {
-            DataWatcherObject<Byte> entityBitFlags = (DataWatcherObject<Byte>) npc.getClass().getDeclaredField("Z").get(npc);
+            DataWatcherObject<Byte> humanSettings = DataWatcher.a(EntityHuman.class, DataWatcherRegistry.a);
 
-            DataWatcher watcher = new DataWatcher(npc);
-            watcher.register(entityBitFlags, npc);
+            DataWatcher watcher = npc.getDataWatcher();
+            watcher.register(humanSettings, (byte) 1);
 
-            watcher.set(entityBitFlags, (byte) 20);
-            watcher.set(entityBitFlags, (byte) 127);
-
+            // Display a player's skin with every layer enabled
+            // 127 is bit mask with every layer enabled -- Fetched from packet sniffing
+            // why doesn't this work
+            // please help
+            watcher.set(humanSettings, (byte) 127);
             setValue(packet, "h", watcher);
+
+            System.out.println("Set val for 'h' :: " + ((DataWatcher) getValue(packet, "h")).get(humanSettings).byteValue());
         }
         catch (Exception ex)
         {
@@ -454,6 +459,18 @@ public class NPC extends Reflections {
 
     public int getEntityID() {
         return entityID;
+    }
+
+    private List<Field> getInheritedPrivateFields(Class<?> type) {
+        List<Field> result = new ArrayList<Field>();
+
+        Class<?> i = type;
+        while (i != null && i != Object.class) {
+            Collections.addAll(result, i.getDeclaredFields());
+            i = i.getSuperclass();
+        }
+
+        return result;
     }
 
 

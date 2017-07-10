@@ -8,7 +8,6 @@ import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.payload.FindAndSwitchServerPayload;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
-import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.command.api.CommandHandler;
 import net.neogamesmc.core.hotbar.HotbarHandler;
@@ -136,18 +135,27 @@ public class Lobby extends Plugin
         ((CraftVillager) villager).getHandle().setPositionRotation(-1.147, 63.06250, 2.5, -80, 0);
         ((CraftVillager) villager).getHandle().h(-80f);
 
-        NpcManager npcManager = new NpcManager(this);
-        net.neogamesmc.core.npc.NPC ben = npcManager.createNewNpc("OutdatedVersion", new Location(spawnLocation.getWorld(), 38, 63, 4.8, 101.0f, -0.3f));
-        ben.setQuote("ice is chewy");
-        ben.setLine(1, ChatColor.YELLOW + "" + net.md_5.bungee.api.ChatColor.BOLD + "NPC " + org.bukkit.ChatColor.YELLOW + " " + ben.getName());
-        ben.setSkin("eyJ0aW1lc3RhbXAiOjE0OTk1ODMxNjIwNjQsInByb2ZpbGVJZCI6IjAzYzMzN2NkN2JlMDQ2OTRiOWIwZTJmZDAzZjU3MjU4IiwicHJvZmlsZU5hbWUiOiJPdXRkYXRlZFZlcnNpb24iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2JjNDZhMWI1OWUzYWJlNGFjMjQ3Y2FmOWVhNWRkMzlmOGZmYjlkNTUwZDhkZDM2NDYxMDVlOTRiOTk5YyJ9LCJDQVBFIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWMzY2E3ZWUyYTQ5OGYxYjVkMjU4ZDVmYTkyN2U2M2U0MzMxNDNhZGQ1NTM4Y2Y2M2I2YTliNzhhZTczNSJ9fX0=", "hBlO8s3TfZc1TIKrWmnY/o9Hc48FcHXmCpMgwvfN7aEW0mJrpAvPe9bi7orXsigmZlOg48bPLjjHbXsWq4qOXWU/+ZMYtGwbx0a+raN8akPR3WHDMI1ynkr3Vog+10SGWSa0hIJurO25OBQdP8kW0RLTbmACDFB2bYQmLU/s8G3QsMko2xgqQc8EjMlSya/q2FmMfCyoM+JjjElt+McVJ20atG/8R303DBJL8MN9YbZ//WTtlAdIejMwlDKdxnnoa/fWHaCPz8bjFWE8LvIgO41sy3yF6uhlHZ6l8bR6OT929cE6Lbxc7082gwyTEqeFx2jB2orpZYsBe2tzgw7NCsXX6WHu58Fb8BNsP0MCKIgdnSzoChuYCDNbjXtFCe+kJyLusrHyoDcwqKEt0yUVipHPDPlsRCmDjOy364uojuRWwRnY/bY1NyooFRiwqecY/wVybXjsytyV4w+iObLwJ9UIMNkujUAvnUDWcliZcnuwWI6CjaGHdEl9kGF0MpS9GxlRrOby7C1zAsAw6OOljm5op6TXs/+3d2ww0qdy/Nj9tzuR/to80MK1TSrTOJ+TWNzgyXcq4XGeRT/kUpwCckyooxvRbnmNRWGki/Nwm/oxcWBlr7YRgwKVfkgTvGOjNqGAz6x/W8nnPyF/F0GizEnkX2fAp6FejZkS/iG7zyY=");
+        try
+        {
+            System.out.println("Attempting to spawn NPCs");
+
+            NpcManager npcManager = register(NpcManager.class);
+
+            net.neogamesmc.core.npc.NPC ben = npcManager.createNewNpc("OutdatedVersion", new Location(spawnLocation.getWorld(), 38, 63, 4.8, 101.0f, -0.3f));
+            ben.setQuote("ice is chewy");
+            ben.setLine(1, ChatColor.YELLOW + "" + net.md_5.bungee.api.ChatColor.BOLD + "NPC " + org.bukkit.ChatColor.YELLOW + " " + ben.getName());
+            ben.setSkin("eyJ0aW1lc3RhbXAiOjE0OTk2Njk5NjY0OTIsInByb2ZpbGVJZCI6IjAzYzMzN2NkN2JlMDQ2OTRiOWIwZTJmZDAzZjU3MjU4IiwicHJvZmlsZU5hbWUiOiJPdXRkYXRlZFZlcnNpb24iLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmM0NmExYjU5ZTNhYmU0YWMyNDdjYWY5ZWE1ZGQzOWY4ZmZiOWQ1NTBkOGRkMzY0NjEwNWU5NGI5OTljIn0sIkNBUEUiOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS81YzNjYTdlZTJhNDk4ZjFiNWQyNThkNWZhOTI3ZTYzZTQzMzE0M2FkZDU1MzhjZjYzYjZhOWI3OGFlNzM1In19fQ==", "nC99fqmbJe8ZuI1Pz4SN6u5bdBW1NEiAsJeZGLR4EjUA43tslrz7fDQmV2wIZRMVpTMM2WH+qd8pp6nmJNp7M7420NmhAtATGdIirM5srN8WBnbtRByJ13m2nbOCxN1p5kziFUvY2KlsC5Sk/RGrIz98S0ZH2jt+vVWPbxkNX1fRNIQmyPePd4Bv18UFANBowK/pbb17cb7DTDPp8MlunbLpqkRWmSLrlclf1jfSR5CpgkMD0jyPQvVxDdEy7RcLrBQK7XT5syjuYat84nFCXEGBMlAfXdTB1D+a+iW2Lt1YZCYR7EuXgO6JHnWzqi0xxC3xJ5CJGFbz2HdYGm9llQuRxgJsJ2KfUv+LoeNDbUXsvjguSdxgiAGbK0uaxGVDG0vnLN7rCVunwUR4HTUrOCGG1mBgjGAMzE5lz2+aSCmb3hpqDpHMSb5I02pefDoM1N60C+WcMTbTLoljvNRPeHQ6ZjFz1MW9gymKTXHlRgy4bAhkzqZywBs2dXnlqL1dNBGTYH4FoGctTZkxn5X8nGaIgcGAxwbjOMaHC5LjkcrdQD0RrebVC5M2wI6AXkOi5rNQqR2aQzA+TeP54sYNGhanN/PUORtYIAcU+LX1J5wVHrq07uxWcnj0s+nUQDCoHo5eT2UELOwzKq0LSo36BxW9O/gvNg9aBohTegvwRUQ=");
 
 
-        net.neogamesmc.core.npc.NPC nokoa = npcManager.createNewNpc("Nokoa", new Location(spawnLocation.getWorld(), 27.5, 64, -29, 42.4f, 15f));
-        nokoa.setQuote("I like trains! Do you like trains?");
-        nokoa.setLine(1, ChatColor.YELLOW + "" + net.md_5.bungee.api.ChatColor.BOLD + "NPC " + org.bukkit.ChatColor.YELLOW + " " + nokoa.getName());
-        nokoa.setSkin("eyJ0aW1lc3RhbXAiOjE0OTk1ODMxNDIzNjUsInByb2ZpbGVJZCI6IjQ0MTJiM2I0ZTAwMDQ4OTViZTFlMThiNThkNDJjYzFkIiwicHJvZmlsZU5hbWUiOiJOb2tvYSIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTMzNzYwYWY1ZWNkZDIwODJlMTk0ZTc0ODYyMTg4ZmE3MjI1Yjc3M2ViYjNkN2ZkNmRiNDQyZmZiYWJiYWUifX19", "ABh1gNaUFCnVtLtb9JObQtJ9ctRMhbT7b6AEcubU3q7y36N+eij3Q+XGuHfgv5e03lgd1lX3nNxOrxbt5NvBFh7ZwEDUqlaQMFqdMskDPqTRKR89CEd6vMzXgIvJQF+eZ/lNlHXCurSn8MuP1afhPlvm8bu4W/W1rk/XHCDmsKYkssChNMN9pvLxnxS3Mx/jcuMuJJfjgjxCWl2IrbtiOjrtXwMVqvhQy37N2eGIfC1FPKzdp5G8sIdrd4+/0RzrkC+jTA/8Uirdm8FZuu/xIIq9yB72Sw1EjKUl9JSJkn5OEOmtquVVCpoYavoNdhpRhWkUbMejdhMTmkzFQB2fsIgKuKXGXSCTIMuauZ3hRIVbCKWsvZIyelmtwzd5pH9ml/7GQvlOzQ02jMwagFNg7ydUBpTf4mIOT3sM5xEwV1Uyfg8aSIDauRTA1E76JuI9xKxOCTThg4GSylZyhiKiiAtezTypc/bIHam5nXlLFAg8H8zdWH5Irluc36eSOfhJlKvHzDQOyspXrFKt5k1oLSgoyH628qwR3dMclXVSpj09HGVMSWjhKaq2RFVvpUbjAMz05YGqwN18qBPXVBL1Gy3j+dmsnfFdu8OaUI4Qp6Gf7IlfCU86FAGWm4PnXLviNa4zK2dyRp8tFnc52LmhZ5zn/kLbkLyzFKsA1Q+Xj7w=");
-
+            net.neogamesmc.core.npc.NPC nokoa = npcManager.createNewNpc("Nokoa", new Location(spawnLocation.getWorld(), 27.5, 64, -29, 42.4f, 15f));
+            nokoa.setQuote("I like trains! Do you like trains?");
+            nokoa.setLine(1, ChatColor.YELLOW + "" + net.md_5.bungee.api.ChatColor.BOLD + "NPC " + org.bukkit.ChatColor.YELLOW + " " + nokoa.getName());
+            nokoa.setSkin("eyJ0aW1lc3RhbXAiOjE0OTk1ODMxNDIzNjUsInByb2ZpbGVJZCI6IjQ0MTJiM2I0ZTAwMDQ4OTViZTFlMThiNThkNDJjYzFkIiwicHJvZmlsZU5hbWUiOiJOb2tvYSIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTMzNzYwYWY1ZWNkZDIwODJlMTk0ZTc0ODYyMTg4ZmE3MjI1Yjc3M2ViYjNkN2ZkNmRiNDQyZmZiYWJiYWUifX19", "ABh1gNaUFCnVtLtb9JObQtJ9ctRMhbT7b6AEcubU3q7y36N+eij3Q+XGuHfgv5e03lgd1lX3nNxOrxbt5NvBFh7ZwEDUqlaQMFqdMskDPqTRKR89CEd6vMzXgIvJQF+eZ/lNlHXCurSn8MuP1afhPlvm8bu4W/W1rk/XHCDmsKYkssChNMN9pvLxnxS3Mx/jcuMuJJfjgjxCWl2IrbtiOjrtXwMVqvhQy37N2eGIfC1FPKzdp5G8sIdrd4+/0RzrkC+jTA/8Uirdm8FZuu/xIIq9yB72Sw1EjKUl9JSJkn5OEOmtquVVCpoYavoNdhpRhWkUbMejdhMTmkzFQB2fsIgKuKXGXSCTIMuauZ3hRIVbCKWsvZIyelmtwzd5pH9ml/7GQvlOzQ02jMwagFNg7ydUBpTf4mIOT3sM5xEwV1Uyfg8aSIDauRTA1E76JuI9xKxOCTThg4GSylZyhiKiiAtezTypc/bIHam5nXlLFAg8H8zdWH5Irluc36eSOfhJlKvHzDQOyspXrFKt5k1oLSgoyH628qwR3dMclXVSpj09HGVMSWjhKaq2RFVvpUbjAMz05YGqwN18qBPXVBL1Gy3j+dmsnfFdu8OaUI4Qp6Gf7IlfCU86FAGWm4PnXLviNa4zK2dyRp8tFnc52LmhZ5zn/kLbkLyzFKsA1Q+Xj7w=");
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
     @Override
     public void disable()
@@ -281,14 +289,6 @@ public class Lobby extends Plugin
     public void disallowWeatherUpdate(WeatherChangeEvent event)
     {
         event.setCancelled(event.toWeatherState());
-    }
-
-    // temp
-    @EventHandler
-    public void roleWhitelist(PlayerLoginEvent event)
-    {
-        if (database.cacheFetch(event.getPlayer().getUniqueId()).role().compareTo(Role.YOUTUBE) >= 0)
-            event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ChatColor.YELLOW + "You are not permitted to join the network yet.");
     }
 
     @EventHandler

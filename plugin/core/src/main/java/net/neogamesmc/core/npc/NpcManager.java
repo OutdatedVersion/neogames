@@ -1,10 +1,13 @@
 package net.neogamesmc.core.npc;
 
+import com.google.inject.Inject;
 import net.neogamesmc.core.bukkit.Plugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.HashMap;
@@ -18,7 +21,8 @@ import java.util.Map;
  *
  * Stores, registers, creates, and manipulate NPCs
  */
-public class NpcManager  {
+public class NpcManager implements Listener
+{
     Plugin plugin;
 
     HashMap<Integer, NPC> npcs = new HashMap<>();
@@ -26,6 +30,7 @@ public class NpcManager  {
     final int RESPAWN_DISTANCE = 88;
     final long REFRESH_CHECK_INTERVAL = 10;
 
+    @Inject
     public NpcManager(Plugin plugin) {
         this.plugin = plugin;
         handleSpawns();
@@ -51,6 +56,11 @@ public class NpcManager  {
 
         PacketReader packetReader = new PacketReader(player, this);
         packetReader.inject();
+
+        ((CraftPlayer) player).getProfile().getProperties().asMap().forEach((key, val) ->
+        {
+            val.forEach(prop -> System.out.println(prop.getName() + ": [signature=" + prop.getSignature() + ",value=" + prop.getValue() + "]"));
+        });
 
         Iterator npcsIteator = npcs.entrySet().iterator();
         while (npcsIteator.hasNext()) {

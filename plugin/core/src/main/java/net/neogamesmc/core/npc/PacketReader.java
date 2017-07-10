@@ -4,7 +4,10 @@ package net.neogamesmc.core.npc;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
+import io.netty.handler.codec.MessageToMessageEncoder;
+import lombok.val;
 import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_11_R1.DataWatcher;
 import net.minecraft.server.v1_11_R1.Packet;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -35,8 +38,26 @@ public class PacketReader {
             @Override
             protected void decode(ChannelHandlerContext arg0, Packet<?> packet, List<Object> arg2) throws Exception {
                 arg2.add(packet);
-                readPacket(packet);
+
+                // System.out.println("Read  :: " + player.getName() + " > " + packet.getClass().getSimpleName());
+                processPacket(packet);
             }
+        });
+
+        channel.pipeline().addLast("PacketInjectorWrite", new MessageToMessageEncoder<Packet<?>>()
+        {
+            @Override
+            protected void encode(ChannelHandlerContext channelHandlerContext, Packet<?> packet, List<Object> list) throws Exception
+            {
+                // System.out.println("Write :: " + player.getName() + " > " + packet.getClass().getSimpleName());
+                list.add(packet);
+                processPacket(packet);
+            }
+        });
+
+        channel.pipeline().forEach(entry ->
+        {
+            System.out.println(entry.getKey() + " -> " + entry.getValue().toString());
         });
     }
 
@@ -47,7 +68,17 @@ public class PacketReader {
     }
 
 
-    public void readPacket(Packet<?> packet) {
+    public void processPacket(Packet<?> packet) {
+        if (packet.getClass().getSimpleName().equals("PacketPlayOutNamedEntitySpawn")) {
+            System.out.println("PacketPlayOutNamedEntitySpawn");
+
+            val dataWatcher = ((DataWatcher) getValue(packet, "h"));
+
+            dataWatcher.c().forEach(item -> {
+                System.out.println("Data Watcher Value: " + (dataWatcher.get(item.a())));
+            });
+        }
+
         if (packet.getClass().getSimpleName().equalsIgnoreCase("PacketPlayInUseEntity")) {
             int id = (Integer) getValue(packet, "a");
 
@@ -60,6 +91,10 @@ public class PacketReader {
 
                 }
             }
+        }
+
+        if (packet.getClass().getSimpleName().equalsIgnoreCase("PacketPlayInSettings")) {
+            System.out.println("val " + getValue(packet, "e"));
         }
 
     }
