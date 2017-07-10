@@ -32,7 +32,7 @@ class PunishTools
      */
     static String format(PunishmentPayload payload)
     {
-        return TimeFormatting.format(Instant.ofEpochMilli(payload.expiresAt));
+        return payload.expiresAt == -1 ? "Never ending sentence" : TimeFormatting.format(Instant.ofEpochMilli(payload.expiresAt));
     }
 
     /**

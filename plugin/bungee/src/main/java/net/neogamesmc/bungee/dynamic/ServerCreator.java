@@ -215,7 +215,7 @@ public class ServerCreator
     {
         val data = groups.get(group);
 
-        return data == null ? Collections.emptySet() : Collections.unmodifiableSet(data.servers);
+        return data == null ? Collections.emptySet() : data.servers;
     }
 
     /**

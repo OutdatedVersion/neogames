@@ -28,7 +28,7 @@ public class LeaveQueueCommand
     public void run(Player player)
     {
         new RemoveFromQueuePayload(player.getUniqueId().toString()).publish(redis);
-        Message.prefix("Queue").content("You've requested to be removed from the queue").send(player);
+        Message.prefix("Queue").content("You've requested removal from the queue").send(player);
     }
 
 }

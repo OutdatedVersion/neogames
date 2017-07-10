@@ -181,7 +181,7 @@ public class Lobby extends Plugin
 
         new HotbarItem(event.getPlayer(), new ItemBuilder(COMPASS).name(bold(DARK_GREEN) + "Game Selection").build())
                 .location(0)
-                .action(Action.RIGHT_CLICK_AIR, this::openNavigationMenu)
+                .action(this::openNavigationMenu, Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK)
                 .add(get(HotbarHandler.class));
 
         scoreboard.create(event.getPlayer());

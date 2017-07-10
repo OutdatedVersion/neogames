@@ -48,7 +48,7 @@ public class PlayerQueue implements Runnable, Listener
     /**
      * A set of every player currently in queue to be connected.
      */
-    private Map<String, String> inQueue = Maps.newHashMap();
+    private Map<String, String> inQueue = Maps.newConcurrentMap();
 
     /**
      * A set of groups that already have servers in queue to be made.
@@ -96,7 +96,8 @@ public class PlayerQueue implements Runnable, Listener
         {
             val group = inQueue.remove(target);
 
-            groupQueues.get(group).removeIf(next -> Arrays.asList(next.targets).contains(target));
+            if (group != null)
+                groupQueues.get(group).removeIf(next -> Arrays.asList(next.targets).contains(target));
         }
     }
 
@@ -125,7 +126,7 @@ public class PlayerQueue implements Runnable, Listener
 
                         if (info != null)
                         {
-                            if ((info.getPlayers().size() + up.count) < max)
+                            if ((info.getPlayers().size() + up.count) <= max)
                             {
                                 System.out.println("[Queue] Connecting " + up.toString() + " to " + info.getName());
 
@@ -175,8 +176,10 @@ public class PlayerQueue implements Runnable, Listener
     }
 
     /**
-     * If a player has been connected to
-     * @param event
+     * If a player has been connected to a server they're queued for and
+     * they're yet to be removed from the queue system, do it manually.
+     *
+     * @param event The event
      */
     @EventHandler
     public void cleanup(ServerSwitchEvent event)
@@ -212,7 +215,9 @@ public class PlayerQueue implements Runnable, Listener
         else
         {
             val from = inQueue.remove(target);
-            groupQueues.get(from).removeIf(reservation -> Arrays.asList(reservation.targets).contains(target));
+
+            if (from != null)
+                groupQueues.get(from).removeIf(reservation -> Arrays.asList(reservation.targets).contains(target));
         }
     }
 
@@ -227,6 +232,7 @@ public class PlayerQueue implements Runnable, Listener
         {
             creator.createAndStartServer(group);
             alreadyCreating.add(group);
+            System.out.println("[Queue] Requested server creation in group " + group);
         }
     }
 

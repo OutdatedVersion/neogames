@@ -11,6 +11,7 @@ import net.neogamesmc.common.redis.api.HandlesType;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.command.api.Command;
+import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.player.Players;
 import org.bukkit.entity.Player;
@@ -55,7 +56,7 @@ public class StaffChatCommand
      */
     @Command ( executor = { "s", "c", "staffchat" } )
     @Permission ( value = Role.MOD, note = "Regular chat works fine. :)" )
-    public void run(Player player, String[] message)
+    public void run(Player player, @Necessary ( "Please provide a message" ) String[] message)
     {
         new StaffChatPayload(config.name, player.getName(), database.cacheFetch(player.getUniqueId()).role(), Text.convertArray(message)).publish(redis);
     }
@@ -70,7 +71,7 @@ public class StaffChatCommand
     {
         Players.stream(Role.MOD, database).forEach(entry ->
             entry.getLeft().sendMessage(new ComponentBuilder("Staff Chat ").bold(true)
-                    .append(Text.fromEnum(entry.getRight()) + " " + entry.getLeft().getName(), NONE).color(entry.getRight().color)
+                    .append(Text.fromEnum(payload.role) + " " + payload.name, NONE).color(payload.role.color)
                     .append(" " + payload.message).color(ChatColor.YELLOW).create())
         );
     }

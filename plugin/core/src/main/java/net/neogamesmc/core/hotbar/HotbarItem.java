@@ -63,9 +63,11 @@ public class HotbarItem
      * @param action The action
      * @return This item, for chaining
      */
-    public HotbarItem action(Action type, Consumer<Player> action)
+    public HotbarItem action(Consumer<Player> action, Action... types)
     {
-        actions.put(type, action);
+        for (Action type : types)
+            actions.put(type, action);
+
         return this;
     }
 

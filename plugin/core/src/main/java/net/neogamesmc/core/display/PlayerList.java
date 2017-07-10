@@ -1,6 +1,7 @@
 package net.neogamesmc.core.display;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import lombok.Getter;
 import lombok.val;
 import net.md_5.bungee.api.ChatColor;
@@ -28,6 +29,7 @@ import static net.neogamesmc.common.reference.Role.PLAYER;
  * @author Ben (OutdatedVersion)
  * @since Jun/19/2017 (2:41 AM)
  */
+@Singleton
 @ParallelStartup
 public class PlayerList implements Listener
 {
@@ -52,7 +54,7 @@ public class PlayerList implements Listener
      * The current mode this
      */
     @Getter
-    private Mode mode;
+    private Mode mode = Mode.ROLES;
 
     /**
      * Apply the display mode when a player logs in.
