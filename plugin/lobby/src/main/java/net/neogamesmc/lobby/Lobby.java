@@ -14,7 +14,7 @@ import net.neogamesmc.core.hotbar.HotbarHandler;
 import net.neogamesmc.core.hotbar.HotbarItem;
 import net.neogamesmc.core.inventory.ItemBuilder;
 import net.neogamesmc.core.issue.Issues;
-import net.neogamesmc.core.npc.NpcManager;
+import net.neogamesmc.core.npc.NPCManager;
 import net.neogamesmc.core.scoreboard.PlayerSidebarManager;
 import net.neogamesmc.core.text.Colors;
 import net.neogamesmc.lobby.news.News;
@@ -137,20 +137,23 @@ public class Lobby extends Plugin
 
         try
         {
-            System.out.println("Attempting to spawn NPCs");
-
-            NpcManager npcManager = register(NpcManager.class);
+            NPCManager npcManager = register(NPCManager.class).scoreboard(get(PlayerSidebarManager.class));
 
             net.neogamesmc.core.npc.NPC ben = npcManager.createNewNpc("OutdatedVersion", new Location(spawnLocation.getWorld(), 38, 63, 4.8, 101.0f, -0.3f));
             ben.setQuote("ice is chewy");
-            ben.setLine(1, ChatColor.YELLOW + "" + net.md_5.bungee.api.ChatColor.BOLD + "NPC " + org.bukkit.ChatColor.YELLOW + " " + ben.getName());
+            ben.setLine(1, ChatColor.YELLOW + "" + net.md_5.bungee.api.ChatColor.BOLD + "NPC " + net.md_5.bungee.api.ChatColor.RESET + org.bukkit.ChatColor.YELLOW + " " + ben.getName());
             ben.setSkin("eyJ0aW1lc3RhbXAiOjE0OTk2Njk5NjY0OTIsInByb2ZpbGVJZCI6IjAzYzMzN2NkN2JlMDQ2OTRiOWIwZTJmZDAzZjU3MjU4IiwicHJvZmlsZU5hbWUiOiJPdXRkYXRlZFZlcnNpb24iLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmM0NmExYjU5ZTNhYmU0YWMyNDdjYWY5ZWE1ZGQzOWY4ZmZiOWQ1NTBkOGRkMzY0NjEwNWU5NGI5OTljIn0sIkNBUEUiOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS81YzNjYTdlZTJhNDk4ZjFiNWQyNThkNWZhOTI3ZTYzZTQzMzE0M2FkZDU1MzhjZjYzYjZhOWI3OGFlNzM1In19fQ==", "nC99fqmbJe8ZuI1Pz4SN6u5bdBW1NEiAsJeZGLR4EjUA43tslrz7fDQmV2wIZRMVpTMM2WH+qd8pp6nmJNp7M7420NmhAtATGdIirM5srN8WBnbtRByJ13m2nbOCxN1p5kziFUvY2KlsC5Sk/RGrIz98S0ZH2jt+vVWPbxkNX1fRNIQmyPePd4Bv18UFANBowK/pbb17cb7DTDPp8MlunbLpqkRWmSLrlclf1jfSR5CpgkMD0jyPQvVxDdEy7RcLrBQK7XT5syjuYat84nFCXEGBMlAfXdTB1D+a+iW2Lt1YZCYR7EuXgO6JHnWzqi0xxC3xJ5CJGFbz2HdYGm9llQuRxgJsJ2KfUv+LoeNDbUXsvjguSdxgiAGbK0uaxGVDG0vnLN7rCVunwUR4HTUrOCGG1mBgjGAMzE5lz2+aSCmb3hpqDpHMSb5I02pefDoM1N60C+WcMTbTLoljvNRPeHQ6ZjFz1MW9gymKTXHlRgy4bAhkzqZywBs2dXnlqL1dNBGTYH4FoGctTZkxn5X8nGaIgcGAxwbjOMaHC5LjkcrdQD0RrebVC5M2wI6AXkOi5rNQqR2aQzA+TeP54sYNGhanN/PUORtYIAcU+LX1J5wVHrq07uxWcnj0s+nUQDCoHo5eT2UELOwzKq0LSo36BxW9O/gvNg9aBohTegvwRUQ=");
 
 
             net.neogamesmc.core.npc.NPC nokoa = npcManager.createNewNpc("Nokoa", new Location(spawnLocation.getWorld(), 27.5, 64, -29, 42.4f, 15f));
             nokoa.setQuote("I like trains! Do you like trains?");
-            nokoa.setLine(1, ChatColor.YELLOW + "" + net.md_5.bungee.api.ChatColor.BOLD + "NPC " + org.bukkit.ChatColor.YELLOW + " " + nokoa.getName());
+            nokoa.setLine(1, ChatColor.YELLOW + "" + net.md_5.bungee.api.ChatColor.BOLD + "NPC " + net.md_5.bungee.api.ChatColor.RESET + org.bukkit.ChatColor.YELLOW + " " + nokoa.getName());
             nokoa.setSkin("eyJ0aW1lc3RhbXAiOjE0OTk1ODMxNDIzNjUsInByb2ZpbGVJZCI6IjQ0MTJiM2I0ZTAwMDQ4OTViZTFlMThiNThkNDJjYzFkIiwicHJvZmlsZU5hbWUiOiJOb2tvYSIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTMzNzYwYWY1ZWNkZDIwODJlMTk0ZTc0ODYyMTg4ZmE3MjI1Yjc3M2ViYjNkN2ZkNmRiNDQyZmZiYWJiYWUifX19", "ABh1gNaUFCnVtLtb9JObQtJ9ctRMhbT7b6AEcubU3q7y36N+eij3Q+XGuHfgv5e03lgd1lX3nNxOrxbt5NvBFh7ZwEDUqlaQMFqdMskDPqTRKR89CEd6vMzXgIvJQF+eZ/lNlHXCurSn8MuP1afhPlvm8bu4W/W1rk/XHCDmsKYkssChNMN9pvLxnxS3Mx/jcuMuJJfjgjxCWl2IrbtiOjrtXwMVqvhQy37N2eGIfC1FPKzdp5G8sIdrd4+/0RzrkC+jTA/8Uirdm8FZuu/xIIq9yB72Sw1EjKUl9JSJkn5OEOmtquVVCpoYavoNdhpRhWkUbMejdhMTmkzFQB2fsIgKuKXGXSCTIMuauZ3hRIVbCKWsvZIyelmtwzd5pH9ml/7GQvlOzQ02jMwagFNg7ydUBpTf4mIOT3sM5xEwV1Uyfg8aSIDauRTA1E76JuI9xKxOCTThg4GSylZyhiKiiAtezTypc/bIHam5nXlLFAg8H8zdWH5Irluc36eSOfhJlKvHzDQOyspXrFKt5k1oLSgoyH628qwR3dMclXVSpj09HGVMSWjhKaq2RFVvpUbjAMz05YGqwN18qBPXVBL1Gy3j+dmsnfFdu8OaUI4Qp6Gf7IlfCU86FAGWm4PnXLviNa4zK2dyRp8tFnc52LmhZ5zn/kLbkLyzFKsA1Q+Xj7w=");
+
+            net.neogamesmc.core.npc.NPC neo = npcManager.createNewNpc("NeoMc_", new Location(spawnLocation.getWorld(), -6.5, 64, -26.5, -30.3f, 0));
+            neo.setQuote("I gotta go");
+            neo.setLine(1, ChatColor.YELLOW + "" + net.md_5.bungee.api.ChatColor.BOLD + "NPC " + net.md_5.bungee.api.ChatColor.RESET + org.bukkit.ChatColor.YELLOW + " " + neo.getName());
+            neo.setSkin("eyJ0aW1lc3RhbXAiOjE0OTk1ODMwNTU4OTQsInByb2ZpbGVJZCI6IjY3MWRhNjhlNTAwZjRlZDRiYWQ1YmFlYmU2ZjAzMzM3IiwicHJvZmlsZU5hbWUiOiJOZW9NY18iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2JjYzhkZWM5OGRhNDRkOWFkZGE2MjIyMTM1ZDZiY2YzNjVlYWI3OGZhN2RjZTc5Yzg4M2Q1OGZlYWYifSwiQ0FQRSI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzQzYTUxZDM0YjA3NmY5YWRhNTU1ZGNhNTYyMjA2YmQ5NDJlNDZhM2M0ZDVmODNjMmMyOWU1YjljM2Q3ZGJjYiJ9fX0=", "bZigeHg+9P0hogAqbuDXOJ8r3nc0ha/bC2/BvS+Hf4/UITmVJsxAvB4YJ9+WniC1rLaYW2SrNL8W8zkUFopF5H51dOVS6G1KNd/Lkj2PL8Wjfbz1aMiyTZf1srwNDnTDj9R7hHqjJDmSCNvxfQnS6isicyPB7XQFYgVzb44nnev1qyejzLkAWy9DVIbwpW7jYjMvoqvRIhNzjUeHsTOBIhoJ1GllBzboKyGkvqfUqzX0vACCUyKtJh645tPWtuuG9BwNkZ+AH38fweShxDd3fRGFE7eI+lvUE8oxCG9MVSWKqng96XFFHL8BQM+qDvD+1myCkalJspBL2FaXz0KBwNYIOeppo6jGfitv3oV02aCbwjbGGPEtxkCYm6Ar7jmHzZHmAEDVTeZEZt1LL7XEH9pgxlaGyPzhQ68yqEqr2wfblbaJIASUc2zR55Ada/2nvq4U8h+PPDTAg5WMMsSb9h+o+/FiwMBEtQXbN4FIasa5H2QEbo6+6E04qqqjTULr02ExU16eSJo1DGlaD/wXpHJCuSh8EmGxQ26Y0K0DONgofBNs1hcSTvIAD7C3fTarUDWrUb/gO5VZZ/RCqjoVQ3ycJSf/c5I7ODD7NEuWiPnHhTGiG+MyhSAIc9b6JGGUVpT1UhgOD+0n+4cSZc0+57Kf7VzBcIsEQRDA4oS37X8=");
         }
         catch (Exception ex)
         {

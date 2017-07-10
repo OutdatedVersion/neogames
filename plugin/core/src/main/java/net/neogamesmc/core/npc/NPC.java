@@ -2,6 +2,7 @@ package net.neogamesmc.core.npc;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import lombok.Getter;
 import net.minecraft.server.v1_11_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,7 +14,6 @@ import org.bukkit.craftbukkit.v1_11_R1.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 
@@ -25,6 +25,7 @@ public class NPC extends Reflections {
 
     private int entityID;
     private Location location;
+    @Getter
     private GameProfile gameprofile;
     private List<Player> viewers = new ArrayList<>();
 
@@ -117,8 +118,6 @@ public class NPC extends Reflections {
      * @param player
      */
     public void spawn(Player player) {
-        System.out.println("spawn method");
-
         /*
         Add player to viewers list so it can be respawned for the viewers when they go out of sight.
          */
@@ -134,7 +133,6 @@ public class NPC extends Reflections {
         npc = new EntityPlayer(nmsServer, nmsWorld, gameprofile, new PlayerInteractManager(nmsWorld));
         npc.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 
-
         PacketPlayOutNamedEntitySpawn packet = new PacketPlayOutNamedEntitySpawn(npc);
         setValue(packet, "a", entityID);
         setValue(packet, "b", gameprofile.getId());
@@ -144,26 +142,8 @@ public class NPC extends Reflections {
         setValue(packet, "f", getFixRotation(location.getYaw()));
         setValue(packet, "g", getFixRotation(location.getPitch()));
 
-        try
-        {
-            DataWatcherObject<Byte> humanSettings = DataWatcher.a(EntityHuman.class, DataWatcherRegistry.a);
+        npc.getDataWatcher().set(new DataWatcherObject<>(13, DataWatcherRegistry.a), (byte) 0xFF);
 
-            DataWatcher watcher = npc.getDataWatcher();
-            watcher.register(humanSettings, (byte) 1);
-
-            // Display a player's skin with every layer enabled
-            // 127 is bit mask with every layer enabled -- Fetched from packet sniffing
-            // why doesn't this work
-            // please help
-            watcher.set(humanSettings, (byte) 127);
-            setValue(packet, "h", watcher);
-
-            System.out.println("Set val for 'h' :: " + ((DataWatcher) getValue(packet, "h")).get(humanSettings).byteValue());
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
 
         /*
         Spawn the NPC and its data
@@ -371,7 +351,7 @@ public class NPC extends Reflections {
             Class c = Class.forName(className);
             @SuppressWarnings("unchecked")
             List<Object> players = (List<Object>) getValue(packet, "b");
-            players.add(c.getConstructor(packet.getClass(), com.mojang.authlib.GameProfile.class, int.class, net.minecraft.server.v1_11_R1.EnumGamemode.class, net.minecraft.server.v1_11_R1.IChatBaseComponent.class).newInstance(packet, gameprofile, 1, EnumGamemode.NOT_SET, CraftChatMessage.fromString(ChatColor.DARK_GRAY + "[NPC] " + this.gameprofile.getId().toString().substring(0, 8))[0]));
+            players.add(c.getConstructor(packet.getClass(), com.mojang.authlib.GameProfile.class, int.class, net.minecraft.server.v1_11_R1.EnumGamemode.class, net.minecraft.server.v1_11_R1.IChatBaseComponent.class).newInstance(packet, gameprofile, 1, EnumGamemode.NOT_SET, CraftChatMessage.fromString(ChatColor.DARK_GRAY + this.gameprofile.getId().toString().substring(0, 8))[0]));
             setValue(packet, "a", PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER);
             setValue(packet, "b", players);
 
@@ -459,18 +439,6 @@ public class NPC extends Reflections {
 
     public int getEntityID() {
         return entityID;
-    }
-
-    private List<Field> getInheritedPrivateFields(Class<?> type) {
-        List<Field> result = new ArrayList<Field>();
-
-        Class<?> i = type;
-        while (i != null && i != Object.class) {
-            Collections.addAll(result, i.getDeclaredFields());
-            i = i.getSuperclass();
-        }
-
-        return result;
     }
 
 

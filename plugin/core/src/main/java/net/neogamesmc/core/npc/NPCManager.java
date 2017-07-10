@@ -1,10 +1,11 @@
 package net.neogamesmc.core.npc;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import net.neogamesmc.core.bukkit.Plugin;
+import net.neogamesmc.core.scoreboard.PlayerSidebarManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,20 +22,28 @@ import java.util.Map;
  *
  * Stores, registers, creates, and manipulate NPCs
  */
-public class NpcManager implements Listener
+@Singleton
+public class NPCManager implements Listener
 {
     Plugin plugin;
 
     HashMap<Integer, NPC> npcs = new HashMap<>();
 
-    final int RESPAWN_DISTANCE = 88;
+    final int RESPAWN_DISTANCE = 42;
     final long REFRESH_CHECK_INTERVAL = 10;
 
     @Inject
-    public NpcManager(Plugin plugin) {
+    public NPCManager(Plugin plugin) {
         this.plugin = plugin;
+
         handleSpawns();
 
+    }
+
+    public NPCManager scoreboard(PlayerSidebarManager manager)
+    {
+        manager.addDefaultModifier(plugin.get(NPCModifier.class));
+        return this;
     }
 
     public NPC createNewNpc(String name, Location location) {
@@ -57,11 +66,6 @@ public class NpcManager implements Listener
         PacketReader packetReader = new PacketReader(player, this);
         packetReader.inject();
 
-        ((CraftPlayer) player).getProfile().getProperties().asMap().forEach((key, val) ->
-        {
-            val.forEach(prop -> System.out.println(prop.getName() + ": [signature=" + prop.getSignature() + ",value=" + prop.getValue() + "]"));
-        });
-
         Iterator npcsIteator = npcs.entrySet().iterator();
         while (npcsIteator.hasNext()) {
             Map.Entry pair = (Map.Entry) npcsIteator.next();
@@ -69,11 +73,9 @@ public class NpcManager implements Listener
 
             npc.spawn(player);
 
-
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 npc.removeNpcInfo(player);
             }, 40l);
-
         }
 
     }
