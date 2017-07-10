@@ -13,6 +13,7 @@ import org.bukkit.craftbukkit.v1_11_R1.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 
@@ -141,11 +142,23 @@ public class NPC extends Reflections {
         setValue(packet, "e", location.getZ());
         setValue(packet, "f", getFixRotation(location.getYaw()));
         setValue(packet, "g", getFixRotation(location.getPitch()));
-        DataWatcher w = new DataWatcher(null);
-        w.register(new DataWatcherObject<>(6, DataWatcherRegistry.c), (byte)20);
-        w.register(new DataWatcherObject<>(10, DataWatcherRegistry.a),  (byte)127);
-        setValue(packet, "h", w);
 
+        try
+        {
+            DataWatcherObject<Byte> entityBitFlags = (DataWatcherObject<Byte>) npc.getClass().getDeclaredField("Z").get(npc);
+
+            DataWatcher watcher = new DataWatcher(npc);
+            watcher.register(entityBitFlags, npc);
+
+            watcher.set(entityBitFlags, (byte) 20);
+            watcher.set(entityBitFlags, (byte) 127);
+
+            setValue(packet, "h", watcher);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
 
         /*
         Spawn the NPC and its data
