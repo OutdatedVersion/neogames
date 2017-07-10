@@ -15,10 +15,10 @@ public enum Role
     DEV(ChatColor.DARK_PURPLE),
     ADMIN(ChatColor.RED),
     MOD(ChatColor.DARK_GREEN),
-    VIP(ChatColor.YELLOW),
     BUILDER(ChatColor.DARK_AQUA),
-    // ^ staff
+    // ^ team members
 
+    VIP(ChatColor.YELLOW),
     YOUTUBE(ChatColor.RED),
     YT(ChatColor.DARK_RED),
     // ^ media

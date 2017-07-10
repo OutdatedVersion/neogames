@@ -42,7 +42,7 @@ public class Text
      * @param val The number
      * @return The text
      */
-    public static String fromCurreny(int val)
+    public static String fromCurrency(int val)
     {
         return FORMAT.format(val);
     }
@@ -75,6 +75,17 @@ public class Text
         }
 
         return builder.toString().trim();
+    }
+
+    /**
+     * Remove all numbers from the provided text.
+     *
+     * @param in The text
+     * @return Stripped text
+     */
+    public static String stripNumbers(String in)
+    {
+        return in.replaceAll("[0-9]", "");
     }
 
 }

@@ -19,6 +19,11 @@ public class ServerConfiguration
     public static final File DATA_FILE = new File("server_data.json");
 
     /**
+     * The ID of this server.
+     */
+    public final int id;
+
+    /**
      * Name of this server.
      */
     public final String name;

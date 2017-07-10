@@ -32,7 +32,7 @@ public enum PunishmentType
                              .append("\nBan ID: ").color(GRAY).append("#" + data.id).color(WHITE).create())
         );
 
-        Message.start().content("A player has been removed from your game for abuse.", RED).bold().sendAsIs();
+        Message.start().content("A player has been removed from your server for abuse.", RED).bold().sendAsIs();
     }, ":hammer: -id **-target** has been banned by **-issued_by**. This will expire -expire.\n**Reason:** -reason"),
 
     /**

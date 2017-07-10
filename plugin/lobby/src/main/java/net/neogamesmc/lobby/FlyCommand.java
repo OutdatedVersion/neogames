@@ -7,6 +7,7 @@ import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.command.api.Command;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.text.Message;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,6 +16,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import static net.md_5.bungee.api.ChatColor.GREEN;
 import static net.md_5.bungee.api.ChatColor.RED;
+import static net.md_5.bungee.api.ChatColor.YELLOW;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -37,6 +39,12 @@ public class FlyCommand implements Listener
     @Permission ( value = Role.DUDE, note = "Sorry, this is currently only for donators!" )
     public void run(Player player)
     {
+        if (player.getGameMode() == GameMode.CREATIVE)
+        {
+            Message.prefix("Lobby").content("May want to get out of creative mode before using this. ;)", YELLOW).send(player);
+            return;
+        }
+
         // Change database side
         val nowUsing = toggle(player);
 

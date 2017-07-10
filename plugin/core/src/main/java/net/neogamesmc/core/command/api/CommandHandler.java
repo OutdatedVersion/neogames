@@ -58,7 +58,7 @@ public class CommandHandler implements Listener
     );
 
     /** Default commands that we won't let players run unless we have one that overrides it */
-    public static final Set<String> BLOCKED_COMMANDS = Sets.newHashSet(
+    private static final Set<String> BLOCKED_COMMANDS = Sets.newHashSet(
             "help", "about", "ver", "version"
     );
 

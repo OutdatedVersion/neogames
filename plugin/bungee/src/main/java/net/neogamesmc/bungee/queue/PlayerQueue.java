@@ -10,12 +10,14 @@ import lombok.ToString;
 import lombok.val;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.neogamesmc.bungee.distribution.DistributionMethod;
 import net.neogamesmc.bungee.distribution.PlayerDirector;
 import net.neogamesmc.bungee.dynamic.ServerCreator;
 import net.neogamesmc.bungee.event.AddServerEvent;
+import net.neogamesmc.common.text.Text;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -67,15 +69,17 @@ public class PlayerQueue implements Runnable, Listener
 
             if (current != null)
             {
-                // Already in queue, but different request
+                // Already in queue, but different group requested
                 if (!current.equals(group))
                 {
-                    // O(n) -- Need to cut down
-                    groupQueues.get(current).removeIf(reservation -> Arrays.asList(reservation.targets).contains(target));
+                    removeReservation(group, target);
                 }
                 // Attempted to queue for a group they're already in
                 else allowAdd = false;
             }
+
+            // Already disallowed, stop processing
+            if (!allowAdd) break;
         }
 
         if (allowAdd)
@@ -154,19 +158,62 @@ public class PlayerQueue implements Runnable, Listener
         long time = System.currentTimeMillis() - startedAt;
 
         if (time >= 4)
-            System.out.println("[Queue] Elapsed processing time: " + time + "ms");
+            System.out.println("[Queue] High processing time: " + time + "ms :: Group count " + groupQueues.size());
     }
 
     @EventHandler
     public void removeFromCreating(AddServerEvent event)
     {
+        System.out.println("[Network :: Debug] AddServerEvent");
         alreadyCreating.remove(event.data.group);
     }
 
     @EventHandler
     public void fromOnDisconnect(PlayerDisconnectEvent event)
     {
-        inQueue.remove(event.getPlayer().toString());
+        removeReservation(null, event.getPlayer().getUniqueId().toString());
+    }
+
+    /**
+     * If a player has been connected to
+     * @param event
+     */
+    @EventHandler
+    public void cleanup(ServerSwitchEvent event)
+    {
+        val target = event.getPlayer().getUniqueId().toString();
+        val groupTo = Text.stripNumbers(event.getPlayer().getServer().getInfo().getName());
+
+        val inQueueFor = inQueue.get(target);
+
+        if (inQueueFor != null && inQueueFor.equals(groupTo))
+        {
+            removeReservation(inQueueFor, target);
+        }
+    }
+
+    /**
+     * Remove a reservation for the provided player.
+     * <p>
+     * If a group is provided we'll only remove reservations
+     * for the target in that group -- If not any request will be removed.
+     *
+     * @param group In the group
+     * @param target The target
+     */
+    private void removeReservation(String group, String target)
+    {
+        // O(n) op -- Need to cut down on this
+        if (group != null)
+        {
+            if (inQueue.remove(target, group))
+                groupQueues.get(group).removeIf(reservation -> Arrays.asList(reservation.targets).contains(target));
+        }
+        else
+        {
+            val from = inQueue.remove(target);
+            groupQueues.get(from).removeIf(reservation -> Arrays.asList(reservation.targets).contains(target));
+        }
     }
 
     /**

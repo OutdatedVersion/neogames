@@ -7,12 +7,13 @@ import net.neogamesmc.common.backend.ServerConfiguration;
 import net.neogamesmc.common.payload.NetworkNoticePayload;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.redis.api.HandlesType;
+import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.command.api.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
+import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.player.Players;
 import net.neogamesmc.core.text.Message;
-import org.apache.commons.lang3.ArrayUtils;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
@@ -56,6 +57,7 @@ public class NetworkNoticeCommand
      * @param message The message
      */
     @Command ( executor = { "notif", "notice", "notification" } )
+    @Permission ( Role.ADMIN )
     public void run(Player player,
                     @Necessary ( "Please provide target servers. (Use 'all' to send it everywhere)" ) String targetServer,
                     @Necessary ( "Please supply a message" ) String[] message)
@@ -72,7 +74,7 @@ public class NetworkNoticeCommand
     @HandlesType ( NetworkNoticePayload.class )
     public void display(NetworkNoticePayload payload)
     {
-        if (payload.isAll() || ArrayUtils.contains(payload.targetServers, config.name))
+        if (matchesThisServer(payload))
         {
             // Construct
             val message = new ComponentBuilder("Network Notification ").color(AQUA).bold(true)
@@ -85,6 +87,33 @@ public class NetworkNoticeCommand
                 Players.sound(player, Sound.ENTITY_WITHER_SPAWN);
             });
         }
+    }
+
+    /**
+     * Check if the provided payload matches this server.
+     *
+     * @param payload The payload
+     * @return Yes or no
+     */
+    private boolean matchesThisServer(NetworkNoticePayload payload)
+    {
+        if (payload.isAll())
+            return true;
+
+        boolean matches = false;
+
+        for (String target : payload.targetServers)
+        {
+            if (target.contains("*"))
+                matches = config.name.matches(target);
+            else
+                matches = config.name.equalsIgnoreCase(target);
+
+            // Already does, no need to process more
+            if (matches) break;
+        }
+
+        return matches;
     }
 
     /**

@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
  * @author Ben (OutdatedVersion)
  * @since Jun/30/2017 (5:10 PM)
  */
-public class DeployServerCommand
+public class DeployServerInGroupCommand
 {
 
     // /deploy game chunk_runner

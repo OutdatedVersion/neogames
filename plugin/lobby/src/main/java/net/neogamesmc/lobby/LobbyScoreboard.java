@@ -105,7 +105,7 @@ public class LobbyScoreboard implements Listener
      */
     private String coinsFor(Player player)
     {
-        return Text.fromCurreny(database.cacheFetch(player.getUniqueId()).coins());
+        return Text.fromCurrency(database.cacheFetch(player.getUniqueId()).coins());
     }
 
 }

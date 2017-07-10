@@ -47,6 +47,12 @@ public class StaffChatCommand
         this.config = config;
     }
 
+    /**
+     * Expose a method to send out messages across the network to staff members.
+     *
+     * @param player The player running the command
+     * @param message The message to send
+     */
     @Command ( executor = { "s", "c", "staffchat" } )
     @Permission ( value = Role.MOD, note = "Regular chat works fine. :)" )
     public void run(Player player, String[] message)
@@ -54,13 +60,18 @@ public class StaffChatCommand
         new StaffChatPayload(config.name, player.getName(), database.cacheFetch(player.getUniqueId()).role(), Text.convertArray(message)).publish(redis);
     }
 
+    /**
+     * Parse and display the provided payload to staff members on this server.
+     *
+     * @param payload The payload
+     */
     @HandlesType ( StaffChatPayload.class )
     public void display(StaffChatPayload payload)
     {
         Players.stream(Role.MOD, database).forEach(entry ->
-            entry.getLeft().sendMessage(new ComponentBuilder("Staff Chat").bold(true)
+            entry.getLeft().sendMessage(new ComponentBuilder("Staff Chat ").bold(true)
                     .append(Text.fromEnum(entry.getRight()) + " " + entry.getLeft().getName(), NONE).color(entry.getRight().color)
-                    .append(payload.message).color(ChatColor.YELLOW).create())
+                    .append(" " + payload.message).color(ChatColor.YELLOW).create())
         );
     }
 

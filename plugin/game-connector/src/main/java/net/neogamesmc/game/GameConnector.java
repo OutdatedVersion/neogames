@@ -2,6 +2,7 @@ package net.neogamesmc.game;
 
 import com.google.inject.Injector;
 import net.neogamesmc.common.database.Database;
+import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.display.PlayerList;
@@ -29,12 +30,13 @@ public class GameConnector extends Plugin
     public void enable(Injector injector)
     {
         this.database = get(Database.class);
+        get(RedisHandler.class).subscribe(RedisChannel.DEFAULT);
 
         loadCore();
         setupCommands();
         registerAsListener();
 
-        unregister(PlayerList.class);
+        get(PlayerList.class).mode(PlayerList.Mode.NO_ROLES);
 
         Scheduler.timer(new CapacityWatchdog(), CapacityWatchdog.INTERVAL);
     }

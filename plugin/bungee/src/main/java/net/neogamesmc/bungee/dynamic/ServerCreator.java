@@ -15,6 +15,7 @@ import net.neogamesmc.bungee.NeoGames;
 import net.neogamesmc.bungee.event.AddServerEvent;
 import net.neogamesmc.bungee.util.NumberProvider;
 import net.neogamesmc.common.backend.ServerConfiguration;
+import net.neogamesmc.common.exception.BugsnagHook;
 import net.neogamesmc.common.reference.Paths;
 import org.apache.commons.io.FileUtils;
 
@@ -93,11 +94,12 @@ public class ServerCreator
             {
                 val path = future.get();
 
-                Runtime.getRuntime().exec(new String[] { "/bin/sh", path } );
+                if (path != null)
+                    Runtime.getRuntime().exec(new String[] { "/bin/sh", path } );
             }
             catch (Exception ex)
             {
-                ex.printStackTrace();
+                BugsnagHook.report(ex);
             }
         }, plugin::async);
 
@@ -167,7 +169,7 @@ public class ServerCreator
 
                 // Data for the server to ingest
                 val maxPlayers = maxPlayersFromGroup(group);
-                val config = new ServerConfiguration(name, group, maxPlayers);
+                val config = new ServerConfiguration(assignedID, name, group, maxPlayers);
 
                 // Write data file
                 FileUtils.writeStringToFile(new File(path + "/server_data.json"), GSON.toJson(config));
@@ -184,7 +186,7 @@ public class ServerCreator
             }
             catch (Exception ex)
             {
-                ex.printStackTrace();
+                BugsnagHook.report(ex);
                 return null;
             }
         });

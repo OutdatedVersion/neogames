@@ -1,5 +1,6 @@
 package net.neogamesmc.core.player;
 
+import com.google.common.base.Joiner;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.text.Message;
@@ -9,6 +10,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,6 +58,16 @@ public class Players
                      .stream()
                      .map(player -> Pair.of(player, database.cacheFetch(player.getUniqueId()).role()))
                      .filter(entry -> entry.getRight().compare(role));
+    }
+
+    /**
+     * Grab the UUID of every online player in an array of strings.
+     *
+     * @return The array
+     */
+    public static String[] onlinePlayersUUID()
+    {
+        return Joiner.on(",").join(stream().map(Player::getUniqueId).map(UUID::toString).collect(Collectors.toSet())).split(",");
     }
 
     /**

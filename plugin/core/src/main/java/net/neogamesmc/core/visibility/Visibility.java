@@ -20,8 +20,8 @@ public enum Visibility
     ROLE_AND_HIGHER,
 
     /**
-     * The player is the only person visible.
+     * The player is only visible to staff members.
      */
-    ONLY_SELF
+    ONLY_STAFF
 
 }

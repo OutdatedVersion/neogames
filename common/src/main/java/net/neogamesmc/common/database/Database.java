@@ -71,20 +71,22 @@ public class Database
     @Inject
     public Database init(Logger logger, ConfigurationProvider provider)
     {
-        final DatabaseConfig config = provider.read("database/standard", DatabaseConfig.class);
-        final HikariConfig hikariConfig = new HikariConfig();
+        val config = provider.read("database/standard", DatabaseConfig.class);
+        val hikariConfig = new HikariConfig();
+
+        hikariConfig.setJdbcUrl(DatabaseConfig.FORMAT_JDBC_URL.apply(config));
 
         hikariConfig.setUsername(config.auth.username);
         hikariConfig.setPassword(config.auth.password);
-        hikariConfig.setJdbcUrl(DatabaseConfig.FORMAT_JDBC_URL.apply(config));
+
         hikariConfig.setMaximumPoolSize(4);
 
-        logger.info("[Database] JDBC URL: " + hikariConfig.getJdbcUrl());
 
         hikari = new HikariDataSource(hikariConfig);
         executor = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
         cache = CacheBuilder.newBuilder().build();
 
+        logger.info("[Database] JDBC URL: " + hikariConfig.getJdbcUrl());
         logger.info("[Database] Opened connection to MySQL instance");
         return this;
     }

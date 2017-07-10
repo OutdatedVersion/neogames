@@ -59,7 +59,8 @@ public class Lobby extends Plugin
      */
     private static final Title.Builder BUILDER = new Title.Builder()
             .title(new ComponentBuilder("Neo").bold(true).color(YELLOW).append("Games").color(GOLD).create())
-            .stay(20 * 3);
+            .fadeIn(35)
+            .stay(70);
 
     /**
      * Where players are sent when joining.
