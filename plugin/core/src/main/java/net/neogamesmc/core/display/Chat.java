@@ -3,10 +3,10 @@ package net.neogamesmc.core.display;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import lombok.val;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.reference.Role;
+import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.text.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -15,7 +15,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import static java.lang.String.format;
 import static net.md_5.bungee.api.ChatColor.*;
-import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -27,11 +26,9 @@ public class Chat implements Listener
 {
 
     /**
-     * The message used to let players know that
-     * chat is currently disabled when they attempt
-     * to send a message.
+     * The message used to let players know that chat is currently disabled when they attempt to send a message.
      */
-    private static final Message SILENCE_INFORM = Message.start().content("Chat is currently disabled.", RED).bold().italic();
+    private static final Message SILENCE_INFORM = Message.start().content("Chat is currently disabled.", RED).bold(true).italic(true);
 
     /**
      * Whether or not chat is currently disabled.
@@ -45,15 +42,11 @@ public class Chat implements Listener
 
     /**
      * Toggle the usability state of chat.
-     *
-     * @return This instance, for chaining.
      */
-    public Chat toggleChat()
+    public void toggleChat()
     {
         this.isSilenced = !isSilenced;
-        Message.start().content("Public chat has been " + (isSilenced ? "disabled." : "enabled."), RED).italic().bold().sendAsIs();
-
-        return this;
+        Message.start().content("Public chat has been " + (isSilenced ? "disabled." : "enabled."), RED).italic(true).bold(true).sendAsIs();
     }
 
     @EventHandler
@@ -71,18 +64,24 @@ public class Chat implements Listener
 
         val name = event.getPlayer().getName();
 
-        val message = new ComponentBuilder
+        val builder = Message.start()
                             // start with the player's display role
-                            (role == Role.PLAYER ? "" : role.name.toUpperCase() + " ").color(role.color).bold(true)
+                            .content(role == Role.PLAYER ? "" : role.name.toUpperCase() + " ", role.color, String::trim).bold(true)
                             // username -- gray w/o role, green if present
-                            .append(name, NONE).color(role == Role.PLAYER ? GRAY : GREEN)
-                            // the message
-                            .append(" " + event.getMessage()).color(WHITE).create();
+                            .content(name).color(role == Role.PLAYER ? GRAY : GREEN);
 
 
+        // Add the message content to the final message
+        for (String word : event.getMessage().split(" "))
+            builder.content(" " + word, WHITE, Text::stripProtocol);
+
+
+        // Send out the message
+        val message = builder.create();
         Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(message));
+
+        // Log -- printf() gets super weird?
         System.out.println(format("[Chat] %s %s: %s", role.name(), name, event.getMessage()));
-        // printf() gets super weird?
     }
 
 }

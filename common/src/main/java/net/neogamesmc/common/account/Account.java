@@ -30,7 +30,7 @@ public class Account
     /**
      * SQL statement to update a player's account after they've logged in.
      */
-    private static final String SQL_UPDATE_ACCOUNT = "UPDATE accounts SET name=?,ip=?,last_login=? WHERE iid=?;";
+    private static final String SQL_UPDATE_ACCOUNT = "UPDATE accounts SET name=?,address=?,last_login=? WHERE iid=?;";
 
     /**
      * Constant uniquely assigned identifier.
@@ -141,7 +141,7 @@ public class Account
 
             new InsertUpdateOperation(SQL_UPDATE_ACCOUNT)
                     .data(name, ip, lastLogin, id)
-                    .async(database);
+                    .sync(database);
         }
         catch (Exception ex)
         {

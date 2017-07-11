@@ -1,5 +1,6 @@
 package net.neogamesmc.common.text;
 
+import net.neogamesmc.common.regex.Regex;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.text.NumberFormat;
@@ -86,6 +87,18 @@ public class Text
     public static String stripNumbers(String in)
     {
         return in.replaceAll("[0-9]", "");
+    }
+
+    /**
+     * Extract the protocol (http/s) from a web address.
+     *
+     * @param address The address
+     * @return The stripped text
+     * @see Regex#URL_PROTOCOL Regex to find the protocol
+     */
+    public static String stripProtocol(String address)
+    {
+        return Regex.URL_PROTOCOL.matcher(address).replaceAll("");
     }
 
 }

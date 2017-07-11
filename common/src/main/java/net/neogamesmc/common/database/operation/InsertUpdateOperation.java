@@ -3,6 +3,7 @@ package net.neogamesmc.common.database.operation;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.database.api.Operation;
 import net.neogamesmc.common.database.result.SQLConsumer;
+import net.neogamesmc.common.exception.BugsnagHook;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -100,6 +101,10 @@ public class InsertUpdateOperation extends Operation<Void>
 
             if (consumer != null)
                 consumer.accept(statement.getGeneratedKeys());
+        }
+        catch (Exception ex)
+        {
+            BugsnagHook.report(ex);
         }
 
         return null;

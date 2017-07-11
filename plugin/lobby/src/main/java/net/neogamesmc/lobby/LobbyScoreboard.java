@@ -3,10 +3,12 @@ package net.neogamesmc.lobby;
 import com.google.inject.Inject;
 import lombok.val;
 import net.neogamesmc.common.database.Database;
+import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.event.UpdatePlayerRoleEvent;
 import net.neogamesmc.core.player.Players;
+import net.neogamesmc.core.scheduler.Scheduler;
 import net.neogamesmc.core.scoreboard.PlayerSidebar;
 import net.neogamesmc.core.scoreboard.PlayerSidebarManager;
 import net.neogamesmc.core.scoreboard.mod.RoleTagModifier;
@@ -14,6 +16,7 @@ import net.neogamesmc.core.scoreboard.title.StaticTitle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import redis.clients.jedis.Jedis;
 
 import static net.md_5.bungee.api.ChatColor.*;
 import static net.neogamesmc.core.text.Colors.bold;
@@ -31,15 +34,36 @@ public class LobbyScoreboard implements Listener
     @Inject private Database database;
 
     /**
+     * Local copy of our Redis instance.
+     */
+    @Inject private RedisHandler redis;
+
+    /**
      * Shared manager instance.
      */
     private PlayerSidebarManager manager;
+
+    /**
+     * The total amount of players online.
+     */
+    private volatile long playerCount;
 
     @Inject
     public void init(Plugin plugin, PlayerSidebarManager manager)
     {
         this.manager = manager.addDefaultModifier(plugin.get(RoleTagModifier.class))
                               .title(new StaticTitle(bold(YELLOW) + "Neo" + bold(GOLD) + "Games"));
+
+        Scheduler.timer(() ->
+        {
+            Scheduler.async(() ->
+            {
+                try (Jedis jedis = redis.client())
+                {
+                    playerCount = Long.parseLong(jedis.get("network:player_count"));
+                }
+            });
+        }, 60);
     }
 
     /**
@@ -57,9 +81,9 @@ public class LobbyScoreboard implements Listener
                             .blank()
                             .add(bold(YELLOW) + "Coins")
                             .add(coinsFor(player))
-//                            .blank()
-//                            .add(bold(GREEN) + "Players")
-//                            .add("0")
+                            .blank()
+                            .add(bold(GREEN) + "Players")
+                            .add(String.valueOf(playerCount))
                             .blank()
                             .add(GOLD + "play.neogamesmc.net")
                             .draw().registerWith(manager, player);

@@ -13,10 +13,10 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.neogamesmc.bungee.NeoGames;
 import net.neogamesmc.bungee.distribution.DistributionMethod;
 import net.neogamesmc.bungee.distribution.PlayerDirector;
 import net.neogamesmc.bungee.dynamic.ServerCreator;
-import net.neogamesmc.bungee.event.AddServerEvent;
 import net.neogamesmc.common.text.Text;
 
 import java.util.*;
@@ -39,6 +39,11 @@ public class PlayerQueue implements Runnable, Listener
      * Local copy our of director.
      */
     @Inject private PlayerDirector director;
+
+    /**
+     * Local copy of our plugin.
+     */
+    @Inject private NeoGames plugin;
 
     /**
      * A relation of group names to their connection queue.
@@ -163,13 +168,6 @@ public class PlayerQueue implements Runnable, Listener
     }
 
     @EventHandler
-    public void removeFromCreating(AddServerEvent event)
-    {
-        System.out.println("[Network :: Debug] AddServerEvent");
-        alreadyCreating.remove(event.data.group);
-    }
-
-    @EventHandler
     public void fromOnDisconnect(PlayerDisconnectEvent event)
     {
         removeReservation(null, event.getPlayer().getUniqueId().toString());
@@ -230,7 +228,8 @@ public class PlayerQueue implements Runnable, Listener
     {
         if (!alreadyCreating.contains(group))
         {
-            creator.createAndStartServer(group);
+            creator.createAndStartServer(group).addListener(() -> alreadyCreating.remove(group), plugin::sync);
+
             alreadyCreating.add(group);
             System.out.println("[Queue] Requested server creation in group " + group);
         }

@@ -55,7 +55,7 @@ public class StaffChatCommand
      * @param message The message to send
      */
     @Command ( executor = { "s", "c", "staffchat" } )
-    @Permission ( value = Role.MOD, note = "Regular chat works fine. :)" )
+    @Permission ( value = Role.MOD, note = "Regular chat is just swell. :)" )
     public void run(Player player, @Necessary ( "Please provide a message" ) String[] message)
     {
         new StaffChatPayload(config.name, player.getName(), database.cacheFetch(player.getUniqueId()).role(), Text.convertArray(message)).publish(redis);

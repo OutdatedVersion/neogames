@@ -1,16 +1,24 @@
 package net.neogamesmc.core.text;
 
+import lombok.val;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.neogamesmc.common.regex.Regex;
+import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.player.Players;
 import org.bukkit.entity.Player;
+
+import java.util.function.Function;
+
+import static net.md_5.bungee.api.ChatColor.*;
 
 /**
  * @author Ben (OutdatedVersion)
  * @since Jun/29/2017 (7:45 PM)
  */
-public class Message
+public class Message extends ComponentBuilder
 {
 
     /**
@@ -23,13 +31,16 @@ public class Message
      */
     public static Message FAILED_TO_EXECUTE = prefix("Commands").content("Failed to execute command", ChatColor.RED);
 
+    /**
+     * Send a message to the provided player indicating we couldn't find an account by the provided name.
+     *
+     * @param player Message target
+     * @param provided The text (name) inputted
+     */
     public static void noAccount(Player player, String provided)
     {
         prefix("Fetch").content("Failed to find player by name:", ChatColor.RED).content(provided, ChatColor.YELLOW).send(player);
     }
-
-    /** The builder backing this message */
-    private ComponentBuilder builder;
 
     /**
      * Whether or not we're currently working
@@ -44,13 +55,14 @@ public class Message
     private boolean isItalic = false;
 
     /**
-     * Class Constructor
-     *
      * @param prefix The prefix
      */
     private Message(String prefix)
     {
-        this.builder = new ComponentBuilder(prefix == null ? "" : (prefix + " »")).color(ChatColor.DARK_AQUA);
+        super(prefix == null ? "" : (prefix + " »"));
+
+        if (prefix != null)
+            this.color(DARK_AQUA);
     }
 
     /**
@@ -73,35 +85,13 @@ public class Message
     }
 
     /**
-     * Invert the current bold status on this message.
-     *
-     * @return This builder for chaining.
-     */
-    public Message bold()
-    {
-        builder.bold(isBold = !isBold);
-        return this;
-    }
-
-    /**
-     * Invert the current italics status on this message.
-     *
-     * @return This builder for chaining.
-     */
-    public Message italic()
-    {
-        builder.italic(isItalic = !isItalic);
-        return this;
-    }
-
-    /**
      * Go to a new line on this message.
      *
      * @return This builder for chaining.
      */
     public Message newLine()
     {
-        builder.append("\n");
+        append("\n");
         return this;
     }
 
@@ -111,17 +101,41 @@ public class Message
      */
     public Message content(Object text)
     {
-        return content(text, ChatColor.GRAY);
+        return content(text, ChatColor.GRAY, null);
     }
 
     /**
-     * @param text the text to add
-     * @param color color of the text
+     * @param text The text
+     * @param color The color
      * @return this builder
      */
     public Message content(Object text, ChatColor color)
     {
-        builder.append(" ").append(String.valueOf(text)).color(color);
+        return content(text, color, null);
+    }
+
+    /**
+     * Add something onto this message.
+     *
+     * @param content The text to add
+     * @param color Color of the text
+     * @param textFormatter Function to format text
+     * @return This message builder
+     */
+    public Message content(Object content, ChatColor color, Function<String, String> textFormatter)
+    {
+        val text = " " + String.valueOf(content);
+
+        // Add actual content to message
+        append(textFormatter != null ? textFormatter.apply(text) : text, FormatRetention.NONE).color(color);
+
+        // Add clickable links
+        if (Regex.URL.matcher(text.trim()).matches())
+        {
+            this.event(new ClickEvent(ClickEvent.Action.OPEN_URL, text.trim()));
+            this.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to visit: ").color(GRAY).append(Text.stripProtocol(text)).color(AQUA).bold(true).create()));
+        }
+
         return this;
     }
 
@@ -148,6 +162,84 @@ public class Message
     }
 
     /**
+     * Set the previous component to the provided color.
+     *
+     * @param color The color
+     * @return This message
+     */
+    @Override
+    public Message color(ChatColor color)
+    {
+        super.color(color);
+        return this;
+    }
+
+    /**
+     * Set the previously added component to be bold.
+     *
+     * @param bold Bold or not
+     * @return The message
+     */
+    @Override
+    public Message bold(boolean bold)
+    {
+        super.bold(bold);
+        return this;
+    }
+
+    /**
+     * Set the previously added component to be italic.
+     *
+     * @param italic Italic or not
+     * @return The message
+     */
+    @Override
+    public Message italic(boolean italic)
+    {
+        super.italic(italic);
+        return this;
+    }
+
+    /**
+     * Set the previously added component to be underlined.
+     *
+     * @param underlined Underlined or not
+     * @return The message
+     */
+    @Override
+    public Message underlined(boolean underlined)
+    {
+        super.underlined(underlined);
+        return this;
+    }
+
+    /**
+     * Set the previously added component to be strikethrough.
+     *
+     * @param strikethrough strikethrough or not
+     * @return The message
+     */
+    @Override
+    public Message strikethrough(boolean strikethrough)
+    {
+        super.strikethrough(strikethrough);
+        return this;
+    }
+
+    /**
+     * Set the previous component to be obfuscated.
+     *
+     * @param obfuscated Obfuscation
+     * @return This message
+     */
+    @Override
+    public Message obfuscated(boolean obfuscated)
+    {
+        super.obfuscated(obfuscated);
+        return this;
+    }
+
+    /**
      * @param player the player to send
      *               the message (at it's
      *               current state) to
@@ -155,7 +247,7 @@ public class Message
      */
     public Player send(Player player)
     {
-        player.sendMessage(builder.append(".").color(ChatColor.GRAY).create());
+        player.sendMessage(this.append(".").color(ChatColor.GRAY).create());
         return player;
     }
 
@@ -165,7 +257,7 @@ public class Message
      */
     public Player sendAsIs(Player player)
     {
-        player.sendMessage(builder.create());
+        player.sendMessage(this.create());
         return player;
     }
 
@@ -174,7 +266,7 @@ public class Message
      */
     public void send()
     {
-        final BaseComponent[] message = builder.append(".").color(ChatColor.GRAY).create();
+        val message = this.append(".").color(ChatColor.GRAY).create();
 
         Players.stream().forEach(player -> player.sendMessage(message));
     }
@@ -184,18 +276,8 @@ public class Message
      */
     public void sendAsIs()
     {
-        final BaseComponent[] message = builder.create();
+        val message = this.create();
         Players.stream().forEach(player -> player.sendMessage(message));
-    }
-
-    /**
-     * Grab the raw content behind this builder.
-     *
-     * @return The components to this message
-     */
-    public BaseComponent[] create()
-    {
-        return builder.create();
     }
 
 }

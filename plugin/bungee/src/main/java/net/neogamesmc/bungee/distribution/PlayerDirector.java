@@ -4,12 +4,14 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import lombok.val;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.neogamesmc.bungee.dynamic.ServerCreator;
+import net.neogamesmc.bungee.util.Message;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -29,12 +31,42 @@ public class PlayerDirector
      */
     private Set<ProxiedPlayer> currentlySending = Sets.newConcurrentHashSet();
 
+    /**
+     * Connect a player to the provided server.
+     *
+     * @param player The player being sent
+     * @param info The server to go to
+     */
     public void connect(ProxiedPlayer player, ServerInfo info)
+    {
+        connect(player, info, null);
+    }
+
+    /**
+     * Connect a player to the provided server.
+     *
+     * @param player The player being connected
+     * @param info The server to connect to
+     * @param issueHandler Process issues in sending players via this handler
+     */
+    public void connect(ProxiedPlayer player, ServerInfo info, Consumer<Throwable> issueHandler)
     {
         if (player != null && info != null)
         {
-            player.connect(info);
-            player.sendMessage(new ComponentBuilder("You're being connected to " + info.getName()).create());
+            player.connect(info, (success, ex) ->
+            {
+                if (success)
+                {
+                    player.sendMessage(
+                            Message.prefix("Network").append("You're being sent to ").color(ChatColor.GRAY)
+                                   .append(info.getName()).color(ChatColor.GREEN).append(".").color(ChatColor.GRAY).create()
+                    );
+                }
+                else if (issueHandler != null)
+                {
+                    issueHandler.accept(ex);
+                }
+            });
         }
     }
 

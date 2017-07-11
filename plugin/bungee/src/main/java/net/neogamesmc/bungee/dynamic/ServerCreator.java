@@ -234,6 +234,7 @@ public class ServerCreator
 
             // send out notification to local code
             proxy.getPluginManager().callEvent(new AddServerEvent(data));
+
             // "log"
             System.out.println("[Network] Now tracking " + name);
         }

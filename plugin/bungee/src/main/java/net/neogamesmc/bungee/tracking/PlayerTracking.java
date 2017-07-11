@@ -33,7 +33,7 @@ public class PlayerTracking implements Listener
         {
             try (Jedis jedis = redis.client())
             {
-                jedis.hset("network:players:" + event.getPlayer().getName(), "server", event.getServer().getInfo().getName());
+                jedis.hset("network:players:" + event.getPlayer().getName().toLowerCase(), "server", event.getServer().getInfo().getName());
             }
         });
     }
@@ -45,7 +45,7 @@ public class PlayerTracking implements Listener
         {
             try (Jedis jedis = redis.client())
             {
-                jedis.hdel("network:players:" + event.getPlayer().getName(), "server");
+                jedis.hdel("network:players:" + event.getPlayer().getName().toLowerCase(), "server");
             }
         });
     }

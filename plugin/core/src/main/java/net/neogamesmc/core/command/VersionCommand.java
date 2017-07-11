@@ -44,7 +44,7 @@ public class VersionCommand
         {
             final BuildData data = new Gson().fromJson(stream, BuildData.class);
 
-            message = Message.start().content("NeoGames", ChatColor.GOLD).bold()
+            message = Message.start().content("NeoGames", ChatColor.GOLD).bold(true)
                            .newLine().content("Build Version: ", ChatColor.GRAY).content(data.build, ChatColor.YELLOW)
                            .newLine().content("Built/deployed by: ").content(data.by, ChatColor.YELLOW);
         }

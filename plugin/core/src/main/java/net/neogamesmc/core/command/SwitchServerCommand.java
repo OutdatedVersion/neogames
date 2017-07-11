@@ -32,8 +32,14 @@ public class SwitchServerCommand
      */
     @Inject private ServerConfiguration data;
 
+    /**
+     * Expose a method for staff members to join exact servers.
+     *
+     * @param player The player to send
+     * @param server The server to send them to
+     */
     @Command ( executor = "server" )
-    @Permission ( value = Role.MOD, note = "Sorry, you're not permitted to use this! Try the menus/NPCs to get around! :)" )
+    @Permission ( value = Role.MOD, note = "Try using the menus/NPCs to get around! :)" )
     public void serverCommand(Player player, @Necessary ( "You missed the server's name" ) String server)
     {
         if (server.equalsIgnoreCase(data.name))
@@ -45,12 +51,22 @@ public class SwitchServerCommand
         new RawSwitchServerPayload(server, player.getUniqueId().toString()).publish(redis);
     }
 
+    /**
+     * Expose a method to players for viewing the name of the server they're currently connected to.
+     *
+     * @param player The player who ran the command
+     */
     @Command ( executor = { "current", "where", "whereami" } )
     public void whereCommand(Player player)
     {
         Message.prefix("Network").content("You are currently connected to:").content(data.name, YELLOW).send(player);
     }
 
+    /**
+     * Provide a method to send players out to lobbies.
+     *
+     * @param player The player running this command
+     */
     @Command ( executor = { "lobby", "hub", "leave" } )
     public void lobbyCommand(Player player)
     {

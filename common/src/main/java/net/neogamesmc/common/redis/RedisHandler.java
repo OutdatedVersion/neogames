@@ -121,7 +121,7 @@ public class RedisHandler
         for (int i = 0; i < channels.length; i++)
             channelsAsString[i] = channels[i].channel;
 
-        new Thread("Hyleria Redis Pub/Sub")
+        new Thread("NeoGames Redis Pub/Sub")
         {
             @Override
             public void run()

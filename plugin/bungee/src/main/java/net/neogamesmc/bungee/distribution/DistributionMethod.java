@@ -45,23 +45,17 @@ public enum DistributionMethod implements PlayerDistribution
             val servers = creator.serversInGroup(group);
             ServerInfo best = null;
 
+            // servers = blastoff1, blastoff2
             for (ServerData current : servers)
             {
                 val currentData = ProxyServer.getInstance().getServerInfo(current.name);
-
-                // First time
-                if (best == null)
-                {
-                    best = currentData;
-                    continue;
-                }
 
                 // Check if it's already full
                 if (currentData.getPlayers().size() >= current.maxPlayers)
                     continue;
 
                 // Better than our current?
-                if (currentData.getPlayers().size() > best.getPlayers().size())
+                if (currentData.getPlayers().size() < (best == null ? 0 : best.getPlayers().size()))
                     best = currentData;
             }
 

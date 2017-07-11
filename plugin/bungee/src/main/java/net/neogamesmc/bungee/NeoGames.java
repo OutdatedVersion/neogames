@@ -12,6 +12,7 @@ import net.neogamesmc.bungee.handle.ConnectionHandler;
 import net.neogamesmc.bungee.handle.Ping;
 import net.neogamesmc.bungee.handle.PunishmentProcessor;
 import net.neogamesmc.bungee.queue.PlayerQueue;
+import net.neogamesmc.bungee.tracking.PlayerCountTracking;
 import net.neogamesmc.bungee.tracking.PlayerTracking;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
@@ -48,6 +49,7 @@ public class NeoGames extends Plugin
         injector.getInstance(ServerCreator.class).createAndStartServer("lobby");
 
         getProxy().getScheduler().schedule(this, injector.getInstance(PlayerQueue.class), 0, 100, TimeUnit.MILLISECONDS);
+        getProxy().getScheduler().schedule(this, injector.getInstance(PlayerCountTracking.class), 0, 2, TimeUnit.SECONDS);
     }
 
     /**
@@ -79,6 +81,16 @@ public class NeoGames extends Plugin
     public void async(Runnable runnable)
     {
         ProxyServer.getInstance().getScheduler().runAsync(this, runnable);
+    }
+
+    /**
+     * Run a task synchronously.
+     *
+     * @param runnable The task to run
+     */
+    public void sync(Runnable runnable)
+    {
+        runnable.run();
     }
 
 }

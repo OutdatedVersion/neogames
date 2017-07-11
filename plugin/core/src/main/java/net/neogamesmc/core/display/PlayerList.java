@@ -37,8 +37,8 @@ public class PlayerList implements Listener
     /**
      * The custom header/footer for our player list.
      */
-    private static final BaseComponent[] TOP_LINE = new ComponentBuilder("NeoGames Network").color(ChatColor.WHITE).bold(true).create(),
-                                      BOTTOM_LINE = new ComponentBuilder("Visit our online community at ").append("neogamesmc.net").color(ChatColor.YELLOW).create();
+    private static final BaseComponent[] LINE_TOP = new ComponentBuilder("NeoGames Network").color(ChatColor.WHITE).bold(true).create(),
+                                      LINE_BOTTOM = new ComponentBuilder("Visit our online community at ").append("neogamesmc.net").color(ChatColor.YELLOW).create();
 
     /**
      * How to display the player's role in our list.
