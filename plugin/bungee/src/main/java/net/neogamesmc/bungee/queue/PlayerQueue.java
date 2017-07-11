@@ -17,6 +17,7 @@ import net.neogamesmc.bungee.NeoGames;
 import net.neogamesmc.bungee.distribution.DistributionMethod;
 import net.neogamesmc.bungee.distribution.PlayerDirector;
 import net.neogamesmc.bungee.dynamic.ServerCreator;
+import net.neogamesmc.bungee.event.AddServerEvent;
 import net.neogamesmc.common.text.Text;
 
 import java.util.*;
@@ -168,6 +169,12 @@ public class PlayerQueue implements Runnable, Listener
     }
 
     @EventHandler
+    public void cleanup(AddServerEvent event)
+    {
+        alreadyCreating.remove(event.data.group);
+    }
+
+    @EventHandler
     public void fromOnDisconnect(PlayerDisconnectEvent event)
     {
         removeReservation(null, event.getPlayer().getUniqueId().toString());
@@ -228,7 +235,7 @@ public class PlayerQueue implements Runnable, Listener
     {
         if (!alreadyCreating.contains(group))
         {
-            creator.createAndStartServer(group).addListener(() -> alreadyCreating.remove(group), plugin::sync);
+            creator.createAndStartServer(group);
 
             alreadyCreating.add(group);
             System.out.println("[Queue] Requested server creation in group " + group);

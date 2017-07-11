@@ -64,16 +64,22 @@ public class Chat implements Listener
 
         val name = event.getPlayer().getName();
 
-        val builder = Message.start()
-                            // start with the player's display role
-                            .content(role == Role.PLAYER ? "" : role.name.toUpperCase() + " ", role.color, String::trim).bold(true)
-                            // username -- gray w/o role, green if present
-                            .content(name).color(role == Role.PLAYER ? GRAY : GREEN);
+        val builder = Message.start();
+
+        if (role != Role.PLAYER)
+        {
+            // start with the player's display role
+            builder.content(role.name.toUpperCase() + " ", role.color, String::trim).bold(true);
+        }
+
+
+        // username -- gray w/o role, green if present
+        builder.content(name).color(role == Role.PLAYER ? GRAY : GREEN);
 
 
         // Add the message content to the final message
         for (String word : event.getMessage().split(" "))
-            builder.content(" " + word, WHITE, Text::stripProtocol);
+            builder.content(word, WHITE, Text::stripProtocol);
 
 
         // Send out the message

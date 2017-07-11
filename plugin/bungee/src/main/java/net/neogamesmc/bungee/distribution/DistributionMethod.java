@@ -55,7 +55,7 @@ public enum DistributionMethod implements PlayerDistribution
                     continue;
 
                 // Better than our current?
-                if (currentData.getPlayers().size() < (best == null ? 0 : best.getPlayers().size()))
+                if (currentData.getPlayers().size() < (best == null ? Integer.MAX_VALUE : best.getPlayers().size()))
                     best = currentData;
             }
 
