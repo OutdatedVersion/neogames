@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import net.neogamesmc.common.payload.QueuePlayersForGroupPayload;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.core.command.api.Command;
+import net.neogamesmc.core.command.api.annotation.Permission;
+import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.player.Players;
 import net.neogamesmc.core.scheduler.Scheduler;
 import org.bukkit.Bukkit;
@@ -22,6 +24,7 @@ public class StopServerCommand
     @Inject private RedisHandler redis;
 
     @Command ( executor = "stop" )
+    @Permission ( Role.ADMIN )
     public void run(Player player)
     {
         new QueuePlayersForGroupPayload("lobby", Players.onlinePlayersUUID()).publish(redis);
