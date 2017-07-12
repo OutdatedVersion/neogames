@@ -54,7 +54,7 @@ public class StaffChatCommand
      * @param player The player running the command
      * @param message The message to send
      */
-    @Command ( executor = { "s", "c", "staffchat" } )
+    @Command ( executor = { "sc", "c", "staffchat" } )
     @Permission ( value = Role.MOD, note = "Regular chat is just swell. :)" )
     public void run(Player player, @Necessary ( "Please provide a message" ) String[] message)
     {

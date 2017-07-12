@@ -130,9 +130,11 @@ public class Message extends ComponentBuilder
         append(textFormatter != null ? textFormatter.apply(text) : text, FormatRetention.NONE).color(color);
 
         // Add clickable links
-        if (Regex.URL.matcher(text.trim()).matches())
+        val trim = text.trim().toLowerCase();
+
+        if (Regex.URL.matcher(trim).matches())
         {
-            this.event(new ClickEvent(ClickEvent.Action.OPEN_URL, text.trim()));
+            this.event(new ClickEvent(ClickEvent.Action.OPEN_URL, Regex.URL_PROTOCOL.matcher(trim).matches() ? trim : "http://" + trim));
             this.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to visit: ").color(GRAY).append(Text.stripProtocol(text)).color(AQUA).bold(true).create()));
         }
 

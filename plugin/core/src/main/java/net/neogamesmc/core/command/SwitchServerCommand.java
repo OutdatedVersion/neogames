@@ -38,7 +38,7 @@ public class SwitchServerCommand
      * @param player The player to send
      * @param server The server to send them to
      */
-    @Command ( executor = "server" )
+    @Command ( executor = { "server", "s" } )
     @Permission ( value = Role.MOD, note = "Try using the menus/NPCs to get around! :)" )
     public void serverCommand(Player player, @Necessary ( "You missed the server's name" ) String server)
     {
