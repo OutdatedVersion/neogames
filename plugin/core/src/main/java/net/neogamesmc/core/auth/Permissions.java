@@ -36,7 +36,7 @@ public class Permissions implements Listener
     /**
      * SQL statement to retrieve the information we require.
      */
-    public static final String SQL_FETCH_NODES = "SELECT * FROM assigned_permissions;";
+    private static final String SQL_FETCH_NODES = "SELECT * FROM assigned_permissions;";
 
     /**
      * A collection of every permission node mapped to a role.

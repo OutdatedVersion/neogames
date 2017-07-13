@@ -122,18 +122,19 @@ public class ServerCreator
                 val groupData = groups.computeIfAbsent(group, ignored -> new GroupData());
 
                 // The server number in this group
-                val groupNumber = groupData.serverCount().incrementAndGet();
+                int groupNumber = groupData.serverCount().incrementAndGet();
 
                 // Name of the server
                 // Example: lobby1
-                val name = group + groupNumber;
+                String name = group + groupNumber;
 
                 // Check if we already have a server under this name
-                if (proxy.getServersCopy().containsKey(name))
+                while (proxy.getServersCopy().containsKey(name))
                 {
                     System.out.println("[Network] Skipping server provision :: Already has " + name);
-                    groupData.serverCount().decrementAndGet();
-                    return null;
+
+                    groupNumber = groupData.serverCount().incrementAndGet();
+                    name = group + groupNumber;
                 }
 
                 val assignedID = id.get();
