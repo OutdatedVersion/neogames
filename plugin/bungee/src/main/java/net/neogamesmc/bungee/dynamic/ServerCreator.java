@@ -131,7 +131,7 @@ public class ServerCreator
                 // Check if we already have a server under this name
                 while (proxy.getServersCopy().containsKey(name))
                 {
-                    System.out.println("[Network] Skipping server provision :: Already has " + name);
+                    System.out.println("[Network] Attempting next ID :: Already has " + name);
 
                     groupNumber = groupData.serverCount().incrementAndGet();
                     name = group + groupNumber;
