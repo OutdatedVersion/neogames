@@ -144,7 +144,7 @@ public class NPC extends Reflections
      * @param val the skin in base 64
      * @param sig the signature of the skin in base 64
      */
-    public void setSkin(String val, String sig)
+    public void skinSet(String val, String sig)
     {
         gameProfile.getProperties().put("textures", new Property("textures", val, sig));
     }
