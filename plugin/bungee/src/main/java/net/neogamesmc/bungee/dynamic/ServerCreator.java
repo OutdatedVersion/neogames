@@ -297,6 +297,7 @@ public class ServerCreator
         {
             case "chunkrunner":
             case "bowplinko":
+            case "event":
                 return 24;
 
             case "blastoff":
