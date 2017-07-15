@@ -8,7 +8,7 @@ import net.neogamesmc.common.backend.ServerConfiguration;
 import net.neogamesmc.common.payload.RawSwitchServerPayload;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.reference.Role;
-import net.neogamesmc.core.command.api.Command;
+import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.player.Players;

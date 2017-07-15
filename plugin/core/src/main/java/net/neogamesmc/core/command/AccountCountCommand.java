@@ -5,7 +5,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.database.operation.RawFetchOperation;
 import net.neogamesmc.common.reference.Role;
-import net.neogamesmc.core.command.api.Command;
+import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.issue.Issues;
 import net.neogamesmc.core.text.Message;

@@ -10,7 +10,7 @@ import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.redis.api.HandlesType;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.common.text.Text;
-import net.neogamesmc.core.command.api.Command;
+import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.player.Players;

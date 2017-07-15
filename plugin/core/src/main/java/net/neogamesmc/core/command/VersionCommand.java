@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.inject.Inject;
 import net.md_5.bungee.api.ChatColor;
 import net.neogamesmc.core.bukkit.Plugin;
-import net.neogamesmc.core.command.api.Command;
+import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.issue.Issues;
 import net.neogamesmc.core.text.Message;
 import org.bukkit.entity.Player;

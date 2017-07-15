@@ -7,7 +7,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.common.text.Text;
-import net.neogamesmc.core.command.api.Command;
+import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.text.Message;
 import org.bukkit.Bukkit;

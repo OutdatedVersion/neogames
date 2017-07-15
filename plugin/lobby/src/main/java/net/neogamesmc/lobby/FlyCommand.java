@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import lombok.val;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.reference.Role;
-import net.neogamesmc.core.command.api.Command;
+import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.text.Message;
 import org.bukkit.GameMode;

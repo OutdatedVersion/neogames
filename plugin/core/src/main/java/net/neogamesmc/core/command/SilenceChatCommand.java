@@ -2,7 +2,7 @@ package net.neogamesmc.core.command;
 
 import com.google.inject.Inject;
 import net.neogamesmc.common.reference.Role;
-import net.neogamesmc.core.command.api.Command;
+import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.display.Chat;
 import org.bukkit.entity.Player;

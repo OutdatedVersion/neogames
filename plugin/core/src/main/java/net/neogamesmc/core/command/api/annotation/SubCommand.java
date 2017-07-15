@@ -1,4 +1,4 @@
-package net.neogamesmc.core.command.api;
+package net.neogamesmc.core.command.api.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

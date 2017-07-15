@@ -1,7 +1,7 @@
 package net.neogamesmc.game.command;
 
 import net.neogamesmc.common.reference.Role;
-import net.neogamesmc.core.command.api.Command;
+import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import org.bukkit.entity.Player;
 

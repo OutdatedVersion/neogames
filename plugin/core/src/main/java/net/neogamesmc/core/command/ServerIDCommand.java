@@ -3,7 +3,7 @@ package net.neogamesmc.core.command;
 import com.google.inject.Inject;
 import net.md_5.bungee.api.ChatColor;
 import net.neogamesmc.common.backend.ServerConfiguration;
-import net.neogamesmc.core.command.api.Command;
+import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.text.Message;
 import org.bukkit.entity.Player;
 

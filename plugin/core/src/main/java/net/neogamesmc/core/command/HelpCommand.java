@@ -1,6 +1,6 @@
 package net.neogamesmc.core.command;
 
-import net.neogamesmc.core.command.api.Command;
+import net.neogamesmc.core.command.api.annotation.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

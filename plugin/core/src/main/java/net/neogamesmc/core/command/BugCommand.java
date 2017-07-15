@@ -9,7 +9,7 @@ import net.neogamesmc.common.payload.SendDiscordMessagePayload;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.bukkit.Plugin;
-import net.neogamesmc.core.command.api.Command;
+import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.text.Message;
 import org.bukkit.entity.Player;

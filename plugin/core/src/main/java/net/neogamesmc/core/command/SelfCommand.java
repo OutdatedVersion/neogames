@@ -7,7 +7,7 @@ import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.common.text.Text;
-import net.neogamesmc.core.command.api.Command;
+import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.CommandHandler;
 import net.neogamesmc.core.text.Message;
 import org.bukkit.entity.Player;

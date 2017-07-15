@@ -4,7 +4,7 @@ import com.google.common.base.Splitter;
 import com.google.inject.Inject;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.common.text.Text;
-import net.neogamesmc.core.command.api.Command;
+import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import org.bukkit.entity.Player;
