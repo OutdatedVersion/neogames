@@ -33,7 +33,7 @@ import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
  * @author Ben (OutdatedVersion)
  * @since Jul/02/2017 (10:33 PM)
  */
-public class PunishmentProcessor implements Listener
+public class  PunishmentProcessor implements Listener
 {
 
     /**

@@ -25,16 +25,14 @@ public class ConnectionHandler implements Listener
 {
 
     /**
-     * Disconnect players with this message if they're using
-     * the wrong version of Minecraft.
+     * Disconnect players with this message if they're using the wrong version of Minecraft.
      */
-    private static final BaseComponent[] DISALLOW_MESSAGE = new ComponentBuilder("Please be sure you're using Minecraft 1.11.1 or above!").color(ChatColor.YELLOW).create();
+    private static final BaseComponent[] MESSAGE_UNSUPPORTED_VERSION = new ComponentBuilder("Please be sure you're using Minecraft 1.11.1 -> 1.12!").color(ChatColor.YELLOW).create();
 
     /**
-     * Disconnect players with this message if no lobbies are online
-     * to handle their login.
+     * Disconnect players with this message if no lobbies are online to handle their login.
      */
-    private static final BaseComponent[] NO_SERVERS_MESSAGE = new ComponentBuilder("Empty Pool.").color(ChatColor.YELLOW).bold(true)
+    private static final BaseComponent[] MESSAGE_NO_SERVERS = new ComponentBuilder("Empty Pool.").color(ChatColor.YELLOW).bold(true)
             .append(" We have no online servers to serve your request.", NONE).color(ChatColor.RED).append(" :(").color(ChatColor.GRAY).create();
 
     /**
@@ -52,7 +50,7 @@ public class ConnectionHandler implements Listener
             if (info != null)
                 event.setTarget(info);
             else
-                event.getPlayer().disconnect(NO_SERVERS_MESSAGE);
+                event.getPlayer().disconnect(MESSAGE_NO_SERVERS);
         }
     }
 
@@ -62,7 +60,7 @@ public class ConnectionHandler implements Listener
         if (ProtocolConstants.MINECRAFT_1_11_1 > event.getConnection().getVersion())
         {
             event.setCancelled(true);
-            event.setCancelReason(DISALLOW_MESSAGE);
+            event.setCancelReason(MESSAGE_UNSUPPORTED_VERSION);
         }
     }
 

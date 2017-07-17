@@ -133,14 +133,6 @@ public class Lobby extends Plugin
         // bowplinko.lineSet(2, GRAY + "No One Is Playing");
         bowplinko.data("group", "bowplinko");
 
-        val event = manager.createNewNPC(GO_TO_GAME, "Event", new Location(lobby, 10.5, 63, -3.5, 0.1f, -7.3f));
-        event.skinSet("eyJ0aW1lc3RhbXAiOjE1MDAwNTUyNzM1NDQsInByb2ZpbGVJZCI6IjIzZjFhNTlmNDY5YjQzZGRiZGI1MzdiZmVjMTA0NzFmIiwicHJvZmlsZU5hbWUiOiIyODA3Iiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jYzU4YmQ1NzVmODMxZjhmM2FlNGI2YTZkNzNiYzk0YWYyNjI0NDRmZmViOWZhZDBhZjg0ZWVkOGM0NmRmIn19fQ==", "IMBUkPJFlW92I6E0Y/rauwjoEpC3jPoO2XilHT0xpaNGAItGxeMkDwZ9oMQCyfGqhRExLz79mYjdUS0QOQN3P9HYw4hrghQR/YO41tBvlkxlC8QksKjGAeKJPD7Ze9rvboXnPOvnYzkfdp818aylmRbjghEeyIPKtnjet3zckH5gio3ASSyUysa/eonU1t+9RwghIT99HdIkcX7SbGM1VafrKuK25wStmmMZ8GJzvfNxHO3DJaSx4e4nym+2VEEiCfptYydjSuYb8yUBJa7TtBVmZHvxmYmD9AuEObO6sRHvN3uzdPVy0pG71dPdsrsUlE8+2tcZ5H/Rv8bsaj0pB1qzQcpfUr7NA7IFY2RDrUhcm+IPCOW68NFEVP/sx31JJNv04F6TvDMbcs1lon4OGE7MNuf0oc+4sGSsrxvph0rRq4j1jpBhKyVm0yaVjuXkiJBI3CJu67uQIdS52Y4dpOs8mKzk2+zusFkufjVAgjuqKTDw/rVuJY8UBJrXMYqHpzA7xYOz2+aJbusQpvhy1eJMu0aJeT0Tpcj6e7eAw0Mq0/bvkbgOpbO9sFKau56ZeJHWeNJZvhd4pxIsQwvWqDElJ7CvcUBYRgq1blUsd1i4HSB7+/0AjYbZlL5jI3GJgLAQBhj4VsoLhxXwLJ+nJv+WTaLeHjASUL/xFnTZReM=");
-        event.lineSet(1, GREEN + "Join " + bold(GOLD) + "WEEKEND EVENT");
-        event.lineSet(2, AQUA + "Minecraft Ninja Warrior" + ChatColor.GRAY + " by NeoMc_");
-        event.lineSet(3, GRAY + "7/14 to 7/16");
-        event.data("group", "event");
-
-
         // TEAM
 
         val ben = manager.createNewNPC(TEAM_MEMBER, "OutdatedVersion", new Location(lobby, 27.54, 65, -33.5, 24.8f, 12.6f));
