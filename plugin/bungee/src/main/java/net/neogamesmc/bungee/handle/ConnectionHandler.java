@@ -27,7 +27,7 @@ public class ConnectionHandler implements Listener
     /**
      * Disconnect players with this message if they're using the wrong version of Minecraft.
      */
-    private static final BaseComponent[] MESSAGE_UNSUPPORTED_VERSION = new ComponentBuilder("Please be sure you're using Minecraft 1.11.1 -> 1.12!").color(ChatColor.YELLOW).create();
+    private static final BaseComponent[] MESSAGE_UNSUPPORTED_VERSION = new ComponentBuilder("Please be sure you're using Minecraft 1.9 -> 1.12!").color(ChatColor.YELLOW).create();
 
     /**
      * Disconnect players with this message if no lobbies are online to handle their login.
@@ -57,7 +57,7 @@ public class ConnectionHandler implements Listener
     @EventHandler ( priority = EventPriority.LOWEST )
     public void forceProtocol(PreLoginEvent event)
     {
-        if (ProtocolConstants.MINECRAFT_1_11_1 > event.getConnection().getVersion())
+        if (ProtocolConstants.MINECRAFT_1_9 > event.getConnection().getVersion())
         {
             event.setCancelled(true);
             event.setCancelReason(MESSAGE_UNSUPPORTED_VERSION);
