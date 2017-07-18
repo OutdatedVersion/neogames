@@ -36,20 +36,6 @@ public enum PunishmentType
     }, ":hammer: -id **-target** has been banned by **-issued_by**. This will expire -expire.\n**Reason:** -reason"),
 
     /**
-     * Removes a player from the network, but allows them to rejoin.
-     */
-    KICK((player, data) ->
-        player.kickPlayer(TextComponent.toLegacyText(
-                new ComponentBuilder("You've been removed from the network.\n\n").color(RED).bold(true)
-                        .append("Reason: ", NONE).color(GRAY)
-                        .append(data.reason).color(WHITE)
-                        .append("\nKick ID: ").color(GRAY)
-                        .append("#" + data.id).color(WHITE)
-                        .create()
-        ))
-    , ":x: -id **-target** has been kicked from the network by **-issued_by** for -reason."),
-
-    /**
      * Removes the ability to chat from a player.
      */
     MUTE((player, data) ->

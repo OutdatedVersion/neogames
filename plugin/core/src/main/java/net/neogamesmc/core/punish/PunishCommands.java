@@ -57,14 +57,6 @@ public class PunishCommands
         // /mute Nokoa 1y Talking about trains too much
     }
 
-    @Command ( executor = "kick" )
-    @Permission ( Role.ADMIN )
-    public void kickCommand(Player player, @Necessary ( "A target name must be provided" ) String name,
-                                           @Necessary ( "You must supply a reason" ) String[] reason)
-    {
-        handler.issue(player, name, PunishmentType.KICK, null, -1, Text.convertArray(reason));
-    }
-
     /**
      * Calculates how long the player provided in
      * {@code milliseconds} from the provided raw text.
