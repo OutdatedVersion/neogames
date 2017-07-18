@@ -15,6 +15,7 @@ import net.neogamesmc.core.player.Players;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import java.util.function.Function;
@@ -65,6 +66,17 @@ public class PlayerList implements Listener
     public void apply(PlayerLoginEvent event)
     {
         playerList(event.getPlayer());
+    }
+
+    /**
+     * Set the header/footer on the player list.
+     *
+     * @param event The event
+     */
+    @EventHandler
+    public void applyHeaderFooter(PlayerJoinEvent event)
+    {
+        event.getPlayer().setPlayerListHeaderFooter(LINE_TOP, LINE_BOTTOM);
     }
 
     /**

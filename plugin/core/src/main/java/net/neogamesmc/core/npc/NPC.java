@@ -9,14 +9,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.val;
-import net.minecraft.server.v1_11_R1.*;
+import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_11_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_11_R1.util.CraftChatMessage;
+import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_12_R1.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -164,6 +164,7 @@ public class NPC extends Reflections
         // Creating the NPC using the EntityPlayer because I couldn't figure out what datawatcher values I need to use.
         MinecraftServer nmsServer = ((CraftServer) Bukkit.getServer()).getServer();
         WorldServer nmsWorld = ((CraftWorld) Bukkit.getWorlds().get(0)).getHandle();
+
         EntityPlayer npc;
         npc = new EntityPlayer(nmsServer, nmsWorld, gameProfile, new PlayerInteractManager(nmsWorld));
         npc.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
@@ -377,10 +378,9 @@ public class NPC extends Reflections
 
         try
         {
-            String className = "net.minecraft.server.v1_11_R1.PacketPlayOutPlayerInfo$PlayerInfoData";
-            Class c = Class.forName(className);
+            Class c = Class.forName("net.minecraft.server.v1_12_R1.PacketPlayOutPlayerInfo$PlayerInfoData");
             @SuppressWarnings ( "unchecked" ) List<Object> players = (List<Object>) getValue(packet, "b");
-            players.add(c.getConstructor(packet.getClass(), com.mojang.authlib.GameProfile.class, int.class, net.minecraft.server.v1_11_R1.EnumGamemode.class, net.minecraft.server.v1_11_R1.IChatBaseComponent.class).newInstance(packet, gameProfile, 1, EnumGamemode.NOT_SET, CraftChatMessage.fromString(ChatColor.DARK_GRAY + this.gameProfile.getId().toString().substring(0, 8))[0]));
+            players.add(c.getConstructor(packet.getClass(), com.mojang.authlib.GameProfile.class, int.class, EnumGamemode.class, IChatBaseComponent.class).newInstance(packet, gameProfile, 1, EnumGamemode.NOT_SET, CraftChatMessage.fromString(ChatColor.DARK_GRAY + this.gameProfile.getId().toString().substring(0, 8))[0]));
             setValue(packet, "a", PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER);
             setValue(packet, "b", players);
 
@@ -403,10 +403,9 @@ public class NPC extends Reflections
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo();
         try
         {
-            String className = "net.minecraft.server.v1_11_R1.PacketPlayOutPlayerInfo$PlayerInfoData";
-            Class c = Class.forName(className);
+            Class c = Class.forName("net.minecraft.server.v1_12_R1.PacketPlayOutPlayerInfo$PlayerInfoData");
             @SuppressWarnings ( "unchecked" ) List<Object> players = (List<Object>) getValue(packet, "b");
-            players.add(c.getConstructor(packet.getClass(), com.mojang.authlib.GameProfile.class, int.class, net.minecraft.server.v1_11_R1.EnumGamemode.class, net.minecraft.server.v1_11_R1.IChatBaseComponent.class).newInstance(packet, gameProfile, 1, EnumGamemode.NOT_SET, CraftChatMessage.fromString(gameProfile.getName())[0]));
+            players.add(c.getConstructor(packet.getClass(), com.mojang.authlib.GameProfile.class, int.class, EnumGamemode.class, IChatBaseComponent.class).newInstance(packet, gameProfile, 1, EnumGamemode.NOT_SET, CraftChatMessage.fromString(gameProfile.getName())[0]));
             setValue(packet, "a", PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER);
             setValue(packet, "b", players);
 

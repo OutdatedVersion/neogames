@@ -1,10 +1,11 @@
 package net.neogamesmc.core.command;
 
+import lombok.val;
 import net.md_5.bungee.api.ChatColor;
 import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.player.Players;
 import net.neogamesmc.core.text.Message;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 /**
@@ -22,7 +23,7 @@ public class PingCommand
     @Command ( executor = { "ping", "lag" } )
     public void run(Player player, String targetName)
     {
-        Player target = targetName == null ? player : Players.find(player, targetName, true);
+        val target = targetName == null ? player : Players.find(player, targetName, true);
 
         if (target != null)
             Message.prefix("Latency").content("The latency of").player(target).content("is observed as").content(((CraftPlayer) player).getHandle().ping + "ms", ChatColor.GREEN).send(player);

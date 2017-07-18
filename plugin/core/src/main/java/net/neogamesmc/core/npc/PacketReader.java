@@ -1,16 +1,12 @@
 package net.neogamesmc.core.npc;
 
-
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
-import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_11_R1.Packet;
-import net.neogamesmc.common.payload.FindAndSwitchServerPayload;
+import net.minecraft.server.v1_12_R1.Packet;
 import net.neogamesmc.common.payload.QueuePlayersForGroupPayload;
-import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.core.text.Colors;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -44,7 +40,7 @@ public class PacketReader
         CraftPlayer cPlayer = (CraftPlayer) this.player;
         channel = cPlayer.getHandle().playerConnection.networkManager.channel;
 
-        channel.pipeline().addAfter("decoder", "neogames_npc_injector", new MessageToMessageDecoder<Packet<?>>()
+        channel.pipeline().addAfter("decoder", "neogames-npc-reader", new MessageToMessageDecoder<Packet<?>>()
         {
             @Override
             protected void decode(ChannelHandlerContext arg0, Packet<?> packet, List<Object> arg2) throws Exception
@@ -57,9 +53,9 @@ public class PacketReader
 
     public void uninject()
     {
-        if (channel.pipeline().get("neogames_npc_injector") != null)
+        if (channel.pipeline().get("neogames-npc-reader") != null)
         {
-            channel.pipeline().remove("neogames_npc_injector");
+            channel.pipeline().remove("neogames-npc-reader");
         }
     }
 

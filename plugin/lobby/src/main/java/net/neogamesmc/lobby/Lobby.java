@@ -5,7 +5,7 @@ import com.google.inject.Injector;
 import lombok.val;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.minecraft.server.v1_11_R1.EnumItemSlot;
+import net.minecraft.server.v1_12_R1.EnumItemSlot;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.payload.QueuePlayersForGroupPayload;
 import net.neogamesmc.common.redis.RedisChannel;
