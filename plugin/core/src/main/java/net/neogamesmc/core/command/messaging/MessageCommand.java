@@ -75,7 +75,7 @@ public class MessageCommand
 
         if (!recipient.messages())
         {
-            Message.prefix("Messaging").player(target).content("has messages disabled!").sendAsIs(player);
+            Message.prefix("Messaging").player(target).content("may not receive messages at the moment!").sendAsIs(player);
             return;
         }
 
