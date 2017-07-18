@@ -113,7 +113,7 @@ public class Message extends ComponentBuilder
 
         if (Regex.URL.matcher(trim).matches())
         {
-            this.event(new ClickEvent(ClickEvent.Action.OPEN_URL, Regex.URL_PROTOCOL.matcher(trim).matches() ? trim : "http://" + trim));
+            this.event(new ClickEvent(ClickEvent.Action.OPEN_URL, (trim.startsWith("http://") || trim.startsWith("https")) ? trim : "http://" + trim));
             this.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to visit: ").color(GRAY).append(Text.stripProtocol(text)).color(AQUA).bold(true).create()));
         }
 

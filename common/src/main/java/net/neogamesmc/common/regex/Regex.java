@@ -15,8 +15,8 @@ public final class Regex
     public static final Pattern URL = Pattern.compile("^(?:(https?)://)?([-\\w_.]{2,}\\.[a-z]{2,4})(/\\S*)?$");
 
     /**
-     * Pattern to match the protocol (http/s) in web addresses.
+     * Pattern to match the protocol (HTTP/S) in web addresses.
      */
-    public static final Pattern URL_PROTOCOL = Pattern.compile("(https?://)");
+    public static final Pattern URL_PROTOCOL = Pattern.compile("((https?)://)");
 
 }
