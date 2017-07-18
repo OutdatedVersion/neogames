@@ -91,7 +91,8 @@ public class Chat implements Listener
         // They're muted
         if (data != null)
         {
-            event.getPlayer().sendMessage(new ComponentBuilder("Woah, you're currently muted! It remains active for").color(RED).bold(true)
+            event.getPlayer().sendMessage(new ComponentBuilder("Woah, you're currently muted!").color(RED).bold(true)
+                                                       .append("\nWhich will remain active until ").color(GRAY)
                                                        .append(data.expiresAt).color(YELLOW)
                                                        .append("\nReason: ").color(GRAY)
                                                        .append(data.reason).color(WHITE).create());
@@ -119,7 +120,7 @@ public class Chat implements Listener
 
 
         // username -- gray w/o role, green if present
-        builder.content(name).color(role == Role.PLAYER ? GRAY : GREEN);
+        builder.content(name, role == Role.PLAYER ? GRAY : GREEN, String::trim);
 
 
         // Add the message content to the final message
@@ -145,7 +146,7 @@ public class Chat implements Listener
             {
                 if (set.next())
                 {
-                    CACHE_MUTES.put(event.getUniqueId(), new MuteData(set.getString("reason"), TimeFormatting.formatLong(set.getTimestamp("expires_at").toInstant())));
+                    CACHE_MUTES.put(event.getUniqueId(), new MuteData(set.getString("reason"), TimeFormatting.format(set.getTimestamp("expires_at").toInstant())));
                 }
             }).sync(database);
         }
@@ -180,9 +181,7 @@ public class Chat implements Listener
             val target = Bukkit.getPlayer(payload.targetName);
 
             if (target != null)
-            {
-                CACHE_MUTES.put(target.getUniqueId(), new MuteData(payload.reason, TimeFormatting.formatLong(Instant.ofEpochMilli(payload.expiresAt))));
-            }
+                CACHE_MUTES.put(target.getUniqueId(), new MuteData(payload.reason, TimeFormatting.format(Instant.ofEpochMilli(payload.expiresAt))));
         }
     }
 

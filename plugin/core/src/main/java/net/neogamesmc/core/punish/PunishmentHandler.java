@@ -2,18 +2,19 @@ package net.neogamesmc.core.punish;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import net.neogamesmc.common.payload.SendDiscordMessagePayload;
+import lombok.val;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.database.mutate.Mutator;
 import net.neogamesmc.common.database.mutate.Mutators;
 import net.neogamesmc.common.database.operation.InsertUpdateOperation;
 import net.neogamesmc.common.inject.ParallelStartup;
+import net.neogamesmc.common.payload.PunishmentPayload;
+import net.neogamesmc.common.payload.SendDiscordMessagePayload;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.redis.api.FromChannel;
 import net.neogamesmc.common.redis.api.HandlesType;
 import net.neogamesmc.core.issue.Issues;
-import net.neogamesmc.common.payload.PunishmentPayload;
 import net.neogamesmc.core.scheduler.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -116,8 +117,9 @@ public class PunishmentHandler
                                 id.set(result.getInt(1));
                         }).sync(database);
 
-                PunishmentPayload payload = new PunishmentPayload(id.get(), type.name(), target, duration == -1 ? -1 : adjustedTime.toEpochMilli(), reason);
+                val payload = new PunishmentPayload(id.get(), type.name(), target, duration == -1 ? -1 : adjustedTime.toEpochMilli(), reason);
                 payload.publish(redis);
+
                 new SendDiscordMessagePayload(CHANNEL_ID, type.message(payload, issuedBy.getName())).publish(redis);
             }
             catch (Exception ex)

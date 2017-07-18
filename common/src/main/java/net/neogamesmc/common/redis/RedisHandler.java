@@ -3,11 +3,14 @@ package net.neogamesmc.common.redis;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.inject.Singleton;
+import lombok.val;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.FromChannel;
 import net.neogamesmc.common.redis.api.HandlesType;
@@ -18,7 +21,10 @@ import redis.clients.jedis.JedisPubSub;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -63,8 +69,9 @@ public class RedisHandler
     /** one {@link Jedis} instance dedicated to the thread-blocking op of "subbing" to channels */
     private volatile Jedis subscriber;
 
+    // TODO(Ben): requires concurrency lock
     /** collection of hooks to our redis system */
-    private ConcurrentHashMap<String, HookData> hooks;
+    private Multimap<String, HookData> hooks;
 
     /**
      * Run requests asynchronously.
@@ -144,13 +151,16 @@ public class RedisHandler
 
                             if (hooks.containsKey(focus))
                             {
-                                final HookData data = hooks.get(focus);
+                                val all = hooks.get(focus);
 
-                                if (data.channel.equals(channel))
+                                for (HookData data : all)
                                 {
-                                    data.method.invoke(data.possessor, GSON.fromJson(json.has("payload")
-                                                                                       ? json.get("payload").toString()
-                                                                                       : "", data.payloadType));
+                                    if (data.channel.equals(channel))
+                                    {
+                                        data.method.invoke(data.possessor, GSON.fromJson(json.has("payload")
+                                                                                         ? json.get("payload").toString()
+                                                                                         : "", data.payloadType));
+                                    }
                                 }
                             }
                         }
@@ -250,7 +260,7 @@ public class RedisHandler
 
             // lazy init
             if (hooks == null)
-                hooks = new ConcurrentHashMap<>();
+                hooks = MultimapBuilder.hashKeys().hashSetValues().build();
 
             boolean provisionedHook = false;
 
