@@ -1,6 +1,7 @@
 package net.neogamesmc.core.command.messaging;
 
 import com.google.inject.Inject;
+import lombok.val;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -31,25 +32,16 @@ public class MessageCommand
                     @Necessary ( "Invalid usage! Valid usage: /msg Player (message)" ) String target,
                     @Necessary ( "Invalid usage! Valid usage: /msg Player (message)" ) String[] message)
     {
-        Player targetPlayer = null;
-        for (Player all : Bukkit.getOnlinePlayers())
-        {
-            if (all.getName().equalsIgnoreCase(target))
-            {
-                targetPlayer = all;
-            }
-        }
+        Player targetPlayer = Bukkit.getPlayer(target);
 
         if (targetPlayer == null)
         {
-            player.sendMessage(Message.prefix("Messaging").content("Player not found.", ChatColor.RED).create());
+            Message.prefix("Messaging").content("We could not find any player by that name", ChatColor.RED).send(player);
             return;
         }
 
         replies.put(player.getUniqueId(), targetPlayer.getUniqueId());
         sendMessage(player, message, targetPlayer);
-
-
     }
 
     @Command ( executor = { "reply", "r" } )
@@ -73,20 +65,27 @@ public class MessageCommand
             player.sendMessage(Message.prefix("Messaging").content("You have not messaged anyone recently.", ChatColor.RED).create());
 
         }
-
     }
 
     private void sendMessage(Player player, String[] message, Player target)
     {
         Role senderRole = database.cacheFetch(player.getUniqueId()).role();
-        Role recipientRole = database.cacheFetch(target.getUniqueId()).role();
-        BaseComponent[] toComponent = new ComponentBuilder("To ").color(ChatColor.AQUA).append(recipientRole.name.toUpperCase()).color(recipientRole.color).append(" " + target.getName()).append(" " + Text.convertArray(message)).color(ChatColor.AQUA).create();
 
+        val recipient = database.cacheFetch(target.getUniqueId());
+
+        if (!recipient.messages())
+        {
+            Message.prefix("Messaging").player(target).content("has messages disabled!").sendAsIs(player);
+            return;
+        }
+
+        val recipientRole = recipient.role();
+
+        BaseComponent[] toComponent = new ComponentBuilder("To ").color(ChatColor.AQUA).append(recipientRole.name.toUpperCase()).color(recipientRole.color).append(" " + target.getName()).append(" " + Text.convertArray(message)).color(ChatColor.AQUA).create();
         BaseComponent[] fromComponent = new ComponentBuilder("From ").color(ChatColor.AQUA).append(senderRole.name.toUpperCase()).color(senderRole.color).append(" " + player.getName()).append(" " + Text.convertArray(message)).color(ChatColor.AQUA).create();
 
         player.sendMessage(toComponent);
         target.sendMessage(fromComponent);
     }
-
 
 }
