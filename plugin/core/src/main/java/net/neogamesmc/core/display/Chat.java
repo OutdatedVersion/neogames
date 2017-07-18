@@ -18,6 +18,7 @@ import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.common.text.Text;
 import net.neogamesmc.common.time.TimeFormatting;
 import net.neogamesmc.core.issue.Issues;
+import net.neogamesmc.core.player.Players;
 import net.neogamesmc.core.text.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -28,6 +29,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
 import static net.md_5.bungee.api.ChatColor.*;
@@ -55,6 +57,11 @@ public class Chat implements Listener
      * In memory cache of mute data for a player.
      */
     private final Cache<UUID, MuteData> CACHE_MUTES = CacheBuilder.newBuilder().build();
+
+    /**
+     * A collection of players who we've recently informed of their mute.
+     */
+    private final Cache<UUID, Boolean> INFORMED = CacheBuilder.newBuilder().expireAfterWrite(3, TimeUnit.SECONDS).build();
 
     /**
      * Whether or not chat is currently disabled.
@@ -85,17 +92,24 @@ public class Chat implements Listener
     public void handleChat(AsyncPlayerChatEvent event)
     {
         event.setCancelled(true);
+        val uuid = event.getPlayer().getUniqueId();
 
-        val data = CACHE_MUTES.getIfPresent(event.getPlayer().getUniqueId());
+        val data = CACHE_MUTES.getIfPresent(uuid);
 
         // They're muted
         if (data != null)
         {
-            event.getPlayer().sendMessage(new ComponentBuilder("Woah, you're currently muted!").color(RED).bold(true)
-                                                       .append("\nWhich will remain active until ").color(GRAY)
-                                                       .append(data.expiresAt).color(YELLOW)
-                                                       .append("\nReason: ").color(GRAY)
-                                                       .append(data.reason).color(WHITE).create());
+            if (INFORMED.getIfPresent(uuid) == null)
+            {
+                event.getPlayer().sendMessage(new ComponentBuilder("Woah, you're currently muted!").color(RED).bold(true)
+                        .append("\nWhich will remain active until ").color(GRAY)
+                        .append(data.expiresAt).color(YELLOW)
+                        .append("\nReason: ").color(GRAY)
+                        .append(data.reason).color(WHITE).create());
+
+                INFORMED.put(uuid, true);
+            }
+
             return;
         }
 
@@ -120,7 +134,7 @@ public class Chat implements Listener
 
 
         // username -- gray w/o role, green if present
-        builder.content(name, role == Role.PLAYER ? GRAY : GREEN, String::trim);
+        builder.content(name, role == Role.PLAYER ? GRAY : GREEN, role == Role.PLAYER ? String::trim : null);
 
 
         // Add the message content to the final message
@@ -130,7 +144,7 @@ public class Chat implements Listener
 
         // Send out the message
         val message = builder.create();
-        Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(message));
+        Players.stream().forEach(player -> player.sendMessage(message));
 
         // Log -- printf() gets super weird?
         System.out.println(format("[Chat] %s %s: %s", role.name(), name, event.getMessage()));
@@ -160,6 +174,7 @@ public class Chat implements Listener
     public void invalidateCache(PlayerQuitEvent event)
     {
         CACHE_MUTES.invalidate(event.getPlayer().getUniqueId());
+        INFORMED.invalidate(event.getPlayer().getUniqueId());
     }
 
     /**

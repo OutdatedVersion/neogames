@@ -14,8 +14,10 @@ import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.redis.api.FromChannel;
 import net.neogamesmc.common.redis.api.HandlesType;
+import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.issue.Issues;
 import net.neogamesmc.core.scheduler.Scheduler;
+import net.neogamesmc.core.text.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -121,6 +123,8 @@ public class PunishmentHandler
                 payload.publish(redis);
 
                 new SendDiscordMessagePayload(CHANNEL_ID, type.message(payload, issuedBy.getName())).publish(redis);
+
+                Message.prefix(Text.fromEnum(type)).content("You have issued a punishment against").player(target).send(issuedBy);
             }
             catch (Exception ex)
             {
