@@ -3,7 +3,7 @@ package net.neogamesmc.common.database.operation;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.database.api.Operation;
 import net.neogamesmc.common.database.result.SQLConsumer;
-import net.neogamesmc.common.exception.BugsnagHook;
+import net.neogamesmc.common.exception.SentryHook;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -104,7 +104,7 @@ public class InsertUpdateOperation extends Operation<Void>
         }
         catch (Exception ex)
         {
-            BugsnagHook.report(ex);
+            SentryHook.report(ex);
         }
 
         return null;

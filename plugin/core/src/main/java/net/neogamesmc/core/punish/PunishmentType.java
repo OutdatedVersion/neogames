@@ -103,7 +103,7 @@ public enum PunishmentType
      */
     public String message(PunishmentPayload payload, String issuedBy)
     {
-        return this.discordMessage.replace("-target", payload.targetPlayer)
+        return this.discordMessage.replace("-target", payload.targetName)
                                   .replace("-issued_by", issuedBy)
                                   .replace("-expire", PunishTools.format(payload))
                                   .replace("-reason", payload.reason)

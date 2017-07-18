@@ -15,7 +15,7 @@ import net.neogamesmc.bungee.NeoGames;
 import net.neogamesmc.bungee.event.AddServerEvent;
 import net.neogamesmc.bungee.util.NumberProvider;
 import net.neogamesmc.common.backend.ServerConfiguration;
-import net.neogamesmc.common.exception.BugsnagHook;
+import net.neogamesmc.common.exception.SentryHook;
 import net.neogamesmc.common.reference.Paths;
 import org.apache.commons.io.FileUtils;
 
@@ -99,7 +99,7 @@ public class ServerCreator
             }
             catch (Exception ex)
             {
-                BugsnagHook.report(ex);
+                SentryHook.report(ex);
             }
         }, plugin::async);
 
@@ -187,7 +187,7 @@ public class ServerCreator
             }
             catch (Exception ex)
             {
-                BugsnagHook.report(ex);
+                SentryHook.report(ex);
                 return null;
             }
         });

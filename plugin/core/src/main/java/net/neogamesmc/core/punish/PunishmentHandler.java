@@ -82,7 +82,7 @@ public class PunishmentHandler
     @HandlesType ( PunishmentPayload.class )
     public void handle(PunishmentPayload payload)
     {
-        final Player target = Bukkit.getPlayerExact(payload.targetPlayer);
+        final Player target = Bukkit.getPlayerExact(payload.targetName);
 
         if (target != null)
         {

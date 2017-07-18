@@ -15,6 +15,7 @@ import net.neogamesmc.core.event.UpdatePlayerRoleEvent;
 import net.neogamesmc.core.issue.Issues;
 import net.neogamesmc.core.scheduler.Scheduler;
 import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.text.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -68,7 +69,7 @@ public class UpdateRoleCommand
 
                 if (!optional.isPresent())
                 {
-                    Message.noAccount(player, targetName);
+                    Messages.noAccount(player, targetName);
                     return;
                 }
 
@@ -109,7 +110,7 @@ public class UpdateRoleCommand
             }
             catch (Exception ex)
             {
-                Message.FAILED_TO_EXECUTE.send(player);
+                Messages.FAILED_TO_EXECUTE.send(player);
                 Issues.handle("Role Command Execution", ex);
             }
         }, Scheduler::sync);

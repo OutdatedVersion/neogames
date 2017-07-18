@@ -22,27 +22,6 @@ public class Message extends ComponentBuilder
 {
 
     /**
-     * The default "missing permission" to send players.
-     */
-    public static Message PERMISSION_MESSAGE = prefix("Permissions").content("You are lacking the permission to do this.", ChatColor.RED);
-
-    /**
-     * The default message to send players if we couldn't run a command.
-     */
-    public static Message FAILED_TO_EXECUTE = prefix("Commands").content("Failed to execute command", ChatColor.RED);
-
-    /**
-     * Send a message to the provided player indicating we couldn't find an account by the provided name.
-     *
-     * @param player Message target
-     * @param provided The text (name) inputted
-     */
-    public static void noAccount(Player player, String provided)
-    {
-        prefix("Fetch").content("Failed to find player by name:", ChatColor.RED).content(provided, ChatColor.YELLOW).send(player);
-    }
-
-    /**
      * Whether or not we're currently working
      * with bold text.
      */

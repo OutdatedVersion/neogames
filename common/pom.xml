@@ -86,9 +86,9 @@
 
         <!-- Exception handling library -->
         <dependency>
-            <groupId>com.bugsnag</groupId>
-            <artifactId>bugsnag</artifactId>
-            <version>[3.0,4.0)</version>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry</artifactId>
+            <version>1.3.0</version>
         </dependency>
 
     </dependencies>

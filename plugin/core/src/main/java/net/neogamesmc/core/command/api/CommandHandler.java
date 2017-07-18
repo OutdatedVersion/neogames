@@ -22,6 +22,7 @@ import net.neogamesmc.core.command.api.satisfier.RoleSatisfier;
 import net.neogamesmc.core.command.api.satisfier.StringArraySatisfier;
 import net.neogamesmc.core.issue.Issues;
 import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.text.Messages;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -383,13 +384,13 @@ public class CommandHandler implements Listener
         {
             info.role = perm.value();
             info.permissionMessage = perm.note().equals("DEFAULT_MESSAGE")
-                                     ? Message.PERMISSION_MESSAGE
+                                     ? Messages.PERMISSION
                                      : prefix("Permissions").content(perm.note(), RED);
         }
         else
         {
             info.role = Role.PLAYER;
-            info.permissionMessage = Message.PERMISSION_MESSAGE;
+            info.permissionMessage = Messages.PERMISSION;
         }
     }
 

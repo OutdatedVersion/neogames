@@ -3,7 +3,7 @@ package net.neogamesmc.core.issue;
 import lombok.val;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.neogamesmc.common.exception.BugsnagHook;
+import net.neogamesmc.common.exception.SentryHook;
 import net.neogamesmc.core.player.Players;
 import net.neogamesmc.core.scheduler.Scheduler;
 import org.bukkit.entity.Player;
@@ -50,7 +50,7 @@ public class Issues
         Players.stream().filter(Player::isOp).forEach(player -> player.sendMessage(message));
 
         // Send out to exception handler
-        Scheduler.async(() -> BugsnagHook.report(throwable));
+        Scheduler.async(() -> SentryHook.report(throwable));
     }
 
 }

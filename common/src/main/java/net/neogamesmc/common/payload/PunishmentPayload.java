@@ -31,7 +31,7 @@ public class PunishmentPayload implements Payload
      * The name of the player it's being issued against.
      */
     @SerializedName ( "target" )
-    public String targetPlayer;
+    public String targetName;
 
     /**
      * UNIX epoch timestamp of when this expires
@@ -50,7 +50,7 @@ public class PunishmentPayload implements Payload
         return new JSONBuilder().add("id", id)
                                 .add("type", type)
                                 .add("reason", reason)
-                                .add("target", targetPlayer)
+                                .add("target", targetName)
                                 .add("expires_at", expiresAt)
                                 .done();
     }

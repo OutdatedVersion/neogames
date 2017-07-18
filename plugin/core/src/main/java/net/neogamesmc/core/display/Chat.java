@@ -1,17 +1,33 @@
 package net.neogamesmc.core.display;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.val;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.neogamesmc.common.database.Database;
+import net.neogamesmc.common.database.operation.RawFetchOperation;
 import net.neogamesmc.common.inject.ParallelStartup;
+import net.neogamesmc.common.payload.PunishmentPayload;
+import net.neogamesmc.common.redis.RedisHandler;
+import net.neogamesmc.common.redis.api.HandlesType;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.common.text.Text;
+import net.neogamesmc.common.time.TimeFormatting;
+import net.neogamesmc.core.issue.Issues;
 import net.neogamesmc.core.text.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+
+import java.time.Instant;
+import java.util.UUID;
 
 import static java.lang.String.format;
 import static net.md_5.bungee.api.ChatColor.*;
@@ -31,6 +47,16 @@ public class Chat implements Listener
     private static final Message SILENCE_INFORM = Message.start().content("Chat is currently disabled.", RED).bold(true).italic(true);
 
     /**
+     * SQL query to grab active mutes on a player's account.
+     */
+    private static final String SQL_FETCH_MUTES = "SELECT id,reason,expires_at FROM punishments WHERE target=? AND revoked != 1 AND type='MUTE' AND (expires_at IS NULL OR expires_at > NOW()) ORDER BY expires_at DESC LIMIT 1;";
+
+    /**
+     * In memory cache of mute data for a player.
+     */
+    private final Cache<UUID, MuteData> CACHE_MUTES = CacheBuilder.newBuilder().build();
+
+    /**
      * Whether or not chat is currently disabled.
      */
     private volatile boolean isSilenced;
@@ -39,6 +65,12 @@ public class Chat implements Listener
      * Local copy of our database.
      */
     @Inject private Database database;
+
+    @Inject
+    public Chat(RedisHandler redis)
+    {
+        redis.registerHook(this);
+    }
 
     /**
      * Toggle the usability state of chat.
@@ -53,6 +85,19 @@ public class Chat implements Listener
     public void handleChat(AsyncPlayerChatEvent event)
     {
         event.setCancelled(true);
+
+        val data = CACHE_MUTES.getIfPresent(event.getPlayer().getUniqueId());
+
+        // They're muted
+        if (data != null)
+        {
+            event.getPlayer().sendMessage(new ComponentBuilder("Woah, you're currently muted! It remains active for").color(RED).bold(true)
+                                                       .append(data.expiresAt).color(YELLOW)
+                                                       .append("\nReason: ").color(GRAY)
+                                                       .append(data.reason).color(WHITE).create());
+            return;
+        }
+
 
         val role = database.cacheFetch(event.getPlayer().getUniqueId()).role();
 
@@ -88,6 +133,57 @@ public class Chat implements Listener
 
         // Log -- printf() gets super weird?
         System.out.println(format("[Chat] %s %s: %s", role.name(), name, event.getMessage()));
+    }
+
+    // temp until mongo
+    @EventHandler
+    public void fetchMutes(AsyncPlayerPreLoginEvent event)
+    {
+        try
+        {
+            new RawFetchOperation(SQL_FETCH_MUTES).data(event.getUniqueId()).task(set ->
+            {
+                if (set.next())
+                {
+                    CACHE_MUTES.put(event.getUniqueId(), new MuteData(set.getString("reason"), TimeFormatting.formatLong(set.getTimestamp("expires_at").toInstant())));
+                }
+            }).sync(database);
+        }
+        catch (Exception ex)
+        {
+            Issues.handle("Fetch Mute Data", ex);
+        }
+    }
+
+    @EventHandler
+    public void invalidateCache(PlayerQuitEvent event)
+    {
+        CACHE_MUTES.invalidate(event.getPlayer().getUniqueId());
+    }
+
+    /**
+     * Represents a mute on a player's account.
+     */
+    @EqualsAndHashCode
+    @AllArgsConstructor
+    private static class MuteData
+    {
+        String reason;
+        String expiresAt;
+    }
+
+    @HandlesType ( PunishmentPayload.class )
+    public void process(PunishmentPayload payload)
+    {
+        if (payload.type.equals("MUTE"))
+        {
+            val target = Bukkit.getPlayer(payload.targetName);
+
+            if (target != null)
+            {
+                CACHE_MUTES.put(target.getUniqueId(), new MuteData(payload.reason, TimeFormatting.formatLong(Instant.ofEpochMilli(payload.expiresAt))));
+            }
+        }
     }
 
 }
