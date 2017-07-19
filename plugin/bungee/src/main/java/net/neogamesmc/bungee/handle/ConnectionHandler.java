@@ -27,7 +27,7 @@ public class ConnectionHandler implements Listener
     /**
      * Disconnect players with this message if they're using the wrong version of Minecraft.
      */
-    private static final BaseComponent[] MESSAGE_UNSUPPORTED_VERSION = new ComponentBuilder("Please be sure you're using Minecraft 1.11/1.12!").color(ChatColor.YELLOW).create();
+    private static final BaseComponent[] MESSAGE_UNSUPPORTED_VERSION = new ComponentBuilder("Please be sure you're using Minecraft 1.11.1/1.12!").color(ChatColor.YELLOW).create();
 
     /**
      * Disconnect players with this message if no lobbies are online to handle their login.
