@@ -36,6 +36,8 @@ public class GameConnector extends Plugin
         setupCommands();
         registerAsListener();
 
+        register(InventoryHandler.class);
+
         get(PlayerList.class).mode(PlayerList.Mode.NO_ROLES);
 
         Scheduler.timer(new CapacityWatchdog(), CapacityWatchdog.INTERVAL);
