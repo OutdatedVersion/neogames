@@ -27,7 +27,7 @@
         <plugin.name>Default-Plugin-Name</plugin.name>
         <plugin.main>net.neogamesmc.null</plugin.main>
 
-        <version.paper>1-12-R1</version.paper>
+        <version.paper>1.11.2-R1</version.paper>
         <version.waterfall>1.11-R1</version.waterfall>
         <version.core>1.0</version.core>
     </properties>

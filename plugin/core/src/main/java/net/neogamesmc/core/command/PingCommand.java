@@ -5,7 +5,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.player.Players;
 import net.neogamesmc.core.text.Message;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 /**

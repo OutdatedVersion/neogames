@@ -3,10 +3,10 @@ package net.neogamesmc.core.npc;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
-import net.minecraft.server.v1_12_R1.Packet;
+import net.minecraft.server.v1_11_R1.Packet;
 import net.neogamesmc.common.payload.QueuePlayersForGroupPayload;
 import net.neogamesmc.core.text.Colors;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -14,7 +14,6 @@ import java.util.List;
 
 import static net.md_5.bungee.api.ChatColor.WHITE;
 import static net.md_5.bungee.api.ChatColor.YELLOW;
-
 
 /**
  * Manipulates player packet
