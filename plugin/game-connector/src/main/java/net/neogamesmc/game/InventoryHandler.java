@@ -24,7 +24,6 @@ public class InventoryHandler implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void disallow(InventoryClickEvent event) {
-        event.getWhoClicked().sendMessage(event.getInventory().getType() + " slot:" + event.getRawSlot());
         if (event.getInventory().getType() == InventoryType.CRAFTING && SLOTS.contains(event.getRawSlot())) {
             event.setCancelled(true);
             event.getWhoClicked().closeInventory();
