@@ -38,7 +38,7 @@ public class PlayerList implements Listener
      * The custom header/footer for our player list.
      */
     private static final BaseComponent[] LINE_TOP = new ComponentBuilder("Neo").color(YELLOW).append("Games").color(GOLD).bold(true).create(),
-                                      LINE_BOTTOM = new ComponentBuilder("Visit our online community at ").append("neogamesmc.net").color(YELLOW).create();
+                                      LINE_BOTTOM = new ComponentBuilder("Visit our online community & shop at ").append("neogamesmc.net").color(YELLOW).create();
 
     /**
      * How to display the player's role in our list.

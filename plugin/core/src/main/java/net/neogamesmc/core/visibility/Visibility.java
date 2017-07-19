@@ -21,6 +21,9 @@ public enum Visibility
 
     /**
      * The player is only visible to staff members.
+     * <p>
+     * In other words, only to {@link Role#MOD} and above. Chances
+     * are this will only be used within some sort of vanishing system.
      */
     ONLY_STAFF
 
