@@ -34,7 +34,6 @@ jobs:
 
       - store_artifacts:
            path: plugin/*/target/*.jar
-           destination: prefix
 
       - save_cache:
           paths:
