@@ -32,6 +32,10 @@ jobs:
 
       - run: mvn dependency:go-offline install -P +build-defaults
 
+      - store_artifacts:
+           path: ${CIRCLE_WORKING_DIRECTORY}/plugin/*/target/*.jar
+           destination: prefix
+
       - save_cache:
           paths:
             - ~/.m2
