@@ -45,7 +45,7 @@ public class ConnectionHandler implements Listener
     {
         if (event.getTarget().getName().equals("Internal-Routing-Server"))
         {
-            val info = director.info("lobby", DistributionMethod.ROUND_ROBBIN);
+            val info = director.info("lobby", DistributionMethod.LOWEST_FILL_TO_CAPACITY);
 
             if (info != null)
                 event.setTarget(info);
