@@ -78,7 +78,7 @@ public class PlayerDirector
      */
     public void sendPlayer(ProxiedPlayer player, String group)
     {
-        sendPlayer(player, group, DistributionMethod.LOWEST_FILL_TO_CAPACITY);
+        sendPlayer(player, group, DistributionMethod.LOWEST_FILL_TO_CAPACITY, null);
     }
 
     /**
@@ -88,7 +88,7 @@ public class PlayerDirector
      * @param group The group
      * @param method The method to use
      */
-    public void sendPlayer(ProxiedPlayer player, String group, DistributionMethod method)
+    public void sendPlayer(ProxiedPlayer player, String group, DistributionMethod method, Consumer<Throwable> exceptionHandler)
     {
         if (!currentlySending.contains(player))
         {
@@ -99,9 +99,13 @@ public class PlayerDirector
             if (info != null)
             {
                 System.out.println("[Network Director] Sending " + player.getName() + " to " + info.getName() + " via method " + method.name());
-                player.connect(info);
+                connect(player, info);
 
                 currentlySending.remove(player);
+            }
+            else if (exceptionHandler != null)
+            {
+                exceptionHandler.accept(new Throwable("Failed to send " + player.getName() + " to " + group + " via " + method.name()));
             }
         }
     }

@@ -2,11 +2,11 @@ package net.neogamesmc.bungee.handle;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import lombok.val;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.event.*;
+import net.md_5.bungee.api.event.PreLoginEvent;
+import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
@@ -44,14 +44,7 @@ public class ConnectionHandler implements Listener
     public void directLogin(ServerConnectEvent event)
     {
         if (event.getTarget().getName().equals("Internal-Routing-Server"))
-        {
-            val info = director.info("lobby", DistributionMethod.ROUND_ROBBIN);
-
-            if (info != null)
-                event.setTarget(info);
-            else
-                event.getPlayer().disconnect(MESSAGE_NO_SERVERS);
-        }
+            director.sendPlayer(event.getPlayer(), "lobby", DistributionMethod.LOWEST_FILL_TO_CAPACITY, ex -> event.getPlayer().disconnect(MESSAGE_NO_SERVERS));
     }
 
     @EventHandler ( priority = EventPriority.LOWEST )
