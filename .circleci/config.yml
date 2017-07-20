@@ -26,7 +26,7 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - r1-dependencies-
 
-      - run: mvn dependency:go-offline install +build-defaults
+      - run: mvn dependency:go-offline install -P +build-defaults
 
       - save_cache:
           paths:
