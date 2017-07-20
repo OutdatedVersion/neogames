@@ -1,16 +1,19 @@
 package net.neogamesmc.common.mongo.entities;
 
-import lombok.Getter;
+import lombok.EqualsAndHashCode;
 import lombok.Setter;
+import lombok.ToString;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
+import org.mongodb.morphia.annotations.Reference;
 
 /**
  * @author Ben (OutdatedVersion)
  * @since Jul/19/2017 (10:41 AM)
  */
 @Entity ( "news" )
-@Getter @Setter
+@Setter
+@EqualsAndHashCode @ToString
 public class NewsLine
 {
 
@@ -28,7 +31,7 @@ public class NewsLine
     /**
      * Reference to the player's account who performed the last change on this line.
      */
-    @Property ( "last_updated_by" )
+    @Reference ( value = "last_updated_by", lazy = true )
     public Account lastUpdatedBy;
 
 }

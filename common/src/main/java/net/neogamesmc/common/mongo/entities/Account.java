@@ -1,11 +1,11 @@
 package net.neogamesmc.common.mongo.entities;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import net.neogamesmc.common.reference.Role;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;
-
 
 import java.util.List;
 import java.util.UUID;
@@ -20,6 +20,7 @@ import java.util.UUID;
        @Index ( value = "i_name", fields = @Field ( "name" ) )
 } )
 @Getter @Setter
+@EqualsAndHashCode
 public class Account
 {
 

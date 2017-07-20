@@ -20,17 +20,35 @@ public class UUIDConverter extends TypeConverter implements SimpleValueConverter
     private static Function<String, UUID> UNDASHED_UUID_PARSER = val -> new UUID(Long.parseUnsignedLong(val.substring(0, 16), 16),
                                                                                  Long.parseUnsignedLong(val.substring(16), 16));
 
+    /**
+     * Parse {@link UUID}s properly
+     */
     public UUIDConverter()
     {
         super(UUID.class);
     }
 
+    /**
+     * Parse the retrieved {@link String} from Mongo.
+     *
+     * @param target Target class
+     * @param fromDBObject The db
+     * @param optionalExtraInfo ignored
+     * @return The UUID
+     */
     @Override
     public Object decode(Class<?> target, Object fromDBObject, MappedField optionalExtraInfo)
     {
         return fromDBObject == null ? null : UNDASHED_UUID_PARSER.apply((String) fromDBObject);
     }
 
+    /**
+     * Write the provided UUID into a document as a String.
+     *
+     * @param value The UUID
+     * @param optionalExtraInfo ignored
+     * @return The String
+     */
     @Override
     public Object encode(Object value, MappedField optionalExtraInfo)
     {
