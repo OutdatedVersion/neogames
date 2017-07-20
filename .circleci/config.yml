@@ -18,10 +18,10 @@ jobs:
       - checkout
 
       # Add special stuff
-      - run: wget https://assets.neogamesmc.net/server/1-11-R1/paper.jar
-      - run: script/add-locally.sh com.destroystokyo paper 1.11.2-R1 paper.jar
-      - run: wget -O waterfall.jar https://ci.aquifermc.org/job/Waterfall/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterfall.jar
-      - run: script/add-locally.sh com.destroystokyo waterfall 1.11-R1 waterfall.jar
+#      - run: wget https://assets.neogamesmc.net/server/1-11-R1/paper.jar
+#      - run: script/add-locally.sh com.destroystokyo paper 1.11.2-R1 paper.jar
+#      - run: wget -O waterfall.jar https://ci.aquifermc.org/job/Waterfall/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterfall.jar
+#      - run: script/add-locally.sh com.destroystokyo waterfall 1.11-R1 waterfall.jar
 
       # Download and cache dependencies
       - restore_cache:
