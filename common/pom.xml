@@ -12,6 +12,13 @@
     <artifactId>common</artifactId>
     <version>1.0</version>
 
+    <repositories>
+        <repository>
+            <id>bungeecord-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+    </repositories>
+
     <dependencies>
 
         <!-- Database: Connection pool -->

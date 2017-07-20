@@ -16,6 +16,8 @@ jobs:
 
     steps:
       - checkout
+      - run: wget https://assets.neogamesmc.net/server/1-11-R1/paper.jar
+      - run: script/add-locally.sh com.destroystokyo paper 1.11.2-R1 paper.jar
 
       # Download and cache dependencies
       - restore_cache:
