@@ -17,6 +17,7 @@ import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.command.api.annotation.SubCommand;
+import net.neogamesmc.core.command.api.satisfier.IntegerSatisfier;
 import net.neogamesmc.core.command.api.satisfier.PlayerSatisfier;
 import net.neogamesmc.core.command.api.satisfier.RoleSatisfier;
 import net.neogamesmc.core.command.api.satisfier.StringArraySatisfier;
@@ -57,7 +58,7 @@ public class CommandHandler implements Listener
      * majority of our commands require.
      */
     public static final Collection<Class<? extends ArgumentSatisfier>> DEFAULT_PROVIDERS = Lists.newArrayList(
-            RoleSatisfier.class, PlayerSatisfier.class, StringArraySatisfier.class
+            RoleSatisfier.class, PlayerSatisfier.class, StringArraySatisfier.class, IntegerSatisfier.class
     );
 
     /** Default commands that we won't let players run unless we have one that overrides it */

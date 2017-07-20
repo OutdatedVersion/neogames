@@ -1,5 +1,6 @@
 package net.neogamesmc.bungee.handle;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -9,6 +10,11 @@ import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.neogamesmc.common.inject.ParallelStartup;
+import net.neogamesmc.common.payload.ModifyMOTDPayload;
+import net.neogamesmc.common.redis.RedisChannel;
+import net.neogamesmc.common.redis.RedisHandler;
+import net.neogamesmc.common.redis.api.FromChannel;
+import net.neogamesmc.common.redis.api.HandlesType;
 
 import java.util.function.Consumer;
 
@@ -64,6 +70,12 @@ public class Ping implements Listener
                        .append(" ✜").color(DARK_AQUA).bold(true)
     );
 
+    @Inject
+    public Ping(RedisHandler redis)
+    {
+        redis.registerHook(this);
+    }
+
     /**
      * Update the {@code message of the day} for this proxy.
      *
@@ -96,6 +108,33 @@ public class Ping implements Listener
         event.getResponse().setDescriptionComponent(responseText);
         event.getResponse().getPlayers().setMax(maxPlayerCount);
         event.getResponse().getVersion().setName(PROTOCOL_NAME);
+    }
+
+    /**
+     * Expose a method to update ping response components via Redis.
+     *
+     * @param payload Payload containing the changes
+     */
+    @FromChannel ( RedisChannel.NETWORK )
+    @HandlesType ( ModifyMOTDPayload.class )
+    public void update(ModifyMOTDPayload payload)
+    {
+        // Update count
+        if (payload.max != -1)
+        {
+            maxPlayerCount = payload.max;
+        }
+
+
+        // Update text
+        // Lovely way of doing this, right?
+        if (payload.line != null)
+        {
+            this.responseText = new TextComponent(
+                    new TextComponent(FIRST_LINE.create()),
+                    new TextComponent(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', payload.line)))
+            );
+        }
     }
 
 }
