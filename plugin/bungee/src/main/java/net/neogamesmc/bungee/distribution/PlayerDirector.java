@@ -88,7 +88,7 @@ public class PlayerDirector
      * @param group The group
      * @param method The method to use
      */
-    public void sendPlayer(ProxiedPlayer player, String group, DistributionMethod method, Consumer<Throwable> exceptionHandler)
+    public void sendPlayer(ProxiedPlayer player, String group, DistributionMethod method, Runnable onFailure)
     {
         if (!currentlySending.contains(player))
         {
@@ -103,9 +103,9 @@ public class PlayerDirector
 
                 currentlySending.remove(player);
             }
-            else if (exceptionHandler != null)
+            else if (onFailure != null)
             {
-                exceptionHandler.accept(new Throwable("Failed to send " + player.getName() + " to " + group + " via " + method.name()));
+                onFailure.run();
             }
         }
     }
