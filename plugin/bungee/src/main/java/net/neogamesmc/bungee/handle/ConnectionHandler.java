@@ -44,7 +44,12 @@ public class ConnectionHandler implements Listener
     public void directLogin(ServerConnectEvent event)
     {
         if (event.getTarget().getName().equals("Internal-Routing-Server"))
-            director.sendPlayer(event.getPlayer(), "lobby", DistributionMethod.LOWEST_FILL_TO_CAPACITY, () -> event.getPlayer().disconnect(MESSAGE_NO_SERVERS));
+        {
+            director.sendPlayer(event.getPlayer(),
+                                "lobby",
+                                DistributionMethod.ROUND_ROBBIN,
+                                () -> event.getPlayer().disconnect(MESSAGE_NO_SERVERS));
+        }
     }
 
     @EventHandler ( priority = EventPriority.LOWEST )
