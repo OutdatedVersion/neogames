@@ -18,6 +18,7 @@ public enum Role
     BUILDER(ChatColor.DARK_AQUA),
     // ^ team members
 
+    MAP(ChatColor.DARK_AQUA),
     VIP(ChatColor.YELLOW),
     YOUTUBE(ChatColor.RED),
     YT(ChatColor.DARK_RED),
