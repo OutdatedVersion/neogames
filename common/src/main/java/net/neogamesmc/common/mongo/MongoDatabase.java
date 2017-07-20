@@ -36,7 +36,7 @@ public class MongoDatabase implements AutoCloseable
         converters.addConverter(new UUIDConverter());
 
         // Ingest the entities for Morphia to use
-        morphia.mapPackage("net.neogamesmc.common.mongo.morphia");
+        morphia.mapPackage("net.neogamesmc.common.mongo.entities");
 
         // TODO(Ben): credentials
         datastore = morphia.createDatastore(new MongoClient(new ServerAddress(), Lists.newArrayList()), DATABASE_NAME);

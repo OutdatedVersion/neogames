@@ -28,16 +28,13 @@ public class UUIDConverter extends TypeConverter implements SimpleValueConverter
     @Override
     public Object decode(Class<?> target, Object fromDBObject, MappedField optionalExtraInfo)
     {
-        if (fromDBObject == null)
-            return null;
-
-        return UNDASHED_UUID_PARSER.apply((String) fromDBObject);
+        return fromDBObject == null ? null : UNDASHED_UUID_PARSER.apply((String) fromDBObject);
     }
 
     @Override
     public Object encode(Object value, MappedField optionalExtraInfo)
     {
-        return ((UUID) value).toString().replaceAll("-", "");
+        return value == null ? null : value.toString().replaceAll("-", "");
     }
 
 }

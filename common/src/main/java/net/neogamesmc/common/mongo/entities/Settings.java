@@ -1,4 +1,4 @@
-package net.neogamesmc.common.mongo.morphia;
+package net.neogamesmc.common.mongo.entities;
 
 import org.mongodb.morphia.annotations.Embedded;
 
