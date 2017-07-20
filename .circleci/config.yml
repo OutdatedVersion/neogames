@@ -32,8 +32,13 @@ jobs:
 
       - run: mvn dependency:go-offline install -P +build-defaults
 
+      - run: |
+          mkdir -p /tmp/artifacts
+          mv plugin/*/target/*.jar /tmp/artifacts
+
       - store_artifacts:
-           path: plugin/*/target/*.jar
+           path: /tmp/artifacts
+           destination: build
 
       - save_cache:
           paths:
