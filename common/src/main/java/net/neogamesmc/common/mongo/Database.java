@@ -14,7 +14,7 @@ import org.mongodb.morphia.Morphia;
  * @author Ben (OutdatedVersion)
  * @since Jul/19/2017 (12:53 AM)
  */
-public class MongoDatabase implements AutoCloseable
+public class Database implements AutoCloseable
 {
 
     /**
@@ -28,7 +28,7 @@ public class MongoDatabase implements AutoCloseable
     private Datastore datastore;
 
     @Inject
-    public MongoDatabase(ConfigurationProvider provider)
+    public Database(ConfigurationProvider provider)
     {
         val morphia = new Morphia();
         val converters = morphia.getMapper().getConverters();
