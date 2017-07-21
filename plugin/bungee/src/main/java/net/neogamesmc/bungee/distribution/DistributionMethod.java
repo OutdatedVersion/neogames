@@ -9,6 +9,7 @@ import net.neogamesmc.bungee.dynamic.ServerData;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -43,15 +44,15 @@ public enum DistributionMethod implements PlayerDistribution
         @Override
         public ServerInfo apply(String group, ServerCreator creator)
         {
-            List<ServerData> servers = creator.serversInGroup(group);
+            Set<ServerData> servers = creator.serversInGroup(group);
 
-            servers.sort((one, two) ->
+            /*servers.sort((one, two) ->
             {
                 int n = Integer.parseInt(one.name.substring(one.name.length() - 1));
                 int n2 = Integer.parseInt(two.name.substring(two.name.length() - 1));
 
                 return Integer.compare(n, n2);
-            });
+            });*/
 
             ServerInfo best = null;
 

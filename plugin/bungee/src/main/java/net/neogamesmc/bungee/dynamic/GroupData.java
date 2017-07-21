@@ -1,9 +1,9 @@
 package net.neogamesmc.bungee.dynamic;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -22,6 +22,6 @@ public class GroupData
     /**
      * The servers within this group.
      */
-    public List<ServerData> servers = Lists.newCopyOnWriteArrayList();
+    public Set<ServerData> servers = Sets.newConcurrentHashSet();
 
 }
