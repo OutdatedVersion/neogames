@@ -22,8 +22,8 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Executors;
 
 /**
@@ -152,7 +152,16 @@ public class ServerCreator
                 val replacedStart = FileUtils.readFileToString(startFile).replaceAll("ID", String.valueOf(assignedID))
                                                                          .replaceAll("MEM_MIN", "256M")
                                                                          .replaceAll("MEM_MAX", memMax(group) + "M");
-                val replacedProperties = FileUtils.readFileToString(propertiesFile).replaceAll("PORT", String.valueOf(assignedPort));
+
+                val propertiesContent = FileUtils.readFileToString(propertiesFile);
+
+                String replacedProperties = propertiesContent.replaceAll("PORT", String.valueOf(assignedPort));
+
+                // Special Case -- TEMP SOLUTION
+                if (group.equals("mariokart"))
+                {
+                    replacedProperties = replacedProperties.replaceAll("resource-pack=", "resource-pack=https://assets.neogamesmc.net/maps/mariokart/pack/1.zip");
+                }
 
                 // Write changes
                 FileUtils.writeStringToFile(startFile, replacedStart);
@@ -212,11 +221,11 @@ public class ServerCreator
      * @param group The group ID
      * @return The servers or an empty set.
      */
-    public Set<ServerData> serversInGroup(String group)
+    public List<ServerData> serversInGroup(String group)
     {
         val data = groups.get(group);
 
-        return data == null ? Collections.emptySet() : data.servers;
+        return data == null ? Collections.emptyList() : data.servers;
     }
 
     /**

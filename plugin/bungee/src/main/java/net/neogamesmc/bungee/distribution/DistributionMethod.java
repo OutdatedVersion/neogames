@@ -43,6 +43,15 @@ public enum DistributionMethod implements PlayerDistribution
         public ServerInfo apply(String group, ServerCreator creator)
         {
             val servers = creator.serversInGroup(group);
+
+            servers.sort((one, two) ->
+            {
+                val n = Integer.parseInt(one.name.substring(one.name.length() - 1));
+                val n2 = Integer.parseInt(two.name.substring(two.name.length() - 1));
+
+                return Integer.compare(n, n2);
+            });
+
             ServerInfo best = null;
 
             // servers = blastoff1, blastoff2
