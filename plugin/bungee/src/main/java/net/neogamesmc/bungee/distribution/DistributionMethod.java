@@ -58,7 +58,7 @@ public enum DistributionMethod implements PlayerDistribution
             // servers = blastoff1, blastoff2
             for (ServerData current : servers)
             {
-                val currentData = ProxyServer.getInstance().getServerInfo(current.name);
+                ServerInfo currentData = ProxyServer.getInstance().getServerInfo(current.name);
 
                 // Check if it's already full
                 if (currentData.getPlayers().size() >= current.maxPlayers)
