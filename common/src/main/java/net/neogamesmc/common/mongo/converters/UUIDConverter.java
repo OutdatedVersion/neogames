@@ -32,27 +32,27 @@ public class UUIDConverter extends TypeConverter implements SimpleValueConverter
      * Parse the retrieved {@link String} from Mongo.
      *
      * @param target Target class
-     * @param fromDBObject The db
-     * @param optionalExtraInfo ignored
+     * @param obj The db
+     * @param info ignored
      * @return The UUID
      */
     @Override
-    public Object decode(Class<?> target, Object fromDBObject, MappedField optionalExtraInfo)
+    public Object decode(Class<?> target, Object obj, MappedField info)
     {
-        return fromDBObject == null ? null : UNDASHED_UUID_PARSER.apply((String) fromDBObject);
+        return obj == null ? null : UNDASHED_UUID_PARSER.apply((String) obj);
     }
 
     /**
      * Write the provided UUID into a document as a String.
      *
-     * @param value The UUID
-     * @param optionalExtraInfo ignored
+     * @param val The UUID
+     * @param info ignored
      * @return The String
      */
     @Override
-    public Object encode(Object value, MappedField optionalExtraInfo)
+    public Object encode(Object val, MappedField info)
     {
-        return value == null ? null : value.toString().replaceAll("-", "");
+        return val == null ? null : val.toString().replaceAll("-", "");
     }
 
 }
