@@ -305,11 +305,13 @@ public class ServerCreator
         {
             case "chunkrunner":
             case "bowplinko":
-            case "event":
                 return 24;
 
             case "blastoff":
                 return 12;
+
+            case "mariokart":
+                return 25;
 
             default:
                 return 50;
