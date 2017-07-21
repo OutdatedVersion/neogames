@@ -159,7 +159,7 @@ public class ServerCreator
                 // Special Case -- TEMP SOLUTION
                 if (group.equals("mariokart"))
                 {
-                    replacedProperties = replacedProperties.replaceAll("resource-pack=", "resource-pack=https://assets.neogamesmc.net/maps/mariokart/pack/2.zip");
+                    replacedProperties = replacedProperties.replaceAll("resource-pack=", "resource-pack=https://assets.neogamesmc.net/maps/mariokart/pack/mariokart-3.zip");
                 }
 
                 // Write changes
@@ -305,13 +305,11 @@ public class ServerCreator
         {
             case "chunkrunner":
             case "bowplinko":
+            case "mariokart":
                 return 24;
 
             case "blastoff":
                 return 12;
-
-            case "mariokart":
-                return 25;
 
             default:
                 return 50;
