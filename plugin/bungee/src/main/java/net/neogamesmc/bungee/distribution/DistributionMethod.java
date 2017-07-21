@@ -7,6 +7,7 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.neogamesmc.bungee.dynamic.ServerCreator;
 import net.neogamesmc.bungee.dynamic.ServerData;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,7 +43,7 @@ public enum DistributionMethod implements PlayerDistribution
         @Override
         public ServerInfo apply(String group, ServerCreator creator)
         {
-            val servers = creator.serversInGroup(group);
+            List<ServerData> servers = creator.serversInGroup(group);
 
             servers.sort((one, two) ->
             {

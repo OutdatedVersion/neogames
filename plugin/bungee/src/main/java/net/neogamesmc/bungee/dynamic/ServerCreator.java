@@ -153,8 +153,7 @@ public class ServerCreator
                                                                          .replaceAll("MEM_MIN", "256M")
                                                                          .replaceAll("MEM_MAX", memMax(group) + "M");
 
-                val propertiesContent = FileUtils.readFileToString(propertiesFile);
-
+                String propertiesContent = FileUtils.readFileToString(propertiesFile);
                 String replacedProperties = propertiesContent.replaceAll("PORT", String.valueOf(assignedPort));
 
                 // Special Case -- TEMP SOLUTION
