@@ -38,7 +38,7 @@ jobs:
 
       - store_artifacts:
            path: /tmp/artifacts
-           destination: build
+           destination: plugin
 
       - save_cache:
           paths:
