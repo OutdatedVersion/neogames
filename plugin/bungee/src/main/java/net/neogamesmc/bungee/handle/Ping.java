@@ -132,7 +132,7 @@ public class Ping implements Listener
         {
             this.responseText = new TextComponent(
                     new TextComponent(FIRST_LINE.create()),
-                    new TextComponent(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', payload.line)))
+                    new TextComponent(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', payload.line.replaceAll("\\$", " "))))
             );
         }
     }
