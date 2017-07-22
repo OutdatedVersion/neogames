@@ -5,6 +5,10 @@ import org.apache.commons.lang3.text.WordUtils;
 
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.UUID;
+import java.util.regex.Pattern;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -17,6 +21,11 @@ public class Text
      * Currency formatter instance.
      */
     private static final NumberFormat FORMAT = NumberFormat.getInstance(Locale.US);
+
+    /**
+     * Pattern to match dashes.
+     */
+    private static final Pattern DASH = Pattern.compile("-");
 
     /**
      * Turns the provided enumerator into
@@ -99,6 +108,44 @@ public class Text
     public static String stripProtocol(String address)
     {
         return Regex.URL_PROTOCOL.matcher(address).replaceAll("");
+    }
+
+    /**
+     * Remove the dashes from a string representation of a {@link UUID}.
+     *
+     * @param uuid The UUID being stripped
+     * @return The textual version
+     */
+    public static String stripUUID(UUID uuid)
+    {
+        checkNotNull(uuid, "You must provide a UUID");
+
+        return DASH.matcher(uuid.toString()).replaceAll("");
+    }
+
+    /**
+     * Parse a textual representation of a {@link UUID} into an actual UUID object.
+     *
+     * @param in The raw text
+     * @return The UUID
+     */
+    public static UUID parseUndashedUUID(String in)
+    {
+        return new UUID(Long.parseUnsignedLong(in.substring(0, 16), 16),
+                        Long.parseUnsignedLong(in.substring(16), 16));
+    }
+
+    /**
+     * Parse the provided text as a UUID. If it follows the standard pattern
+     * then use the built in function; if it follows the Mojangian formation
+     * then use our own solution for parsing.
+     *
+     * @param in The text
+     * @return The UUID
+     */
+    public static UUID parseUUID(String in)
+    {
+        return in.contains("-") ? UUID.fromString(in) : parseUndashedUUID(in);
     }
 
 }

@@ -1,11 +1,11 @@
 package net.neogamesmc.common.mongo.converters;
 
+import net.neogamesmc.common.text.Text;
 import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
 
 import java.util.UUID;
-import java.util.function.Function;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -13,12 +13,6 @@ import java.util.function.Function;
  */
 public class UUIDConverter extends TypeConverter implements SimpleValueConverter
 {
-
-    /**
-     * Turns an undashed string representation of {@link UUID} into an actual UUID.
-     */
-    private static Function<String, UUID> UNDASHED_UUID_PARSER = val -> new UUID(Long.parseUnsignedLong(val.substring(0, 16), 16),
-                                                                                 Long.parseUnsignedLong(val.substring(16), 16));
 
     /**
      * Parse {@link UUID}s properly
@@ -39,7 +33,7 @@ public class UUIDConverter extends TypeConverter implements SimpleValueConverter
     @Override
     public Object decode(Class<?> target, Object obj, MappedField info)
     {
-        return obj == null ? null : UNDASHED_UUID_PARSER.apply((String) obj);
+        return obj == null ? null : Text.parseUndashedUUID((String) obj);
     }
 
     /**

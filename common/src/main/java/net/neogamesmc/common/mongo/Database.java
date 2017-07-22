@@ -102,7 +102,7 @@ public class Database implements AutoCloseable
      * @param <T> Type of the class
      * @return A {@link Query} with the required type
      */
-    public <T> Query<T> create(Class<T> clazz)
+    public <T> Query<T> queryFor(Class<T> clazz)
     {
         return datastore.createQuery(clazz);
     }
