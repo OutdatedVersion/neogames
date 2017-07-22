@@ -1,10 +1,8 @@
 package net.neogamesmc.common.payload;
 
-import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
-import org.json.simple.JSONObject;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -27,12 +25,6 @@ public class RemoveFromQueuePayload implements Payload
     public RemoveFromQueuePayload(String... targets)
     {
         this.targets = targets;
-    }
-
-    @Override
-    public JSONObject asJSON()
-    {
-        return new JSONBuilder().add("targets", targets).done();
     }
 
     @Override

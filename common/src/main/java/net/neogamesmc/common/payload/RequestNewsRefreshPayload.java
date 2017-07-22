@@ -2,11 +2,9 @@ package net.neogamesmc.common.payload;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.RequiredArgsConstructor;
-import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
-import org.json.simple.JSONObject;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -39,16 +37,6 @@ public class RequestNewsRefreshPayload implements Payload
      */
     @SerializedName ( "updated_at" )
     public final long updatedAt;
-
-    @Override
-    public JSONObject asJSON()
-    {
-        return new JSONBuilder().add("id", id)
-                                .add("updated_by", updatedBy)
-                                .add("new_value", newValue)
-                                .add("updated_at", updatedBy)
-                                .done();
-    }
 
     @Override
     public RedisChannel channel()

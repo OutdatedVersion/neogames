@@ -2,11 +2,9 @@ package net.neogamesmc.common.payload;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
-import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
-import org.json.simple.JSONObject;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -43,17 +41,6 @@ public class PunishmentPayload implements Payload
      * The reason behind issuing this punishment.
      */
     public String reason;
-
-    @Override
-    public JSONObject asJSON()
-    {
-        return new JSONBuilder().add("id", id)
-                                .add("type", type)
-                                .add("reason", reason)
-                                .add("target", targetName)
-                                .add("expires_at", expiresAt)
-                                .done();
-    }
 
     @Override
     public RedisChannel channel()

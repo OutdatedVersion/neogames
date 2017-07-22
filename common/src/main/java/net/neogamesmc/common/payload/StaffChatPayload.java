@@ -2,12 +2,10 @@ package net.neogamesmc.common.payload;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
-import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
 import net.neogamesmc.common.reference.Role;
-import org.json.simple.JSONObject;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -38,16 +36,6 @@ public class StaffChatPayload implements Payload
      * The message.
      */
     public String message;
-
-    @Override
-    public JSONObject asJSON()
-    {
-        return new JSONBuilder().add("message", message)
-                                .add("sent_on", sentOn)
-                                .add("name", name)
-                                .add("role", role)
-                                .done();
-    }
 
     @Override
     public RedisChannel channel()

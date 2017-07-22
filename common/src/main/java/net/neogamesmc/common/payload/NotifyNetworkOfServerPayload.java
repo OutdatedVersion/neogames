@@ -1,11 +1,9 @@
 package net.neogamesmc.common.payload;
 
 import lombok.AllArgsConstructor;
-import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
-import org.json.simple.JSONObject;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -31,12 +29,6 @@ public class NotifyNetworkOfServerPayload implements Payload
      * we'll assume that we will be removing one following the property of: {@link #name}
      */
     public boolean add;
-
-    @Override
-    public JSONObject asJSON()
-    {
-        return new JSONBuilder().add("name", name).add("group", group).add("add", add).done();
-    }
 
     @Override
     public RedisChannel channel()

@@ -1,11 +1,9 @@
 package net.neogamesmc.common.payload;
 
 import lombok.AllArgsConstructor;
-import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
-import org.json.simple.JSONObject;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -32,17 +30,6 @@ public class RequestServerCreationPayload implements Payload
      * Any extra data for our manager to use.
      */
     public String data;
-
-    @Override
-    public JSONObject asJSON()
-    {
-        return new JSONBuilder()
-                .add("type", "ADD_SERVER")
-                .add("player", player)
-                .add("group", group)
-                .add("data", data)
-                .done();
-    }
 
     @Override
     public RedisChannel channel()

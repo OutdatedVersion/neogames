@@ -2,7 +2,6 @@ package net.neogamesmc.common.redis.api;
 
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
-import org.json.simple.JSONObject;
 
 /**
  * Represents a packet of data sent over
@@ -13,16 +12,7 @@ import org.json.simple.JSONObject;
  */
 public interface Payload
 {
-
-    /**
-     * Turns this payload into a
-     * JSON object that we may then
-     * send over the provided channel
-     *
-     * @return the payload as JSON
-     */
-    JSONObject asJSON();
-
+    
     /**
      * @return the Redis channel this payload
      *         is to be sent over
@@ -32,21 +22,13 @@ public interface Payload
     RedisChannel channel();
 
     /**
-     * @param focus the {@code focus} of this payload
-     * @return the object as a {@link String}
+     * Returns whether or not this payload does contain data.
+     *
+     * @return Yes or no
      */
-    default String asString(String focus)
+    default boolean hasContent()
     {
-        final JSONObject json = new JSONObject();
-
-        json.put("focus", focus);
-
-        final JSONObject payload = this.asJSON();
-
-        if (payload != null)
-            json.put("payload", payload);
-
-        return json.toString();
+        return true;
     }
 
     /**

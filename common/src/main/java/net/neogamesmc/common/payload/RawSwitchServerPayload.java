@@ -3,10 +3,6 @@ package net.neogamesmc.common.payload;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.Collections;
 
 /**
  * Represents the action of changing the
@@ -42,7 +38,7 @@ public class RawSwitchServerPayload implements Payload
     /**
      * Class Constructor
      *
-     * @param server The nam,e
+     * @param server The name
      * @param targets The players to send
      */
     public RawSwitchServerPayload(String server, String... targets)
@@ -50,20 +46,6 @@ public class RawSwitchServerPayload implements Payload
         this.server = server;
         this.targets = targets;
         this.bulk = targets.length > 1;
-    }
-
-    @Override
-    public JSONObject asJSON()
-    {
-        final JSONObject json = new JSONObject();
-        final JSONArray targetsJSON = new JSONArray();
-        Collections.addAll(targetsJSON, this.targets);
-
-        json.put("bulk", bulk);
-        json.put("server", server);
-        json.put("targets", targetsJSON);
-
-        return json;
     }
 
     @Override

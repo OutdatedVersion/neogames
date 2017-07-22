@@ -2,11 +2,9 @@ package net.neogamesmc.common.payload;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.RequiredArgsConstructor;
-import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
-import org.json.simple.JSONObject;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -37,12 +35,6 @@ public class NetworkNoticePayload implements Payload
     public boolean isAll()
     {
         return targetServers[0].equals("ALL");
-    }
-
-    @Override
-    public JSONObject asJSON()
-    {
-        return new JSONBuilder().add("target_servers", targetServers).add("message", message).done();
     }
 
     @Override

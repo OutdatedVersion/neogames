@@ -76,7 +76,7 @@ public class SwitchServerCommand
             return;
         }
 
-        new FindAndSwitchServerPayload(new String[] { player.getUniqueId().toString() }, "lobby").publish(redis);
+        new FindAndSwitchServerPayload("lobby", player.getUniqueId().toString()).publish(redis);
     }
 
 }

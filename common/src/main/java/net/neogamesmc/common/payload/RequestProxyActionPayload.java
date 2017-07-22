@@ -1,11 +1,9 @@
 package net.neogamesmc.common.payload;
 
 import lombok.RequiredArgsConstructor;
-import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
-import org.json.simple.JSONObject;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -27,12 +25,6 @@ public class RequestProxyActionPayload implements Payload
     public enum Action
     {
         PURGE_PUNISHMENT_CACHE
-    }
-
-    @Override
-    public JSONObject asJSON()
-    {
-        return new JSONBuilder().add("action", action).done();
     }
 
     @Override

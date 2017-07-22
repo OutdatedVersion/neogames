@@ -1,20 +1,21 @@
 package net.neogamesmc.common.payload;
 
-import lombok.AllArgsConstructor;
-import net.neogamesmc.common.json.JSONBuilder;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.Payload;
-import org.json.simple.JSONObject;
 
 /**
  * @author Ben (OutdatedVersion)
  * @since Jul/07/2017 (5:48 AM)
  */
 @Focus ( "req-server-change" )
-@AllArgsConstructor
 public class FindAndSwitchServerPayload implements Payload
 {
+
+    /**
+     * The group the player is requesting.
+     */
+    public String group;
 
     /**
      * UUIDs of the players to switch out.
@@ -22,17 +23,15 @@ public class FindAndSwitchServerPayload implements Payload
     public String[] targets;
 
     /**
-     * The group the player is requesting.
+     * Class Constructor
+     *
+     * @param group The target group
+     * @param targets The targets
      */
-    public String group;
-
-    @Override
-    public JSONObject asJSON()
+    public FindAndSwitchServerPayload(String group, String... targets)
     {
-        return new JSONBuilder()
-                .add("targets", targets)
-                .add("group", group)
-                .done();
+        this.group = group;
+        this.targets = targets;
     }
 
     @Override

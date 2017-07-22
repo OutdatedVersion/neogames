@@ -6,15 +6,16 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.inject.Singleton;
+import lombok.EqualsAndHashCode;
 import lombok.val;
 import net.neogamesmc.common.redis.api.Focus;
 import net.neogamesmc.common.redis.api.FromChannel;
 import net.neogamesmc.common.redis.api.HandlesType;
 import net.neogamesmc.common.redis.api.Payload;
+import org.json.simple.JSONObject;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
@@ -25,6 +26,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Supplier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -40,7 +44,7 @@ public class RedisHandler
 {
 
     /** Whether or not to print out debug messages here */
-    private static final boolean DEBUG_ENABLED = Boolean.valueOf(System.getProperty("net.neogamesmc.common.redis.debug", "false"));
+    private static final boolean DEBUG_ENABLED = Boolean.getBoolean("net.neogamesmc.common.redis.debug");
 
     /** Convert raw JSON strings into Java objects */
     private static final JsonParser JSON_PARSER = new JsonParser();
@@ -57,21 +61,32 @@ public class RedisHandler
         public String load(Class<? extends Payload> key) throws Exception
         {
             checkState(key.isAnnotationPresent(Focus.class), "Invalid payload! Missing Focus annotation.");
-            debug("Fetching focus for payload type: " + key.getName());
+            debug(() -> "Fetching focus for payload type: " + key.getName());
 
             return key.getAnnotation(Focus.class).value();
         }
     });
 
-    /** a pool of redis connections */
+    /**
+     * A thread-safe pool supplying {@link Jedis} instances for interaction with Redis.
+     */
     private JedisPool pool;
 
-    /** one {@link Jedis} instance dedicated to the thread-blocking op of "subbing" to channels */
+    /**
+     * One {@link Jedis} instance reserved to perform the thread-blocking
+     * operation of "subscribing" to a Redis pub/sub channel.
+     */
     private volatile Jedis subscriber;
 
-    // TODO(Ben): requires concurrency lock
-    /** collection of hooks to our redis system */
+    /**
+     * Usage hooks for our Redis system.
+     */
     private Multimap<String, HookData> hooks;
+
+    /**
+     * Used for concurrency assurance with {@link #hooks}.
+     */
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     /**
      * Run requests asynchronously.
@@ -143,17 +158,15 @@ public class RedisHandler
                     {
                         try
                         {
-                            debug("Received JSON message on channel: " + channel);
-                            debug("Message: [" + message + "]");
+                            debug(() -> "Received JSON message on channel: " + channel);
+                            debug(() -> "Message: [" + message + "]");
 
-                            final JsonObject json = JSON_PARSER.parse(message).getAsJsonObject();
-                            final String focus = json.get("focus").getAsString();
+                            val json = JSON_PARSER.parse(message).getAsJsonObject();
+                            val focus = json.get("focus").getAsString();
 
                             if (hooks.containsKey(focus))
                             {
-                                val all = hooks.get(focus);
-
-                                for (HookData data : all)
+                                for (HookData data : hooks.get(focus))
                                 {
                                     if (data.channel.equals(channel))
                                     {
@@ -223,11 +236,20 @@ public class RedisHandler
 
         executor.submit(() ->
         {
-            debug("Publishing payload on " + channel + "\npayload w/o focus: [" + payload.asJSON().toString() + "]");
+            debug(() -> "Publishing payload on " + channel + "\npayload w/o focus: [" + GSON.toJson(payload) + "]");
 
             try (Jedis jedis = pool.getResource())
             {
-                jedis.publish(channel, payload.asString(payloadFocusCache.get(payload.getClass())));
+                val json = new JSONObject();
+
+                json.put("focus", payloadFocusCache.get(payload.getClass()));
+
+                if (payload.hasContent())
+                {
+                    json.put("payload", GSON.toJson(payload));
+                }
+
+                jedis.publish(channel, json.toJSONString());
             }
             catch (ExecutionException ex)
             {
@@ -256,7 +278,7 @@ public class RedisHandler
     {
         try
         {
-            debug("[Redis Handler] Provisioning hook at: " + object.getClass().getCanonicalName());
+            debug(() -> "Provisioning hook at: " + object.getClass().getCanonicalName());
 
             // lazy init
             if (hooks == null)
@@ -316,15 +338,16 @@ public class RedisHandler
      *
      * @param message the message
      */
-    private static void debug(String message)
+    private static void debug(Supplier<String> message)
     {
         if (DEBUG_ENABLED)
-            System.out.println("[Redis Debug] " + message);
+            System.out.println("[Redis Debug] " + message.get());
     }
 
     /**
      * Set of data pertaining to a Redis hook
      */
+    @EqualsAndHashCode
     private static class HookData
     {
         /** instance of the item holding this hook */
