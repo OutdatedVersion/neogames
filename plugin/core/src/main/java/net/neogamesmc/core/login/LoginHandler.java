@@ -1,6 +1,5 @@
 package net.neogamesmc.core.login;
 
-import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import lombok.val;
@@ -8,7 +7,6 @@ import net.neogamesmc.common.account.Account;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.database.operation.InsertUpdateOperation;
 import net.neogamesmc.common.inject.ParallelStartup;
-import net.neogamesmc.common.login.LoginHook;
 import net.neogamesmc.core.issue.Issues;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -16,8 +14,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import java.util.Set;
 
 /**
  * Processing players joining servers.
@@ -41,22 +37,10 @@ public class LoginHandler implements Listener
     @Inject private Database database;
 
     /**
-     * Thread-safe set of hooks we may use.
-     */
-    private Set<LoginHook> loginHooks = Sets.newCopyOnWriteArraySet();
-
-    /**
-     * Add a hook into our set of registered hooks.
+     * Fetch player data from our database, and cache it. In the case that they do not have data yet, create it.
      *
-     * @param hook The hook
-     * @return This handler, for chaining
+     * @param event The asynchronous login event
      */
-    public LoginHandler registerLoginHooks(LoginHook hook)
-    {
-        loginHooks.add(hook);
-        return this;
-    }
-
     @EventHandler
     public void handle(AsyncPlayerPreLoginEvent event)
     {
