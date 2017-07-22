@@ -87,7 +87,8 @@ public class BuycraftBukkitHook
                                                 .append("If you happen to run into any issues regarding\n", FORMATTING)
                                                 .append("this please contact us at ", FORMATTING)
                                                 .append("neogamesmc.net\n").color(DARK_AQUA)
-                                                .append("                                                                           ").strikethrough(true).color(AQUA).create());
+                                                .append("                                                                           ").strikethrough(true).color(AQUA)
+                                                .create());
             }
         }
     }

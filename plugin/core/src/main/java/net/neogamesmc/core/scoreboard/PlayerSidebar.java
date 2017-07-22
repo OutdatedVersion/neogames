@@ -78,13 +78,13 @@ public class PlayerSidebar
         this.lines = Maps.newHashMap();
         this.scoreboard = scoreboard;
 
-        this.objective = scoreboard.registerNewObjective(UUID.randomUUID().toString().substring(0, 8), ScoreboardConstants.DUMMY_OBJECTIVE);
+        this.objective = scoreboard.registerNewObjective(UUID.randomUUID().toString().substring(0, 8), PlayerSidebarManager.DUMMY_OBJECTIVE);
         this.objective.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
 
     public PlayerSidebar add(String line)
     {
-        checkState((counter + 1) <= ScoreboardConstants.MAX_LINES, "You've reached the line cap on this scoreboard.");
+        checkState((counter + 1) <= PlayerSidebarManager.MAX_LINES, "You've reached the line cap on this scoreboard.");
 
         stagingLines[counter++] = line;
         return this;

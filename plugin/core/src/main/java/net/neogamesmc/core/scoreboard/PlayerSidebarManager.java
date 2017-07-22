@@ -30,6 +30,16 @@ public class PlayerSidebarManager implements Listener
 {
 
     /**
+     * The identifier for a "dummy" type objective.
+     */
+    public static final String DUMMY_OBJECTIVE = "dummy";
+
+    /**
+     * The maximum amount of lines (scores) we may set on a scoreboard.
+     */
+    public static final byte MAX_LINES = 15;
+
+    /**
      * A common title shared across every scoreboard.
      */
     @Setter @Getter
