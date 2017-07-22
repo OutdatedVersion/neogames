@@ -180,7 +180,10 @@ public abstract class Plugin extends JavaPlugin implements Listener
         }
         catch (Exception ex)
         {
-            throw new RuntimeException("Unable to startup server.", ex);
+            ex.printStackTrace();
+            System.out.println("========= Issue encountered whilst starting server -- shutting down.");
+
+            Bukkit.shutdown();
         }
     }
 

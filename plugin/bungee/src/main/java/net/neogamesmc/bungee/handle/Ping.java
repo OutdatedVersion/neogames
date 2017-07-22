@@ -121,9 +121,7 @@ public class Ping implements Listener
     {
         // Update count
         if (payload.max != -1)
-        {
-            maxPlayerCount = payload.max;
-        }
+            updatePlayerBound(payload.max);
 
 
         // Update text
