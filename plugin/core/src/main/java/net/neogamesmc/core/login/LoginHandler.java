@@ -4,11 +4,10 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import lombok.val;
-import net.neogamesmc.common.account.Account;
-import net.neogamesmc.common.database.Database;
-import net.neogamesmc.common.database.operation.InsertUpdateOperation;
 import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.login.LoginHook;
+import net.neogamesmc.common.mongo.AccountLayer;
+import net.neogamesmc.common.mongo.Database;
 import net.neogamesmc.core.issue.Issues;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -31,12 +30,12 @@ public class LoginHandler implements Listener
 {
 
     /**
-     * SQL statement to insert player data.
+     * Bridge to player data.
      */
-    private static final String SQL_RECORD_PLAYER = "INSERT INTO accounts (uuid, name, address) VALUES(?, ?, ?);";
+    @Inject private AccountLayer source;
 
     /**
-     * Bridge to player data.
+     * Interface to our database.
      */
     @Inject private Database database;
 
@@ -62,26 +61,21 @@ public class LoginHandler implements Listener
     {
         try
         {
-            val account = database.fetchAccountSync(event.getUniqueId());
+            val fetch = source.fetchAccountSync(event.getUniqueId());
 
-            if (account.isPresent())
+            if (fetch.isPresent())
             {
-                database.cacheCommit(account.get().updateData(database, event.getName(), event.getAddress().getHostAddress()));
+                val account = fetch.get();
+
+                database.persist(account);
+                // TODO(Ben): update account
             }
             else
             {
-                val creating = new Account().fromLogin(event.getUniqueId(), event.getName(), event.getAddress().getHostAddress());
-
-                new InsertUpdateOperation(SQL_RECORD_PLAYER)
-                        .data(creating.uuid(), creating.name(), creating.ip())
-                        .keys(result ->
-                        {
-                            if (result.next())
-                                creating.id = result.getInt(1);
-                        }).sync(database);
-
-                database.cacheCommit(creating);
+                // TODO(Ben): create acct
             }
+
+            // TODO(Ben): cache acct
         }
         catch (Exception ex)
         {

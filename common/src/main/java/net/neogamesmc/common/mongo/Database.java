@@ -2,9 +2,11 @@ package net.neogamesmc.common.mongo;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import lombok.NonNull;
 import lombok.val;
 import net.neogamesmc.common.config.ConfigurationProvider;
 import net.neogamesmc.common.exception.SentryHook;
@@ -26,6 +28,7 @@ import java.util.function.Consumer;
  * @author Ben (OutdatedVersion)
  * @since Jul/19/2017 (12:53 AM)
  */
+@Singleton
 public class Database implements AutoCloseable
 {
 
@@ -107,6 +110,11 @@ public class Database implements AutoCloseable
         return datastore.createQuery(clazz);
     }
 
+    public <T> void persist(@NonNull T entity)
+    {
+        service.submit(() -> datastore.save(entity));
+    }
+
     /**
      * Persist the changes made in the provided {@link Entity}.
      * <p>
@@ -116,9 +124,22 @@ public class Database implements AutoCloseable
      * @param callback Task to run with the result when the operation has completed
      * @param <T> Type of that entity
      */
-    public <T> void save(T entity, Consumer<Key<T>> callback)
+    public <T> void persist(@NonNull T entity, Consumer<Key<T>> callback)
     {
         service.submit(() -> callback.accept(datastore.save(entity)));
+    }
+
+
+    // TODO(Ben): Consider moving these execution methods to their own thing
+
+    /**
+     * Execute the provided task asynchronously.
+     *
+     * @param runnable The task to run
+     */
+    public void execute(Runnable runnable)
+    {
+        service.submit(runnable);
     }
 
 }
