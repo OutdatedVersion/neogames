@@ -21,7 +21,7 @@ import java.util.UUID;
 @Entity ( "accounts" )
 @Indexes ( {
        @Index ( value = "i_uuid", unique = true, fields = @Field ( "uuid" ) ),
-       @Index ( value = "i_name", fields = @Field ( "name" ) )
+       @Index ( value = "i_name", fields = @Field ( "name_lower" ) )
 } )
 @EqualsAndHashCode
 public class Account
