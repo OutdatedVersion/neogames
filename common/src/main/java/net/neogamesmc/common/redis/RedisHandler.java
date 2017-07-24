@@ -246,7 +246,7 @@ public class RedisHandler
 
                 if (payload.hasContent())
                 {
-                    json.put("payload", GSON.toJson(payload));
+                    json.put("payload", GSON.toJsonTree(payload).getAsJsonObject());
                 }
 
                 jedis.publish(channel, json.toJSONString());
