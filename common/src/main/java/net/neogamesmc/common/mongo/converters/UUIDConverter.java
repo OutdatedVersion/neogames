@@ -1,7 +1,6 @@
 package net.neogamesmc.common.mongo.converters;
 
 import net.neogamesmc.common.text.Text;
-import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
 
@@ -11,7 +10,7 @@ import java.util.UUID;
  * @author Ben (OutdatedVersion)
  * @since Jul/19/2017 (1:24 AM)
  */
-public class UUIDConverter extends TypeConverter implements SimpleValueConverter
+public class UUIDConverter extends TypeConverter
 {
 
     /**

@@ -1,5 +1,6 @@
 package net.neogamesmc.common.mongo;
 
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -20,6 +21,7 @@ import org.mongodb.morphia.query.Query;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -40,19 +42,35 @@ public class Database implements AutoCloseable
     private static final String DATABASE_NAME = "neogames";
 
     /**
+     * A collection of fully-qualified classes that require mapping.
+     */
+    private Set<Class> mappingRequests = Sets.newConcurrentHashSet();
+
+    /**
      * Exposes a way to run tasks asynchronous to the primary server thread.
      */
     private ExecutorService service;
+
+    /**
+     * Our object <-> document mapping tool.
+     */
+    private Morphia morphia;
 
     /**
      * Morphia representation of a Mongo database.
      */
     private Datastore datastore;
 
+    /**
+     * Configuration values for our database.
+     */
+    private DatabaseConfig config;
+
     @Inject
     public Database(ConfigurationProvider provider)
     {
-        val morphia = new Morphia();
+        morphia = new Morphia();
+
         val converters = morphia.getMapper().getConverters();
 
         // We save UUIDs in an alternative fashion (the "Mojagian" way)
@@ -63,8 +81,11 @@ public class Database implements AutoCloseable
 
 
         // Load up configuration details for our database
-        val config = provider.read("database/standard", DatabaseConfig.class);
+        config = provider.read("database/standard", DatabaseConfig.class);
+    }
 
+    public Database init()
+    {
         val client = new MongoClient(new ServerAddress(), Collections.singletonList(
                 MongoCredential.createCredential(config.name, DATABASE_NAME, config.password.toCharArray())
         ));
@@ -72,11 +93,10 @@ public class Database implements AutoCloseable
         datastore = morphia.createDatastore(client, DATABASE_NAME);
         datastore.ensureIndexes(true);
 
-
         service = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
-                                                        .setNameFormat("database-processor-%d")
-                                                        .setUncaughtExceptionHandler((thread, ex) -> SentryHook.report(ex))
-                                                        .build());
+                .setNameFormat("database-processor-%d")
+                .setUncaughtExceptionHandler((thread, ex) -> SentryHook.report(ex))
+                .build());
     }
 
     @Override
@@ -84,6 +104,16 @@ public class Database implements AutoCloseable
     {
         datastore.getMongo().close();
         service.shutdown();
+    }
+
+    public void map(Class... classes)
+    {
+        morphia.map(classes);
+    }
+
+    public void map(String packageName)
+    {
+        morphia.mapPackage(packageName);
     }
 
     /**
