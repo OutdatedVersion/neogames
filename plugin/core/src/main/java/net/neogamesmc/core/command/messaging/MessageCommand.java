@@ -85,15 +85,15 @@ public class MessageCommand
         ComponentBuilder fromComponent = new ComponentBuilder("From ").color(ChatColor.AQUA);
         appendRole(fromComponent, senderRole);
 
-        player.sendMessage(toComponent.append(" " + target.getName()).append(" " + Text.convertArray(message)).color(ChatColor.AQUA).create());
-        target.sendMessage(fromComponent.append(" " + player.getName()).append(" " + Text.convertArray(message)).color(ChatColor.AQUA).create());
+        player.sendMessage(toComponent.append(target.getName()).append(" " + Text.convertArray(message)).color(ChatColor.AQUA).create());
+        target.sendMessage(fromComponent.append(player.getName()).append(" " + Text.convertArray(message)).color(ChatColor.AQUA).create());
     }
 
     private static void appendRole(ComponentBuilder builder, Role role)
     {
         if (role != Role.PLAYER)
         {
-            builder.append(role.name.toUpperCase()).color(role.color);
+            builder.append(role.name.toUpperCase() + " ").color(role.color);
         }
         else builder.color(ChatColor.GRAY);
     }
