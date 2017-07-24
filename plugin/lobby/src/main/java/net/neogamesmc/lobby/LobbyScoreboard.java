@@ -52,7 +52,7 @@ public class LobbyScoreboard implements Listener
     public void init(Plugin plugin, PlayerSidebarManager manager)
     {
         this.manager = manager.addDefaultModifier(plugin.get(RoleTagModifier.class))
-                              .title(new StaticTitle(bold(YELLOW) + "NEO" + bold(GOLD) + "GAMES"));
+                              .title(new StaticTitle(bold(YELLOW) + "Neo" + bold(GOLD) + "Games"));
 
         Scheduler.timer(() ->
         {
