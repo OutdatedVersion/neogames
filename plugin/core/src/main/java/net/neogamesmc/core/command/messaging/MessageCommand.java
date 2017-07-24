@@ -3,7 +3,6 @@ package net.neogamesmc.core.command.messaging;
 import com.google.inject.Inject;
 import lombok.val;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.reference.Role;
@@ -29,8 +28,8 @@ public class MessageCommand
 
     @Command ( executor = { "msg", "pm", "tell", "whisper", "w", "m", "choo" } )
     public void run(Player player,
-                    @Necessary ( "Invalid usage! Valid usage: /msg Player (message)" ) String target,
-                    @Necessary ( "Invalid usage! Valid usage: /msg Player (message)" ) String[] message)
+                    @Necessary ( "Try using /m player (message)" ) String target,
+                    @Necessary ( "You didn't provide any message to send!" ) String[] message)
     {
         Player targetPlayer = Bukkit.getPlayer(target);
 
@@ -54,7 +53,7 @@ public class MessageCommand
 
             if (targetPlayer == null)
             {
-                player.sendMessage(Message.prefix("Messaging").content("Player is no longer online.", ChatColor.RED).create());
+                Message.prefix("Messaging").content("That player is no longer online", ChatColor.RED).send(player);
                 return;
             }
 
@@ -62,8 +61,7 @@ public class MessageCommand
         }
         else
         {
-            player.sendMessage(Message.prefix("Messaging").content("You have not messaged anyone recently.", ChatColor.RED).create());
-
+            Message.prefix("Messaging").content("You have not messaged anyone recently", ChatColor.RED).send(player);
         }
     }
 
@@ -81,11 +79,23 @@ public class MessageCommand
 
         val recipientRole = recipient.role();
 
-        BaseComponent[] toComponent = new ComponentBuilder("To ").color(ChatColor.AQUA).append(recipientRole.name.toUpperCase()).color(recipientRole.color).append(" " + target.getName()).append(" " + Text.convertArray(message)).color(ChatColor.AQUA).create();
-        BaseComponent[] fromComponent = new ComponentBuilder("From ").color(ChatColor.AQUA).append(senderRole.name.toUpperCase()).color(senderRole.color).append(" " + player.getName()).append(" " + Text.convertArray(message)).color(ChatColor.AQUA).create();
+        ComponentBuilder toComponent = new ComponentBuilder("To ").color(ChatColor.AQUA);
+        appendRole(toComponent, recipientRole);
 
-        player.sendMessage(toComponent);
-        target.sendMessage(fromComponent);
+        ComponentBuilder fromComponent = new ComponentBuilder("From ").color(ChatColor.AQUA);
+        appendRole(fromComponent, senderRole);
+
+        player.sendMessage(toComponent.append(" " + target.getName()).append(" " + Text.convertArray(message)).color(ChatColor.AQUA).create());
+        target.sendMessage(fromComponent.append(" " + player.getName()).append(" " + Text.convertArray(message)).color(ChatColor.AQUA).create());
+    }
+
+    private static void appendRole(ComponentBuilder builder, Role role)
+    {
+        if (role != Role.PLAYER)
+        {
+            builder.append(role.name.toUpperCase()).color(role.color);
+        }
+        else builder.color(ChatColor.GRAY);
     }
 
 }
