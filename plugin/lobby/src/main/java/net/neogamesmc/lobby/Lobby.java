@@ -133,6 +133,12 @@ public class Lobby extends Plugin
         // bowplinko.lineSet(2, GRAY + "No One Is Playing");
         bowplinko.data("group", "bowplinko");
 
+        val mariokart = manager.createNewNPC(GO_TO_GAME, "Mario Kart", new Location(lobby, 3.67, 63, 5, -106.4f, -2.6f));
+        mariokart.skinSet("eyJ0aW1lc3RhbXAiOjE1MDEwNDc3MTc2NDksInByb2ZpbGVJZCI6IjNkOWNmOTZiN2MyNzRiZWVhZDFiOWQ0NTM3NTRjYjc2IiwicHJvZmlsZU5hbWUiOiJOaWtha2EiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzUzZmU1MzE0NzgzY2IyZjg5ZGRjZWE0NDk2MjI5ZWVmNGViNDg2ODYyODJjZDEzOTNkZWZlN2MxOTQ5In19fQ==", "MHBwNl74jscR0q+ibHi1wYzAKJG7poZtWtZUJryoVsCRjrXTGQGH9XtbwoTJaHRB+dtVrIa2AYbeuj9vrxhq5DifU58F2Fx+pmSGenJ1TWF4/9B+NbKyYnUtoQlAkKQTOY+8A6XuhmpeSAQiV4lnkGsFmUyrhk66u14VBkVdrPY+3t6dINYB5aTYJCrxo7mVP8EiJPM9lc29Bu6gQx8fUSvhvLTTohYn2D6Qd2w+mYEJQHVizcxiSi/OauJ870kpzIbtt8iJEJ+JdN8TJvsd3e2hwiXYgLQLklSzRnrZdQZBUJSwOmDI+44830efJSLT4Pd4J3bHzIfh+2wbAlQXNLDrqb0Scbuf7IGBh/0+Znw9xD8wGas4U9SunL7nEV0juSunhhJW5P1HXgRSSVt9qqD0kycQ9saX5TUpWMfaT4H1NklIlBuQL6LIogA3Xmh89oEqv3ElnR9e3R5yVSR5AR/3IPeIyCb5lvRzlsRP6pc0nwXAsw1mWvDKBVklOe2mjLEdlLYsEkjDhAibU2HR4EUhcNwf/sm9VM+eyBN1UusWURsaTig9XYnjGqUyCHw2tj7E5KpD5ZK7HnxdnKMWKL3o8jqVuIsbk50SWlEj3Tve6UPj7m3pmZ+0wWhbq685hDf4+au7UPWsjQEQj2MWaLDhJRlTDmPJFFiAqkfy7/g=");
+        mariokart.lineSet(1, GREEN + "Join " + bold(DARK_PURPLE) + "Mario Kart");
+        // bowplinko.lineSet(2, GRAY + "No One Is Playing");
+        mariokart.data("group", "mariokart");
+
         // TEAM
 
         val ben = manager.createNewNPC(TEAM_MEMBER, "OutdatedVersion", new Location(lobby, 27.54, 65, -33.5, 24.8f, 12.6f));
@@ -162,7 +168,7 @@ public class Lobby extends Plugin
     @Override
     public void disable()
     {
-        get(Database.class).release();
+        database.release();
 
         spawnLocation.getWorld().getEntities().stream().filter(entity -> entity.hasMetadata("send-server")).forEach(Entity::remove);
     }

@@ -26,8 +26,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -80,13 +78,10 @@ public class RedisHandler
 
     /**
      * Usage hooks for our Redis system.
+     * <p>
+     * Not thread-safe
      */
     private Multimap<String, HookData> hooks;
-
-    /**
-     * Used for concurrency assurance with {@link #hooks}.
-     */
-    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     /**
      * Run requests asynchronously.
