@@ -18,6 +18,7 @@ import net.neogamesmc.core.inventory.ItemBuilder;
 import net.neogamesmc.core.npc.NPCManager;
 import net.neogamesmc.core.scoreboard.PlayerSidebarManager;
 import net.neogamesmc.core.text.Colors;
+import net.neogamesmc.core.text.Messages;
 import net.neogamesmc.lobby.news.News;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -361,14 +362,21 @@ public class Lobby extends Plugin
 
             switch (event.getSlot())
             {
-                case 11:
+                case 9:
                     sendTo(player, "chunkrunner");
                     break;
-                case 13:
+
+                case 11:
                     sendTo(player, "blastoff");
                     break;
-                case 15:
+
+                case 13:
                     sendTo(player, "bowplinko");
+                    break;
+
+                case 15:
+                    sendTo(player, "mariokart");
+                    Messages.debug("Send to MarioKart");
                     break;
             }
         }
