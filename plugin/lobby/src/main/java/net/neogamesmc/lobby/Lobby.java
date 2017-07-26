@@ -362,21 +362,20 @@ public class Lobby extends Plugin
 
             switch (event.getSlot())
             {
-                case 9:
+                case 10:
                     sendTo(player, "chunkrunner");
                     break;
 
-                case 11:
+                case 12:
                     sendTo(player, "blastoff");
                     break;
 
-                case 13:
+                case 14:
                     sendTo(player, "bowplinko");
                     break;
 
-                case 15:
+                case 16:
                     sendTo(player, "mariokart");
-                    Messages.debug("Send to MarioKart");
                     break;
             }
         }
