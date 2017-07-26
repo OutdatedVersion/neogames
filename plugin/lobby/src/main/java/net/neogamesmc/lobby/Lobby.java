@@ -324,7 +324,7 @@ public class Lobby extends Plugin
 
         ItemBuilder mariokart = new ItemBuilder(NETHER_STAR);
         mariokart.name(Colors.bold(ChatColor.DARK_AQUA) + "MarioKart");
-        bowplinkoItemBuilder.lore(
+        mariokart.lore(
                 ChatColor.DARK_GRAY + "Race/Challenge",
                 "",
                 ChatColor.GRAY + "Hit the ground running in this epic remake of MarioKart!",
