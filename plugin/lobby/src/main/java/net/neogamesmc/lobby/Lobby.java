@@ -15,7 +15,6 @@ import net.neogamesmc.core.command.api.CommandHandler;
 import net.neogamesmc.core.hotbar.HotbarHandler;
 import net.neogamesmc.core.hotbar.HotbarItem;
 import net.neogamesmc.core.inventory.ItemBuilder;
-import net.neogamesmc.core.issue.Issues;
 import net.neogamesmc.core.npc.NPCManager;
 import net.neogamesmc.core.scoreboard.PlayerSidebarManager;
 import net.neogamesmc.core.text.Colors;
@@ -29,7 +28,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -38,7 +36,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -51,6 +53,7 @@ import static net.neogamesmc.core.npc.NPCType.TEAM_MEMBER;
 import static net.neogamesmc.core.text.Colors.bold;
 import static org.bukkit.Material.BOW;
 import static org.bukkit.Material.COMPASS;
+import static org.bukkit.Material.NETHER_STAR;
 
 /**
  * Startup function(s) for a main lobby.
@@ -135,7 +138,7 @@ public class Lobby extends Plugin
 
         val mariokart = manager.createNewNPC(GO_TO_GAME, "Mario Kart", new Location(lobby, 3.67, 63, 5, -106.4f, -2.6f));
         mariokart.skinSet("eyJ0aW1lc3RhbXAiOjE1MDEwNDc3MTc2NDksInByb2ZpbGVJZCI6IjNkOWNmOTZiN2MyNzRiZWVhZDFiOWQ0NTM3NTRjYjc2IiwicHJvZmlsZU5hbWUiOiJOaWtha2EiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzUzZmU1MzE0NzgzY2IyZjg5ZGRjZWE0NDk2MjI5ZWVmNGViNDg2ODYyODJjZDEzOTNkZWZlN2MxOTQ5In19fQ==", "MHBwNl74jscR0q+ibHi1wYzAKJG7poZtWtZUJryoVsCRjrXTGQGH9XtbwoTJaHRB+dtVrIa2AYbeuj9vrxhq5DifU58F2Fx+pmSGenJ1TWF4/9B+NbKyYnUtoQlAkKQTOY+8A6XuhmpeSAQiV4lnkGsFmUyrhk66u14VBkVdrPY+3t6dINYB5aTYJCrxo7mVP8EiJPM9lc29Bu6gQx8fUSvhvLTTohYn2D6Qd2w+mYEJQHVizcxiSi/OauJ870kpzIbtt8iJEJ+JdN8TJvsd3e2hwiXYgLQLklSzRnrZdQZBUJSwOmDI+44830efJSLT4Pd4J3bHzIfh+2wbAlQXNLDrqb0Scbuf7IGBh/0+Znw9xD8wGas4U9SunL7nEV0juSunhhJW5P1HXgRSSVt9qqD0kycQ9saX5TUpWMfaT4H1NklIlBuQL6LIogA3Xmh89oEqv3ElnR9e3R5yVSR5AR/3IPeIyCb5lvRzlsRP6pc0nwXAsw1mWvDKBVklOe2mjLEdlLYsEkjDhAibU2HR4EUhcNwf/sm9VM+eyBN1UusWURsaTig9XYnjGqUyCHw2tj7E5KpD5ZK7HnxdnKMWKL3o8jqVuIsbk50SWlEj3Tve6UPj7m3pmZ+0wWhbq685hDf4+au7UPWsjQEQj2MWaLDhJRlTDmPJFFiAqkfy7/g=");
-        mariokart.lineSet(1, GREEN + "Join " + bold(DARK_PURPLE) + "Mario Kart");
+        mariokart.lineSet(1, GREEN + "Join " + bold(DARK_AQUA) + "Mario Kart");
         // bowplinko.lineSet(2, GRAY + "No One Is Playing");
         mariokart.data("group", "mariokart");
 
@@ -171,34 +174,6 @@ public class Lobby extends Plugin
         database.release();
 
         spawnLocation.getWorld().getEntities().stream().filter(entity -> entity.hasMetadata("send-server")).forEach(Entity::remove);
-    }
-
-    /**
-     * Creates an instance of the provided class.
-     * <p>
-     * If it happens to be a descendant of a {@link Listener}
-     * we'll automatically register it with Bukkit as well.
-     *
-     * @param clazz The class to register
-     */
-    public <T> T register(final Class<T> clazz)
-    {
-        try
-        {
-            T obj = get(clazz);
-
-            // auto-register event listeners
-            if (obj instanceof Listener)
-                getServer().getPluginManager().registerEvents((Listener) obj, this);
-
-            return obj;
-        }
-        catch (Exception ex)
-        {
-            Issues.handle("Class Registration", ex);
-        }
-
-        throw new RuntimeException("An unknown issue occurred during injection.");
     }
 
     @EventHandler ( priority = EventPriority.LOWEST )
@@ -327,26 +302,47 @@ public class Lobby extends Plugin
         chunkRunnerItemBuilder.lore(ChatColor.DARK_GRAY + "Parkour/Challenge", "", ChatColor.GRAY + "Run along a parkour course that", ChatColor.GRAY + "generates in one direction and", ChatColor.GRAY + "crumbles away behind you at an", ChatColor.GRAY + "increasing speed!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky & FantomLX", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "1 - 24 Players");
 
 
-        inventory.setItem(11, chunkRunnerItemBuilder.build());
-        inventory.setItem(2, glass(13));
-        inventory.setItem(20, glass(13));
+        inventory.setItem(10, chunkRunnerItemBuilder.build());
+        inventory.setItem(1, glass(13));
+        inventory.setItem(19, glass(13));
 
         ItemBuilder blastOffItemBuilder = new ItemBuilder(Material.FIREBALL);
         blastOffItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.RED) + "Blast Off");
         blastOffItemBuilder.lore(ChatColor.DARK_GRAY + "Mini-game/PvP", "", ChatColor.GRAY + "Use your arsenal of exploding weapons", ChatColor.GRAY + "and tons of powerups to blast apart", ChatColor.GRAY + "the map! Be the last player standing", ChatColor.GRAY + "to win!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky, Falcinspire, Dennisbuilds,", ChatColor.BLUE + "ItsZender, Jayjo, Corey977, JacobRuby,", ChatColor.BLUE + "Team Dracolyte & StainMine", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 12 Players");
 
-        inventory.setItem(13, blastOffItemBuilder.build());
-        inventory.setItem(4, glass(1));
-        inventory.setItem(22, glass(1));
+        inventory.setItem(12, blastOffItemBuilder.build());
+        inventory.setItem(3, glass(1));
+        inventory.setItem(21, glass(1));
 
         ItemBuilder bowplinkoItemBuilder = new ItemBuilder(Material.BOW);
         bowplinkoItemBuilder.name(Colors.bold(net.md_5.bungee.api.ChatColor.DARK_PURPLE) + "Bowplinko");
         bowplinkoItemBuilder.lore(ChatColor.DARK_GRAY + "Mini-game/Archery", "", ChatColor.GRAY + "A fast-paced archery war between", ChatColor.GRAY + "two teams, but with a twist.", ChatColor.GRAY + "If you get hit, you fall down", ChatColor.GRAY + "a plinko board!", "", ChatColor.GRAY + "Developer: " + ChatColor.GOLD + "NeoMc", ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "iWacky", ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 24 Players");
 
-        inventory.setItem(15, bowplinkoItemBuilder.build());
-        inventory.setItem(6, glass(10));
-        inventory.setItem(24, glass(10));
+        inventory.setItem(14, bowplinkoItemBuilder.build());
+        inventory.setItem(5, glass(10));
+        inventory.setItem(23, glass(10));
 
+        ItemBuilder mariokart = new ItemBuilder(NETHER_STAR);
+        mariokart.name(Colors.bold(ChatColor.DARK_AQUA) + "MarioKart");
+        bowplinkoItemBuilder.lore(
+                ChatColor.DARK_GRAY + "Race/Challenge",
+                "",
+                ChatColor.GRAY + "Hit the ground running in this epic remake of MarioKart!",
+                "",
+                ChatColor.GRAY + "Manuever around bends, sidestep obstacles, and use",
+                "",
+                ChatColor.GRAY + "classic MarioKart powerups to help you win!",
+                "",
+                ChatColor.GRAY + "This map cycles between \"Balloon Battle\" and \"Race\" modes!",
+                "",
+                ChatColor.GRAY + "Developer: " + ChatColor.DARK_AQUA + "Flamingosaurus",
+                ChatColor.GRAY + "Credit: " + ChatColor.BLUE + "VioletRose",
+                ChatColor.GRAY + "Supports: " + ChatColor.YELLOW + "2 - 24 Players"
+        );
+
+        inventory.setItem(16, mariokart.build());
+        inventory.setItem(7, glass(14));
+        inventory.setItem(25, glass(14));
         player.openInventory(inventory);
     }
 
