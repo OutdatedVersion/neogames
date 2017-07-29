@@ -58,17 +58,7 @@ public class Ping implements Listener
      * <p>
      * It may be "hot-swapped" at any point.
      */
-    private volatile BaseComponent responseText = updateResponse(builder ->
-                builder.append("  ✜ ", NONE).color(DARK_AQUA).bold(true)
-                       .append("We are live!", NONE).color(GREEN)
-                       .append(" Chunk Runner").color(DARK_GREEN)
-                       .append(",").color(GREEN)
-                       .append(" Blast Off").color(RED)
-                       .append(" & ").color(GREEN)
-                       .append("More").color(DARK_PURPLE).underlined(true)
-                       .append("!", NONE).color(GREEN)
-                       .append(" ✜").color(DARK_AQUA).bold(true)
-    );
+    private volatile BaseComponent responseText = updateResponse(ComponentBuilder::create);
 
     @Inject
     public Ping(RedisHandler redis)

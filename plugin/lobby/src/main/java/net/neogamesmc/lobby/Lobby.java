@@ -18,7 +18,6 @@ import net.neogamesmc.core.inventory.ItemBuilder;
 import net.neogamesmc.core.npc.NPCManager;
 import net.neogamesmc.core.scoreboard.PlayerSidebarManager;
 import net.neogamesmc.core.text.Colors;
-import net.neogamesmc.core.text.Messages;
 import net.neogamesmc.lobby.news.News;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
