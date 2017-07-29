@@ -26,7 +26,7 @@ public class PingCommand
         val target = targetName == null ? player : Players.find(player, targetName, true);
 
         if (target != null)
-            Message.prefix("Latency").content("The latency of").player(target).content("is observed as").content(((CraftPlayer) player).getHandle().ping + "ms", ChatColor.GREEN).send(player);
+            Message.prefix("Latency").content("The latency of").player(target).content("is observed as").content(((CraftPlayer) target).getHandle().ping + "ms", ChatColor.GREEN).send(player);
     }
 
 }
