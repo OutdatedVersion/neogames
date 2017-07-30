@@ -31,7 +31,7 @@ public class PunishCommands
      */
     @Inject private PunishmentHandler handler;
 
-    @Command ( executor = "ban" )
+    @Command ( executor = { "ban", "bane", "ben" } )
     @Permission ( Role.MOD )
     public void banCommand(Player player, @Necessary ( "Please provide the target's name" ) String name,
                                           @Necessary ( "A duration for the punishment is required" ) String duration,
