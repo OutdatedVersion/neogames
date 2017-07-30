@@ -1,10 +1,12 @@
 package net.neogamesmc.core.command;
 
 import com.google.inject.Inject;
+import lombok.val;
 import net.md_5.bungee.api.ChatColor;
 import net.neogamesmc.common.payload.ModifyMOTDPayload;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.reference.Role;
+import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.command.api.annotation.SubCommand;
@@ -42,13 +44,16 @@ public class MOTDCommand
 
     @SubCommand ( of = "motd", executors = "line" )
     @Permission ( Role.ADMIN )
-    public void updateSecondLine(Player player, String val)
+    public void updateSecondLine(Player player, String[] text)
     {
-        new ModifyMOTDPayload(val, -1).publish(redis);
+        val modified = Text.convertArray(text);
+
+        // Let the proxy know of the intended change
+        new ModifyMOTDPayload(modified, -1).publish(redis);
 
         Message.prefix("Ping Response")
                 .content("Updated line to [")
-                .content(ChatColor.translateAlternateColorCodes('&', val))
+                .content(ChatColor.translateAlternateColorCodes('&', modified))
                 .content("]", ChatColor.GRAY)
                 .send(player);
     }
