@@ -160,7 +160,8 @@ public class Chat implements Listener
             {
                 if (set.next())
                 {
-                    CACHE_MUTES.put(event.getUniqueId(), new MuteData(set.getString("reason"), TimeFormatting.format(set.getTimestamp("expires_at").toInstant())));
+                    val stamp = set.getTimestamp("expires_at");
+                    CACHE_MUTES.put(event.getUniqueId(), new MuteData(set.getString("reason"), stamp == null ? "Never ending sentence" : TimeFormatting.format(stamp.toInstant())));
                 }
             }).sync(database);
         }
@@ -196,7 +197,7 @@ public class Chat implements Listener
             val target = Bukkit.getPlayer(payload.targetName);
 
             if (target != null)
-                CACHE_MUTES.put(target.getUniqueId(), new MuteData(payload.reason, TimeFormatting.format(Instant.ofEpochMilli(payload.expiresAt))));
+                CACHE_MUTES.put(target.getUniqueId(), new MuteData(payload.reason, payload.expiresAt == -1 ? "Never ending sentence" : TimeFormatting.format(Instant.ofEpochMilli(payload.expiresAt))));
         }
     }
 
