@@ -4,6 +4,7 @@ import com.mongodb.DBObject;
 import it.unimi.dsi.fastutil.objects.Object2BooleanArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.val;
 import net.neogamesmc.common.account.Setting;
 import net.neogamesmc.common.reference.Role;
@@ -41,6 +42,7 @@ public class Account
     /**
      * A unique player chosen username displayed publicly apart of their identity.
      */
+    @Getter
     private String name;
 
     /**

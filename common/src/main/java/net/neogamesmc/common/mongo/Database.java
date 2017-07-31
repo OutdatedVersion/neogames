@@ -84,6 +84,12 @@ public class Database implements AutoCloseable
         config = provider.read("database/standard", DatabaseConfig.class);
     }
 
+    /**
+     * Initialize the resources associated with this database, and
+     * open the physical connections to our datasource.
+     *
+     * @return This instance, for chaining
+     */
     public Database init()
     {
         val client = new MongoClient(new ServerAddress(), Collections.singletonList(
@@ -91,12 +97,18 @@ public class Database implements AutoCloseable
         ));
 
         datastore = morphia.createDatastore(client, DATABASE_NAME);
+
+        // In reality this really only needs to be called
+        // when changes are made to the loose schema.
+        // This doesn't need to be executed all the time;
         datastore.ensureIndexes(true);
 
         service = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
                 .setNameFormat("database-processor-%d")
                 .setUncaughtExceptionHandler((thread, ex) -> SentryHook.report(ex))
                 .build());
+
+        return this;
     }
 
     @Override

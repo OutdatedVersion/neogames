@@ -1,5 +1,7 @@
 package net.neogamesmc.common.task;
 
+import net.neogamesmc.common.exception.SentryHook;
+
 /**
  * @author Ben (OutdatedVersion)
  * @since Jul/22/2017 (11:29 PM)
@@ -16,9 +18,15 @@ public interface Callback<Type>
 
     /**
      * Will be executed when the operation has failed to complete without issue.
+     * <p>
+     * The default implementation sends the cause of the issue to our error tracker.
+     * Though, you may wish to handle it differently on a per-use basis.
      *
      * @param throwable The issue thrown
      */
-    void failure(Throwable throwable);
+    default void failure(Throwable throwable)
+    {
+        SentryHook.report(throwable);
+    }
 
 }
