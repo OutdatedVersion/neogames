@@ -38,14 +38,13 @@ public class PlayerList implements Listener
      * The custom header/footer for our player list.
      */
     private static final BaseComponent[] LINE_TOP = new ComponentBuilder("Neo").bold(true).color(YELLOW).append("Games\n").color(GOLD)
-                                                                 .append("Address - ").bold(false).color(GREEN).append("play.neogamesmc.net").color(YELLOW)
-                                                                 .append(" ❚ ").color(RED)
-                                                                 .append("Site - ").color(GREEN).append("neogamesmc.net").color(GOLD)
+                                                                 .append("play.neogamesmc.net").bold(false).color(GOLD)
+                                                                 .append(" / ").color(RED).bold(true)
+                                                                 .append("store.neogamesmc.net").color(AQUA).bold(false)
                                                                  .create(),
 
                                       // bottom half
-                                      LINE_BOTTOM = new ComponentBuilder("Purchase").color(YELLOW).append(" ranks ").color(AQUA).append("to help keep us running & get some unique perks!").color(YELLOW)
-                                                                 .append("\nThanks for the support!").color(GRAY).append(" :)").color(DARK_GRAY).create();
+                                      LINE_BOTTOM = new ComponentBuilder("Purchase").color(YELLOW).append(" ranks ").color(AQUA).append("to help keep us running & get some unique perks!").color(YELLOW).create();
 
     /**
      * How to display the player's role in our list.
