@@ -1,16 +1,11 @@
 package net.neogamesmc.bungee.distribution;
 
-import com.google.common.collect.Maps;
-import lombok.val;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.neogamesmc.bungee.dynamic.ServerCreator;
 import net.neogamesmc.bungee.dynamic.ServerData;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -18,23 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public enum DistributionMethod implements PlayerDistribution
 {
-
-    /**
-     * RR
-     */
-    ROUND_ROBBIN
-    {
-        private Map<String, AtomicInteger> counters = Maps.newHashMap();
-
-        @Override
-        public ServerInfo apply(String group, ServerCreator creator)
-        {
-            val counter = counters.computeIfAbsent(group, ignored -> new AtomicInteger(1));
-            int id = creator.serverCountInGroup(group) < (counter.get() + 1) ? counter.getAndSet(1) : counter.getAndIncrement();
-
-            return ProxyServer.getInstance().getServerInfo(group + id);
-        }
-    },
 
     /**
      * FTC

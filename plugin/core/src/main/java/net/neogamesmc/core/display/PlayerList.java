@@ -97,7 +97,10 @@ public class PlayerList implements Listener
     }
 
     /**
-     * Update how players are displayed.
+     * Update how players are displayed in the list.
+     * <p>
+     * Changes are made immediately if the current mode does not
+     * match the mode being requested.
      *
      * @param mode The new mode
      */

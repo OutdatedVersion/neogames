@@ -1,4 +1,4 @@
-package net.neogamesmc.bungee.util;
+package net.neogamesmc.common.number;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -10,6 +10,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class NumberProvider
 {
+
+    // TODO(Ben): primitive fastutil queue
 
     /**
      * The ports returned from old server instances.
@@ -24,11 +26,11 @@ public class NumberProvider
     /**
      * Create a new creator with the provided starting value.
      *
-     * @param number The starting value.
+     * @param startingValue The starting value.
      */
-    public NumberProvider(int number)
+    public NumberProvider(int startingValue)
     {
-        this.working = new AtomicInteger(number);
+        this.working = new AtomicInteger(startingValue);
     }
 
     /**
@@ -52,8 +54,10 @@ public class NumberProvider
      */
     public NumberProvider returnNumber(int num)
     {
+        // TODO(Ben): special case determined by why it failed
+
         if (!returned.add(num))
-            System.out.println("[Port Provider] Failed to add port " + num);
+            throw new RuntimeException("Failed to return number to provider " + num);
 
         return this;
     }

@@ -2,9 +2,9 @@ package net.neogamesmc.bungee.dynamic;
 
 import com.google.common.collect.Sets;
 import lombok.Data;
+import net.neogamesmc.common.number.NumberProvider;
 
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -17,7 +17,7 @@ public class GroupData
     /**
      * The amount of servers in this group.
      */
-    public AtomicInteger serverCount = new AtomicInteger(0);
+    public NumberProvider idProvider = new NumberProvider(1);
 
     /**
      * The servers within this group.

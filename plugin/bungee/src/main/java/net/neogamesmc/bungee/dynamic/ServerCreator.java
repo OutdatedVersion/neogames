@@ -13,9 +13,9 @@ import lombok.val;
 import net.md_5.bungee.api.ProxyServer;
 import net.neogamesmc.bungee.NeoGames;
 import net.neogamesmc.bungee.event.AddServerEvent;
-import net.neogamesmc.bungee.util.NumberProvider;
 import net.neogamesmc.common.backend.ServerConfiguration;
 import net.neogamesmc.common.exception.SentryHook;
+import net.neogamesmc.common.number.NumberProvider;
 import net.neogamesmc.common.reference.Paths;
 import org.apache.commons.io.FileUtils;
 
@@ -94,8 +94,10 @@ public class ServerCreator
             {
                 val path = future.get();
 
-                if (path != null)
-                    Runtime.getRuntime().exec(new String[] { "/bin/sh", path } );
+                if (path == null)
+                    throw new RuntimeException("No path returned from creation in " + group);
+
+                Runtime.getRuntime().exec(new String[] { "/bin/sh", path } );
             }
             catch (Exception ex)
             {
@@ -122,7 +124,7 @@ public class ServerCreator
                 val groupData = groups.computeIfAbsent(group, ignored -> new GroupData());
 
                 // The server number in this group
-                int groupNumber = groupData.serverCount().incrementAndGet();
+                int groupNumber = groupData.idProvider.get();
 
                 // Name of the server
                 // Example: lobby1
@@ -133,7 +135,7 @@ public class ServerCreator
                 {
                     System.out.println("[Network] Attempting next ID :: Already has " + name);
 
-                    groupNumber = groupData.serverCount().incrementAndGet();
+                    groupNumber = groupData.idProvider.get();
                     name = group + groupNumber;
                 }
 
@@ -202,19 +204,6 @@ public class ServerCreator
     }
 
     /**
-     * Grab the total server count in the provided group.
-     *
-     * @param group The group ID
-     * @return The server count
-     */
-    public int serverCountInGroup(String group)
-    {
-        val data = groups.get(group);
-
-        return data == null ? 0 : data.serverCount.get();
-    }
-
-    /**
      * Grab every server within the provided group.
      *
      * @param group The group ID
@@ -259,14 +248,16 @@ public class ServerCreator
     public void removeServer(String group, String name)
     {
         val data = groups.get(group);
+        int discardedID = Integer.parseInt(name.replace(group, ""));
 
-        // Lower count by one
-        data.serverCount.decrementAndGet();
+        // Allow us to reuse that server ID
+        data.idProvider.returnNumber(discardedID);
 
         val iterator = data.servers.iterator();
         ServerData server = null;
 
         // Remove from server list
+        // TODO(Ben): O(n) -- replace w/ map
         while (iterator.hasNext())
         {
             val next = iterator.next();
@@ -286,12 +277,11 @@ public class ServerCreator
             id.returnNumber(server.id);
 
             FileUtils.deleteDirectory(new File(Paths.SERVERS.path + "/" + server.id));
+
+            // Remove from proxy
+            proxy.getServers().remove(name);
+            System.out.println("[Network] No longer tracking " + name);
         }
-
-
-        // Remove from proxy
-        proxy.getServers().remove(name);
-        System.out.println("[Network] No longer tracking " + name);
     }
 
     /**
