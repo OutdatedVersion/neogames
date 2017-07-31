@@ -2,7 +2,7 @@ package net.neogamesmc.common.mongo.entities;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import net.neogamesmc.common.mongo.converters.location.Location;
+import net.neogamesmc.common.mongo.converters.location.LocationConverter;
 import org.mongodb.morphia.annotations.Entity;
 
 /**
@@ -15,7 +15,7 @@ public class NPCData
 
     public String name;
 
-    public Location location;
+    public LocationConverter.Location location;
 
     public String type;
 
