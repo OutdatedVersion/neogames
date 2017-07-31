@@ -2,7 +2,6 @@ package net.neogamesmc.core.command;
 
 import com.google.inject.Inject;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.neogamesmc.common.backend.ServerConfiguration;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.payload.StaffChatPayload;
@@ -14,6 +13,7 @@ import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.player.Players;
+import net.neogamesmc.core.text.Message;
 import org.bukkit.entity.Player;
 
 import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
@@ -54,7 +54,7 @@ public class StaffChatCommand
      * @param player The player running the command
      * @param message The message to send
      */
-    @Command ( executor = { "sc", "c", "staffchat" } )
+    @Command ( executor = { "sc", "staffchat" } )
     @Permission ( value = Role.MOD, note = "Regular chat is just swell. :)" )
     public void run(Player player, @Necessary ( "Please provide a message" ) String[] message)
     {
@@ -70,7 +70,7 @@ public class StaffChatCommand
     public void display(StaffChatPayload payload)
     {
         Players.stream(Role.MOD, database).forEach(entry ->
-            entry.getLeft().sendMessage(new ComponentBuilder("Staff Chat ").bold(true)
+            entry.getLeft().sendMessage(Message.start().content("Staff Chat ").bold(true)
                     .append(Text.fromEnum(payload.role) + " " + payload.name, NONE).color(payload.role.color)
                     .append(" " + payload.message).color(ChatColor.YELLOW).create())
         );

@@ -32,7 +32,7 @@ public class NetworkNoticePayload implements Payload
      *
      * @return Yes or no
      */
-    public boolean isAll()
+    public boolean toAll()
     {
         return targetServers[0].equals("ALL");
     }

@@ -311,6 +311,9 @@ public class ServerCreator
             case "blastoff":
                 return 12;
 
+            case "fishingforgold":
+                return 10;
+
             default:
                 return 50;
         }

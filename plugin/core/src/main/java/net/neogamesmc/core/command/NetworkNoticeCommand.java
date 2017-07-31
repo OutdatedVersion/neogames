@@ -2,7 +2,6 @@ package net.neogamesmc.core.command;
 
 import com.google.inject.Inject;
 import lombok.val;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.neogamesmc.common.backend.ServerConfiguration;
 import net.neogamesmc.common.payload.NetworkNoticePayload;
 import net.neogamesmc.common.redis.RedisHandler;
@@ -19,7 +18,6 @@ import org.bukkit.entity.Player;
 
 import static net.md_5.bungee.api.ChatColor.AQUA;
 import static net.md_5.bungee.api.ChatColor.YELLOW;
-import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -77,8 +75,8 @@ public class NetworkNoticeCommand
         if (matchesThisServer(payload))
         {
             // Construct
-            val message = new ComponentBuilder("Network Notification ").color(AQUA).bold(true)
-                                      .append(payload.message, NONE).color(YELLOW).create();
+            val message = Message.start().content("Network Notification ").color(AQUA).bold(true)
+                                      .content(payload.message).bold(false).color(YELLOW).create();
 
             // Send out
             Players.stream().forEach(player ->
@@ -97,7 +95,7 @@ public class NetworkNoticeCommand
      */
     private boolean matchesThisServer(NetworkNoticePayload payload)
     {
-        if (payload.isAll())
+        if (payload.toAll())
             return true;
 
         boolean matches = false;
