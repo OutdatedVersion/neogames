@@ -19,7 +19,7 @@ public class PreventRespawn implements Listener
     @EventHandler
     public void handle(PlayerDeathEvent event)
     {
-        event.getEntity().setHealth(20.0D);
+        event.getEntity().setHealth(20);
     }
 
 }

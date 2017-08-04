@@ -72,7 +72,7 @@ public class StaffChatCommand
     {
         Players.stream(Role.MOD, database).forEach(entry ->
             entry.getLeft().sendMessage(Message.start().content("Staff Chat", WHITE).bold(true)
-                    .append(Text.fromEnum(payload.role) + " " + payload.name, NONE).color(payload.role.color)
+                    .append(" " + Text.fromEnum(payload.role) + " " + payload.name, NONE).color(payload.role.color)
                     .append(" " + payload.message).color(ChatColor.YELLOW).create())
         );
     }

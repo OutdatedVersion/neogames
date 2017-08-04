@@ -304,6 +304,9 @@ public class ServerCreator
             case "fishingforgold":
                 return 10;
 
+            case "shulkerrush":
+                return 8;
+
             default:
                 return 50;
         }
