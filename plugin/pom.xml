@@ -33,6 +33,14 @@
     </properties>
 
 
+    <repositories>
+        <repository>
+            <id>dmulloy2-repo</id>
+            <url>http://repo.dmulloy2.net/nexus/repository/public/</url>
+        </repository>
+    </repositories>
+
+
     <dependencies>
 
         <!-- Minecraft oriented API(s) -->
@@ -41,6 +49,13 @@
             <artifactId>paper</artifactId>
             <version>${version.paper}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- Working with Minecraft on the packet level (both read/write) -->
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib-API</artifactId>
+            <version>4.3.0</version>
         </dependency>
 
         <!-- Apache: Random utilities related to language stuff -->
