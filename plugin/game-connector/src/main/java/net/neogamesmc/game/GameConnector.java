@@ -7,6 +7,7 @@ import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.display.PlayerList;
 import net.neogamesmc.core.scheduler.Scheduler;
+import net.neogamesmc.game.death.PreventRespawn;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -37,6 +38,7 @@ public class GameConnector extends Plugin
         registerAsListener();
 
         register(InventoryHandler.class);
+        register(PreventRespawn.class);
 
         get(PlayerList.class).mode(PlayerList.Mode.NO_ROLES);
 
