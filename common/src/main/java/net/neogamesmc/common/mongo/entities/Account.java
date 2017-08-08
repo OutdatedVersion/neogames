@@ -1,5 +1,6 @@
 package net.neogamesmc.common.mongo.entities;
 
+import com.google.common.collect.Sets;
 import com.mongodb.DBObject;
 import it.unimi.dsi.fastutil.objects.Object2BooleanArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
@@ -16,6 +17,8 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
+ * Represents a collection of a player's data.
+ *
  * @author Ben (OutdatedVersion)
  * @since Jul/19/2017 (1:02 AM)
  */
@@ -37,6 +40,7 @@ public class Account
     /**
      * A unique <i>constant</i> identifier assigned by Mojang.
      */
+    @Getter
     private UUID uuid;
 
     /**
@@ -69,7 +73,7 @@ public class Account
      * <p>
      * When this changes it will be relocated to {@link #addressPrevious} and this is updated to the new address.
      */
-    @Property ( "address_current" )
+    @Getter @Property ( "address_current" )
     private String addressCurrent;
 
     /**
@@ -92,6 +96,7 @@ public class Account
      * only non-default {@link Setting} values are persisted on our database.
      * in some sort of attempt to reduce account size footprints.
      */
+    // consider lazy init
     private Object2BooleanMap<String> settings = new Object2BooleanArrayMap<>(Setting.values().length);
 
     /**
@@ -128,6 +133,9 @@ public class Account
         return this;
     }
 
+
+    // Legacy document representation used in method parameters as that's what Morphia supports
+
     /**
      * Tasks to execute immediately before this entity is saved to our database instance.
      *
@@ -158,6 +166,40 @@ public class Account
 
         if (!doc.isEmpty())
             doc.forEach((key, val) -> settings.put(key, (boolean) val));
+    }
+
+    /**
+     * Update the name of the player we're currently tracking.
+     *
+     * @param newName The new name
+     * @return This account, for chaining
+     */
+    public Account updateName(String newName)
+    {
+        if (namePrevious == null)
+            namePrevious = Sets.newHashSet();
+
+        namePrevious.add(name);
+        name = newName;
+
+        return this;
+    }
+
+    /**
+     * Update the IP address of the player we're currently tracking.
+     *
+     * @param newAddress The new IP address
+     * @return This account, for chaining
+     */
+    public Account updateAddress(String newAddress)
+    {
+        if (addressPrevious == null)
+            addressPrevious = Sets.newHashSet();
+
+        addressPrevious.add(addressCurrent);
+        addressCurrent = newAddress;
+
+        return this;
     }
 
 }

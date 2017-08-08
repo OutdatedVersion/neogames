@@ -2,7 +2,9 @@ package net.neogamesmc.lobby;
 
 import com.google.inject.Inject;
 import lombok.val;
-import net.neogamesmc.common.database.Database;
+import net.neogamesmc.common.account.Setting;
+import net.neogamesmc.common.mongo.AccountLayer;
+import net.neogamesmc.common.mongo.Database;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Permission;
@@ -29,6 +31,11 @@ public class FlyCommand implements Listener
      * Locally held database instance.
      */
     @Inject private Database database;
+
+    /**
+     * Manipulate account data.
+     */
+    @Inject private AccountLayer source;
 
     /**
      * Expose a method for the player to toggle this setting.
@@ -79,7 +86,7 @@ public class FlyCommand implements Listener
      */
     private boolean enabled(Player player)
     {
-        return database.cacheFetch(player.getUniqueId()).lobbyFlight();
+        return source.cacheFetch(player.getUniqueId()).setting(Setting.LOBBY_FLIGHT);
     }
 
     /**
@@ -90,12 +97,13 @@ public class FlyCommand implements Listener
      */
     private boolean toggle(Player player)
     {
-        val account = database.cacheFetch(player.getUniqueId());
-
         // Invert
-        account.lobbyFlight(!account.lobbyFlight(), database);
+        val account = source.cacheFetch(player.getUniqueId());
 
-        return account.lobbyFlight();
+        Setting.invert(Setting.LOBBY_FLIGHT, account);
+        database.persist(account);
+
+        return account.setting(Setting.LOBBY_FLIGHT);
     }
 
 }

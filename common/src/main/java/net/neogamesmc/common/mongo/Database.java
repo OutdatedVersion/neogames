@@ -1,6 +1,5 @@
 package net.neogamesmc.common.mongo;
 
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -13,6 +12,7 @@ import net.neogamesmc.common.config.ConfigurationProvider;
 import net.neogamesmc.common.exception.SentryHook;
 import net.neogamesmc.common.mongo.converters.UUIDConverter;
 import net.neogamesmc.common.mongo.entities.Account;
+import net.neogamesmc.common.task.Callback;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Key;
 import org.mongodb.morphia.Morphia;
@@ -21,7 +21,6 @@ import org.mongodb.morphia.query.Query;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -40,11 +39,6 @@ public class Database implements AutoCloseable
      * Name of the Mongo database where all of our data in-question is stored.
      */
     private static final String DATABASE_NAME = "neogames";
-
-    /**
-     * A collection of fully-qualified classes that require mapping.
-     */
-    private Set<Class> mappingRequests = Sets.newConcurrentHashSet();
 
     /**
      * Exposes a way to run tasks asynchronous to the primary server thread.
@@ -69,9 +63,7 @@ public class Database implements AutoCloseable
     @Inject
     public Database(ConfigurationProvider provider)
     {
-        morphia = new Morphia();
-
-        val converters = morphia.getMapper().getConverters();
+        val converters = (morphia = new Morphia()).getMapper().getConverters();
 
         // We save UUIDs in an alternative fashion (the "Mojagian" way)
         converters.addConverter(new UUIDConverter());
@@ -104,9 +96,9 @@ public class Database implements AutoCloseable
         datastore.ensureIndexes(true);
 
         service = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
-                .setNameFormat("database-processor-%d")
-                .setUncaughtExceptionHandler((thread, ex) -> SentryHook.report(ex))
-                .build());
+                           .setNameFormat("database-processor-%d")
+                           .setUncaughtExceptionHandler((thread, ex) -> SentryHook.report(ex))
+                           .build());
 
         return this;
     }
@@ -118,11 +110,21 @@ public class Database implements AutoCloseable
         service.shutdown();
     }
 
+    /**
+     * Instruct our ORM, Morphia, to start tracking the provided classes as database entities.
+     *
+     * @param classes The classes
+     */
     public void map(Class... classes)
     {
         morphia.map(classes);
     }
 
+    /**
+     * Instruct our ORM to traverse the provided package for classes that may be mapped to a database entity.
+     *
+     * @param packageName The fully qualified package name; example: {@code com.google.inject}
+     */
     public void map(String packageName)
     {
         morphia.mapPackage(packageName);
@@ -141,7 +143,7 @@ public class Database implements AutoCloseable
     }
 
     /**
-     * Create a query with the provided type.
+     * Create a query with the provided type.w
      *
      * @param clazz Morphia entity representing the desired type
      * @param <T> Type of the class
@@ -166,9 +168,9 @@ public class Database implements AutoCloseable
      * @param callback Task to run with the result when the operation has completed
      * @param <T> Type of that entity
      */
-    public <T> void persist(@NonNull T entity, Consumer<Key<T>> callback)
+    public <T> void persist(@NonNull T entity, Callback<Key<T>> callback)
     {
-        service.submit(() -> callback.accept(datastore.save(entity)));
+        service.submit(() -> Callback.process(callback, () -> datastore.save(entity)));
     }
 
 

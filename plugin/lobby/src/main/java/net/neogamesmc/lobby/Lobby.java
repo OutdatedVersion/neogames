@@ -6,7 +6,8 @@ import lombok.val;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.minecraft.server.v1_12_R1.EnumItemSlot;
-import net.neogamesmc.common.database.Database;
+import net.neogamesmc.common.exception.SentryHook;
+import net.neogamesmc.common.mongo.Database;
 import net.neogamesmc.common.payload.QueuePlayersForGroupPayload;
 import net.neogamesmc.common.redis.RedisChannel;
 import net.neogamesmc.common.redis.RedisHandler;
@@ -24,7 +25,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,7 +38,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -154,9 +157,14 @@ public class Lobby extends Plugin
     @Override
     public void disable()
     {
-        get(Database.class).release();
-
-        spawnLocation.getWorld().getEntities().stream().filter(entity -> entity.hasMetadata("send-server")).forEach(Entity::remove);
+        try
+        {
+            get(Database.class).close();
+        }
+        catch (Exception ex)
+        {
+            SentryHook.report(ex);
+        }
     }
 
     /**
@@ -231,7 +239,7 @@ public class Lobby extends Plugin
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event)
     {
-        event.setCancelled(event.getEntity().hasMetadata("send-server") || event.getEntityType() == EntityType.PLAYER);
+        event.setCancelled(event.getEntityType() == EntityType.PLAYER);
     }
 
     @EventHandler
@@ -286,16 +294,6 @@ public class Lobby extends Plugin
     public void disallowWeatherUpdate(WeatherChangeEvent event)
     {
         event.setCancelled(event.toWeatherState());
-    }
-
-    @EventHandler
-    public void npcHandler(PlayerInteractEntityEvent event)
-    {
-        if (!event.getRightClicked().hasMetadata("send-server"))
-            return;
-
-        event.setCancelled(true);
-        sendTo(event.getPlayer(), event.getRightClicked().getMetadata("send-server").get(0).asString());
     }
 
     @EventHandler
@@ -368,17 +366,6 @@ public class Lobby extends Plugin
     private void sendTo(Player player, String group)
     {
         new QueuePlayersForGroupPayload(group, player.getUniqueId().toString()).publish(get(RedisHandler.class));
-    }
-
-    /**
-     * Grab the text for the "Join so and so players now" message on the selector.
-     *
-     * @param group The group this is for
-     * @return The text
-     */
-    private String currentlyPlaying(String group)
-    {
-        return ChatColor.GREEN + "" + ChatColor.UNDERLINE + "Join" + ChatColor.GOLD + " 0" + ChatColor.GREEN + " people now!";
     }
 
     /**

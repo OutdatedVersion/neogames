@@ -2,10 +2,13 @@ package net.neogamesmc.common.task;
 
 import net.neogamesmc.common.exception.SentryHook;
 
+import java.util.concurrent.Callable;
+
 /**
  * @author Ben (OutdatedVersion)
  * @since Jul/22/2017 (11:29 PM)
  */
+@FunctionalInterface
 public interface Callback<Type>
 {
 
@@ -27,6 +30,27 @@ public interface Callback<Type>
     default void failure(Throwable throwable)
     {
         SentryHook.report(throwable);
+    }
+
+    /**
+     * Attempt executing the provided task, and passing it through to
+     * the callback provided; in the event that the operation fails, the
+     * {@link #failure(Throwable)} method of the callback is executed instead.
+     *
+     * @param callback The callback
+     * @param callable The task to run
+     * @param <T> Type-parameter for the task
+     */
+    static <T> void process(Callback<T> callback, Callable<T> callable)
+    {
+        try
+        {
+            callback.success(callable.call());
+        }
+        catch (Exception ex)
+        {
+            callback.failure(ex);
+        }
     }
 
 }

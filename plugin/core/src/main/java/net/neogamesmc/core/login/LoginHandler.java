@@ -65,17 +65,36 @@ public class LoginHandler implements Listener
 
             if (fetch.isPresent())
             {
-                val account = fetch.get();
+                // TODO(Ben): replace with some sort of "conditional chain" tool
+                boolean persist = false;
 
-                database.persist(account);
-                // TODO(Ben): update account
+                val account = fetch.get();
+                val addr = event.getAddress().getHostAddress();
+
+                // Track name changes
+                if (!account.name().equals(event.getName()))
+                {
+                    account.updateName(event.getName());
+                    persist = true;
+                }
+
+                // Track IP address changes
+                if (!account.addressCurrent().equals(addr))
+                {
+                    account.updateAddress(addr);
+                    persist = true;
+                }
+
+                if (persist)
+                    database.persist(account);
+
+                // Hold account in-memory
+                source.cacheInsert(account);
             }
             else
             {
                 // TODO(Ben): create acct
             }
-
-            // TODO(Ben): cache acct
         }
         catch (Exception ex)
         {
@@ -92,7 +111,7 @@ public class LoginHandler implements Listener
     @EventHandler ( priority = EventPriority.HIGHEST )
     public void cleanup(PlayerQuitEvent event)
     {
-        database.cacheInvalidate(event.getPlayer().getUniqueId());
+        source.cacheInvalidate(event.getPlayer().getUniqueId());
     }
 
     /**

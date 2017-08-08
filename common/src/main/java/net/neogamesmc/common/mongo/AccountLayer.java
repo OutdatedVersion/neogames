@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import lombok.NonNull;
 import lombok.val;
+import net.neogamesmc.common.inject.ParallelStartup;
 import net.neogamesmc.common.mongo.entities.Account;
 import net.neogamesmc.common.task.Callback;
 import net.neogamesmc.common.text.Text;
@@ -24,13 +25,14 @@ import static com.google.common.base.Preconditions.checkArgument;
  * @since Jul/21/2017 (1:08 PM)
  */
 @Singleton
+@ParallelStartup
 public class AccountLayer
 {
 
     /**
      * The default options for an operation to retrieve an account from our datasource.
      */
-    private static final FindOptions FIND_OPTIONS = new FindOptions().limit(1).maxTime(4, TimeUnit.SECONDS);
+    private static final FindOptions DEFAULT_OPTIONS = new FindOptions().limit(1).maxTime(4, TimeUnit.SECONDS);
 
     /**
      * Local copy of our database instance.
@@ -60,7 +62,7 @@ public class AccountLayer
         {
             // Iteration over cache elements to lookup by name
             // performs poorly compared to the O(1) lookup of the UUID.
-            // It should be avoided as much as possible.
+            // -- It should be avoided if at all possible
             for (Account account : cache.asMap().values())
             {
                 if (account.name().equals(name))
@@ -80,7 +82,7 @@ public class AccountLayer
         return Optional.ofNullable(
                 database.queryFor(Account.class)
                         .field(useName ? "name_lower" : "uuid").equal(useName ? name : Text.stripUUID(uuid))
-                        .get(FIND_OPTIONS)
+                        .get(DEFAULT_OPTIONS)
         );
     };
 
@@ -108,14 +110,7 @@ public class AccountLayer
     {
         checkArgument(name.length() <= 16, "The username provided is too long; perhaps you tried supplying a UUID in string form?");
 
-        try
-        {
-            callback.success(TASK_CREATOR.apply(null, name).call());
-        }
-        catch (Exception ex)
-        {
-            callback.failure(ex);
-        }
+        database.execute(() -> Callback.process(callback, TASK_CREATOR.apply(null, name)));
     }
 
     /**
@@ -126,17 +121,38 @@ public class AccountLayer
      */
     public void fetchAccount(@NonNull UUID uuid, Callback<Optional<Account>> callback)
     {
-        database.execute(() ->
-        {
-            try
-            {
-                callback.success(TASK_CREATOR.apply(uuid, null).call());
-            }
-            catch (Exception ex)
-            {
-                callback.failure(ex);
-            }
-        });
+        database.execute(() -> Callback.process(callback, TASK_CREATOR.apply(uuid, null)));
+    }
+
+    /**
+     * Retrieve an account from our cache with the provided UUID.
+     *
+     * @param uuid The UUID of the player you're looking for
+     * @return The account you're looking for
+     */
+    public Account cacheFetch(UUID uuid)
+    {
+        return cache.getIfPresent(uuid);
+    }
+
+    /**
+     * Insert the provided account into the cache.
+     *
+     * @param account The account to be inserted
+     */
+    public void cacheInsert(Account account)
+    {
+        cache.put(account.uuid(), account);
+    }
+
+    /**
+     * Remove an entry from the cache matching the provided key.
+     *
+     * @param uuid The key, UUID, under which what you want to remove was inserted under
+     */
+    public void cacheInvalidate(UUID uuid)
+    {
+        cache.invalidate(uuid);
     }
 
 }
