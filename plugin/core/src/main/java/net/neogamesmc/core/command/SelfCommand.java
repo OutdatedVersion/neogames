@@ -38,6 +38,7 @@ public class SelfCommand
      */
     private final ImmutableMap<UUID, Role> SHOULD_BE = ImmutableMap.<UUID, Role>builder()
                                                 .put(fromString("671da68e-500f-4ed4-bad5-baebe6f03337"), Role.OWNER)  // NeoMc_
+                                                .put(fromString("7ddc493a-f0e5-45a3-9b28-c5533c6291ec"), Role.OWNER)  // FalcInspire
                                                 .put(fromString("4412b3b4-e000-4895-be1e-18b58d42cc1d"), Role.DEV)    // OutdatedVersion
                                                 .put(fromString("03c337cd-7be0-4694-b9b0-e2fd03f57258"), Role.DEV)    // Nokoa
                                                 .put(fromString("9f15bf38-96dd-4d0c-ba3b-cc6e447402ec"), Role.DEV)    // DeJay6424
