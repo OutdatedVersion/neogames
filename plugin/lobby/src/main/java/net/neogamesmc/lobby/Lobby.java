@@ -165,12 +165,12 @@ public class Lobby extends Plugin
         dejay.skinSet("eyJ0aW1lc3RhbXAiOjE1MDI1ODQzOTE2NTMsInByb2ZpbGVJZCI6IjlmMTViZjM4OTZkZDRkMGNiYTNiY2M2ZTQ0NzQwMmVjIiwicHJvZmlsZU5hbWUiOiJEZUpheTY0MjQiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2RhMGU5M2I5ZTRmMzZmNjI0ZDRlNzJkZWYwMTEzNjZlYWM3NWIxYjNjMWRjODA1Y2YwYWU0M2Q5MDA2MSJ9fX0=", "JWCGgfVSD/NpliHn0cSs3eNOYbFT4+mJnblSxNSKkiUyYMELBmhXYVyXzBZXnO75FDhSODbcgCiyvRcqOLszAQtEkFI0UmqgBLPauNVjAe57g7MnGyc4kys+svYuVytwfeY+EDxj9sKnQdWUYN5t35ccZ7HCFSK85mhEJM86qm78Ae9GKSGOdddkWEVHwM+aqCVSOu6zUb+ffUIgkq2++81h8cAPmH2P9ESKD7Mcs1T+dimaOcEfT7mzsi4vFiLu1oQNMAmDnGAOoFxAYzRvuod2YITHRHsrp9GUuHV8WGYUWuUAf5apj5OYVgjAnJa8xMfNm+cRz82yh2AJMNyQ0RbVZr6oAQ3+joRxLDqxs+snuGaDL6haDNl6I+oSwz1DkzxT7Dw8ztXjVqngutt9HUu0F3uxqIaN/MpSL5aKPPeu7l5huYwS7EZ8cgLVBiKQoLeRPfqD1R+2PJR3M2IUwb3LI+g/VWMzPLuvYG6CsX6cC6nYdI3vyRZGoBsknIu30kdJTZXw94gCSEsBvSbft0y3VhSe4qYlEkWLAUY39rOi6Gh/+3WGxzH++1U63Wc7h7GqSceuJZrk45zc6l4WFvmbeRkbF5lpyHK4zQ7cYQkmP5lvSModuazzjqS8wLv6b23Lr51IQxeizw9aJgd6rNaLbWgKKNmBCpSYCUaHvyk=");
 
         // EVENT
-        val event = manager.createNewNPC(GO_TO_GAME, "Event", new Location(lobby, 10.5, 63, -3.5, 0.1f, -7.3f));
+        /*val event = manager.createNewNPC(GO_TO_GAME, "Event", new Location(lobby, 10.5, 63, -3.5, 0.1f, -7.3f));
         event.skinSet("eyJ0aW1lc3RhbXAiOjE1MDAwNTUyNzM1NDQsInByb2ZpbGVJZCI6IjIzZjFhNTlmNDY5YjQzZGRiZGI1MzdiZmVjMTA0NzFmIiwicHJvZmlsZU5hbWUiOiIyODA3Iiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jYzU4YmQ1NzVmODMxZjhmM2FlNGI2YTZkNzNiYzk0YWYyNjI0NDRmZmViOWZhZDBhZjg0ZWVkOGM0NmRmIn19fQ==", "IMBUkPJFlW92I6E0Y/rauwjoEpC3jPoO2XilHT0xpaNGAItGxeMkDwZ9oMQCyfGqhRExLz79mYjdUS0QOQN3P9HYw4hrghQR/YO41tBvlkxlC8QksKjGAeKJPD7Ze9rvboXnPOvnYzkfdp818aylmRbjghEeyIPKtnjet3zckH5gio3ASSyUysa/eonU1t+9RwghIT99HdIkcX7SbGM1VafrKuK25wStmmMZ8GJzvfNxHO3DJaSx4e4nym+2VEEiCfptYydjSuYb8yUBJa7TtBVmZHvxmYmD9AuEObO6sRHvN3uzdPVy0pG71dPdsrsUlE8+2tcZ5H/Rv8bsaj0pB1qzQcpfUr7NA7IFY2RDrUhcm+IPCOW68NFEVP/sx31JJNv04F6TvDMbcs1lon4OGE7MNuf0oc+4sGSsrxvph0rRq4j1jpBhKyVm0yaVjuXkiJBI3CJu67uQIdS52Y4dpOs8mKzk2+zusFkufjVAgjuqKTDw/rVuJY8UBJrXMYqHpzA7xYOz2+aJbusQpvhy1eJMu0aJeT0Tpcj6e7eAw0Mq0/bvkbgOpbO9sFKau56ZeJHWeNJZvhd4pxIsQwvWqDElJ7CvcUBYRgq1blUsd1i4HSB7+/0AjYbZlL5jI3GJgLAQBhj4VsoLhxXwLJ+nJv+WTaLeHjASUL/xFnTZReM=");
         event.lineSet(1, GREEN + "Join " + bold(GOLD) + "WEEKEND EVENT");
         event.lineSet(2, AQUA + "Shulker Rush" + ChatColor.GRAY + " by The Minemakers");
         event.lineSet(3, GRAY + "8/4 to 8/6");
-        event.data("group", "shulkerrush");
+        event.data("group", "shulkerrush");*/
     }
 
     @Override
