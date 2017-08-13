@@ -1,5 +1,7 @@
 package net.neogamesmc.core.bukkit;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import com.google.gson.Gson;
 import com.google.inject.Binder;
 import com.google.inject.Guice;
@@ -162,6 +164,7 @@ public abstract class Plugin extends JavaPlugin implements Listener
                 binder.bind(Plugin.class).toInstance(this);
                 binder.bind(JavaPlugin.class).toInstance(this);
 
+                binder.bind(ProtocolManager.class).toInstance(ProtocolLibrary.getProtocolManager());
                 binder.bind(ServerConfiguration.class).toInstance(data);
                 binder.bind(RedisHandler.class).toInstance(redis);
 

@@ -9,7 +9,6 @@ import net.neogamesmc.core.text.Colors;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import static net.md_5.bungee.api.ChatColor.WHITE;
@@ -66,11 +65,11 @@ public class PacketReader
 
             if (getValue(packet, "action").toString().equalsIgnoreCase("INTERACT") || getValue(packet, "action").toString().equalsIgnoreCase("ATTACK"))
             {
-                if (manager.getNpcs().containsKey(id))
+                if (manager.getTracking().containsKey(id))
                 {
                     if ((System.currentTimeMillis() - lastClick) > 2000)
                     {
-                        NPC npc = manager.getNpcs().get(id);
+                        NPC npc = manager.getTracking().get(id);
 
                         switch (npc.type())
                         {
@@ -88,22 +87,6 @@ public class PacketReader
                 }
             }
         }
-    }
-
-    public Object getValue(Object obj, String name)
-    {
-        try
-        {
-            Field field = obj.getClass().getDeclaredField(name);
-            field.setAccessible(true);
-            return field.get(obj);
-        }
-        catch (Exception e)
-        {
-            // ignored
-        }
-
-        return null;
     }
 
 }

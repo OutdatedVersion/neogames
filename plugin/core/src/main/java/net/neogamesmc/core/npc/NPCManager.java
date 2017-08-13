@@ -1,5 +1,6 @@
 package net.neogamesmc.core.npc;
 
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.neogamesmc.common.redis.RedisHandler;
@@ -27,36 +28,51 @@ import java.util.Map;
 public class NPCManager implements Listener
 {
 
-    Plugin plugin;
+    /**
+     * The distance (in blocks) a player must be to receive the entities.
+     */
+    private static final int RESPAWN_DISTANCE = 42;
 
-    HashMap<Integer, NPC> npcs = new HashMap<>();
+    /**
+     * How often to refresh entities.
+     */
+    private static final long REFRESH_CHECK_INTERVAL = 10;
 
-    final int RESPAWN_DISTANCE = 42;
-    final long REFRESH_CHECK_INTERVAL = 10;
+    /**
+     * Managing plugin instance.
+     */
+    @Inject private Plugin plugin;
 
-    final RedisHandler redis;
+    /**
+     * Mapping of an entity's ID to the representation.
+     */
+    private Map<Integer, NPC> tracking = Maps.newHashMap();
+    // TODO(Ben): replace with primitive map
 
-    @Inject
-    public NPCManager(Plugin plugin, RedisHandler redis)
+    @Inject RedisHandler redis;
+
+    public NPCManager()
     {
-        this.plugin = plugin;
-        this.redis = redis;
-
         handleSpawns();
-
     }
 
+    /**
+     * Link a {@link PlayerSidebarManager} to this {@code NPCManager}.
+     *
+     * @param manager Scoreboard manager
+     * @return This manager, for chaining
+     */
     public NPCManager scoreboard(PlayerSidebarManager manager)
     {
         manager.addDefaultModifier(plugin.get(NPCModifier.class));
         return this;
     }
 
-    public NPC createNewNPC(NPCType type, String name, Location location)
+    public NPC create(NPCType type, String name, Location location)
     {
         NPC npc = new NPC(type, name, location);
 
-        npcs.put(npc.getEntityID(), npc);
+        tracking.put(npc.getEntityID(), npc);
 
         return npc;
     }
@@ -74,7 +90,7 @@ public class NPCManager implements Listener
         PacketReader packetReader = new PacketReader(player, this);
         packetReader.inject();
 
-        Iterator npcsIteator = npcs.entrySet().iterator();
+        Iterator npcsIteator = tracking.entrySet().iterator();
         while (npcsIteator.hasNext())
         {
             Map.Entry pair = (Map.Entry) npcsIteator.next();
@@ -98,7 +114,7 @@ public class NPCManager implements Listener
     {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () ->
         {
-            Iterator npcsIteator = npcs.entrySet().iterator();
+            Iterator npcsIteator = tracking.entrySet().iterator();
             while (npcsIteator.hasNext())
             {
                 Map.Entry pair = (Map.Entry) npcsIteator.next();
@@ -127,8 +143,8 @@ public class NPCManager implements Listener
         }, REFRESH_CHECK_INTERVAL, REFRESH_CHECK_INTERVAL);
     }
 
-    public HashMap<Integer, NPC> getNpcs()
+    public HashMap<Integer, NPC> getTracking()
     {
-        return npcs;
+        return tracking;
     }
 }
