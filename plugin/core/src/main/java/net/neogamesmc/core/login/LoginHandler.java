@@ -1,7 +1,5 @@
 package net.neogamesmc.core.login;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import lombok.val;
@@ -18,10 +16,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import javax.annotation.Nullable;
-
-import java.util.Optional;
 
 /**
  * Processing players joining servers.
@@ -79,30 +73,18 @@ public class LoginHandler implements Listener
         }
     }
 
+    /**
+     * Give developers, plus those above them, operator globally.
+     *
+     * @param event The event
+     */
     @EventHandler
-    public void handleOp(PlayerJoinEvent e)
+    public void opPlayer(PlayerJoinEvent event)
     {
-        val acc = database.fetchAccount(e.getPlayer().getUniqueId()); //Get the acc
-        Futures.addCallback(acc, new FutureCallback<Optional<Account>>()
-        {
-            @Override
-            public void onSuccess(@Nullable Optional<Account> account)
-            {
-                account.ifPresent(a -> {
-                    if (a.role() == Role.DEV || a.role() == Role.OWNER)
-                    {
-                        //Op em
-                        e.getPlayer().setOp(true);
-                    }
-                });
-            }
+        val account = database.cacheFetch(event.getPlayer().getUniqueId());
 
-            @Override
-            public void onFailure(Throwable throwable)
-            {
-
-            }
-        });
+        if (account.role().compare(Role.DEV))
+            event.getPlayer().setOp(true);
     }
 
     /**
