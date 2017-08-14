@@ -1,5 +1,7 @@
 package net.neogamesmc.core.login;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import lombok.val;
@@ -7,13 +9,19 @@ import net.neogamesmc.common.account.Account;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.database.operation.InsertUpdateOperation;
 import net.neogamesmc.common.inject.ParallelStartup;
+import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.issue.Issues;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import javax.annotation.Nullable;
+
+import java.util.Optional;
 
 /**
  * Processing players joining servers.
@@ -56,13 +64,10 @@ public class LoginHandler implements Listener
             {
                 val creating = new Account().fromLogin(event.getUniqueId(), event.getName(), event.getAddress().getHostAddress());
 
-                new InsertUpdateOperation(SQL_RECORD_PLAYER)
-                        .data(creating.uuid(), creating.name(), creating.ip())
-                        .keys(result ->
-                        {
-                            if (result.next())
-                                creating.id = result.getInt(1);
-                        }).sync(database);
+                new InsertUpdateOperation(SQL_RECORD_PLAYER).data(creating.uuid(), creating.name(), creating.ip()).keys(result -> {
+                    if (result.next())
+                        creating.id = result.getInt(1);
+                }).sync(database);
 
                 database.cacheCommit(creating);
             }
@@ -72,6 +77,32 @@ public class LoginHandler implements Listener
             deny(event);
             Issues.handle("Player Login", ex);
         }
+    }
+
+    @EventHandler
+    public void handleOp(PlayerJoinEvent e)
+    {
+        val acc = database.fetchAccount(e.getPlayer().getUniqueId()); //Get the acc
+        Futures.addCallback(acc, new FutureCallback<Optional<Account>>()
+        {
+            @Override
+            public void onSuccess(@Nullable Optional<Account> account)
+            {
+                account.ifPresent(a -> {
+                    if (a.role() == Role.DEV || a.role() == Role.OWNER)
+                    {
+                        //Op em
+                        e.getPlayer().setOp(true);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable throwable)
+            {
+
+            }
+        });
     }
 
     /**
