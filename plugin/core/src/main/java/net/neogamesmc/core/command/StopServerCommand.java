@@ -37,8 +37,9 @@ public class StopServerCommand
     public void run(Player player)
     {
 
-        if(!executed.contains(player.getUniqueId())) {
-            Message.prefix("[Server Stop]").content("Are you sure you want to stop this server? Execute /stop again to confirm").send(player);
+        if (!executed.contains(player.getUniqueId()))
+        {
+            Message.prefix("Server Stop").content("Are you sure you want to stop this server? Execute /stop again to confirm").send(player);
             executed.add(player.getUniqueId());
             return;
         }
