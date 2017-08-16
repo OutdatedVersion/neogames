@@ -43,6 +43,7 @@ public class StopServerCommand
             executed.add(player.getUniqueId());
             return;
         }
+
         new QueuePlayersForGroupPayload("lobby", Players.onlinePlayersUUID()).publish(redis);
 
         // Two seconds later, shutdown
