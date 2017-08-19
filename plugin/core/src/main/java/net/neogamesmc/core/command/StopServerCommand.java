@@ -41,6 +41,11 @@ public class StopServerCommand
         {
             Message.prefix("Server Stop").content("Are you sure you want to stop this server? Execute /stop again to confirm").send(player);
             executed.add(player.getUniqueId());
+            //If the player doesn't repeat the command within 10 seconds, make them type it twice again
+            Scheduler.delayed(() -> {
+                executed.remove(player.getUniqueId());
+                Message.prefix("Server Stop").content("Stop timed out").send(player);
+            }, 200);
             return;
         }
 
