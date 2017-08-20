@@ -15,17 +15,15 @@ import org.bukkit.entity.Player;
  * @author Ben (OutdatedVersion)
  * @since Jun/30/2017 (5:10 PM)
  */
-public class DeployServerInGroupCommand
+public class ProvisionServerInGroupCommand
 {
-
-    // /deploy game chunk_runner
 
     /**
      * Work with our Redis instance
      */
     @Inject private RedisHandler redis;
 
-    @Command ( executor = "deploy" )
+    @Command ( executor = "provision" )
     @Permission ( Role.ADMIN )
     public void run(Player player,
                     @Necessary ( "Please provide a network group" ) String group)
