@@ -87,21 +87,19 @@ public class Message extends ComponentBuilder
         val isURL = Regex.URL.matcher(text).matches();
 
         // By default, we do not retain any formatting... follow through on that if there is no override provided..
-        val retention = options.isEmpty() ? Retention.NOTHING
-                                          : options.stream()
-                                                   .filter(Objects::nonNull)
-                                                   .filter(option -> option.getClass().equals(Retention.class))
-                                                   .findFirst()
-                                                   .map(option -> (Retention) option)
-                                                   .orElse(Retention.NOTHING);
+        val retention = options.stream()
+                               .filter(Objects::nonNull)
+                               .filter(option -> option.getClass().equals(Retention.class))
+                               .findFirst()
+                               .map(option -> (Retention) option)
+                               .orElse(Retention.NOTHING);
 
 
         // Add actual content to message
         append(isURL ? Text.stripProtocol(text) : text, retention.ref);
 
         // Apply options
-        if (!options.isEmpty())
-            options.forEach(option -> option.accept(this));
+        options.forEach(option -> option.accept(this));
 
 
         // Add clickable links; whilst respecting the option to skip over this
