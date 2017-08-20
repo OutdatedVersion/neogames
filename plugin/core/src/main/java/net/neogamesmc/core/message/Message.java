@@ -83,7 +83,7 @@ public class Message extends ComponentBuilder
     public Message content(Object content, MessageOption... optionsRaw)
     {
         val options = Arrays.asList(optionsRaw);
-        val text = (options.contains(MessageOption.NO_LEADING_SPACE) ? "" : " ") + String.valueOf(content).trim();
+        val text = (options.contains(MessageOption.NO_LEADING_SPACE) ? "" : " ") + String.valueOf(content);
         val isURL = Regex.URL.matcher(text).matches();
 
         // By default, we do not retain any formatting... follow through on that if there is no override provided..
