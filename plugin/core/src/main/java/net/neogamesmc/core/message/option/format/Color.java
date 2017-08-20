@@ -97,7 +97,7 @@ public enum Color implements MessageOption
     /**
      * Lookup map of our color representation to the BungeeCord API one.
      */
-    private static final EnumBiMap<ChatColor, Color> RELATION;
+    private static  EnumBiMap<ChatColor, Color> RELATION;
 
     // populate
     static
@@ -105,7 +105,12 @@ public enum Color implements MessageOption
         RELATION = EnumBiMap.create(ChatColor.class, Color.class);
 
         for (ChatColor color : ChatColor.values())
+        {
+            if (color == ChatColor.MAGIC)
+                break;
+
             RELATION.put(color, Color.valueOf(color.name()));
+        }
     }
 
     /**
