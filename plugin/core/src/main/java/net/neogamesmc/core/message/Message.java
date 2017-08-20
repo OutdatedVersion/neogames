@@ -100,7 +100,8 @@ public class Message extends ComponentBuilder
         append(isURL ? Text.stripProtocol(text) : text, retention.ref);
 
         // Apply options
-        options.forEach(option -> option.accept(this));
+        if (!options.isEmpty())
+            options.forEach(option -> option.accept(this));
 
 
         // Add clickable links; whilst respecting the option to skip over this
