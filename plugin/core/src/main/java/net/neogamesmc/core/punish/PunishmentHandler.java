@@ -17,7 +17,7 @@ import net.neogamesmc.common.redis.api.HandlesType;
 import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.issue.Issues;
 import net.neogamesmc.core.scheduler.Scheduler;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

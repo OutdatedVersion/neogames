@@ -9,11 +9,9 @@ import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.format.Color;
 import org.bukkit.entity.Player;
-
-import static net.md_5.bungee.api.ChatColor.RED;
-import static net.md_5.bungee.api.ChatColor.YELLOW;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -44,7 +42,7 @@ public class SwitchServerCommand
     {
         if (server.equalsIgnoreCase(data.name))
         {
-            Message.prefix("Network").content("You are already connected to that server", RED).send(player);
+            Message.prefix("Network").content("You are already connected to that server", Color.RED).send(player);
             return;
         }
 
@@ -59,7 +57,7 @@ public class SwitchServerCommand
     @Command ( executor = { "current", "where", "whereami" } )
     public void whereCommand(Player player)
     {
-        Message.prefix("Network").content("You are currently connected to:").content(data.name, YELLOW).send(player);
+        Message.prefix("Network").content("You are currently connected to:").content(data.name, Color.YELLOW).send(player);
     }
 
     /**
@@ -72,7 +70,7 @@ public class SwitchServerCommand
     {
         if (data.name.startsWith("lobby"))
         {
-            Message.prefix("Network").content("You are already connected to a lobby!", RED).sendAsIs(player);
+            Message.prefix("Network").content("You are already connected to a lobby!", Color.RED).sendAsIs(player);
             return;
         }
 

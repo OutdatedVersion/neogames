@@ -9,7 +9,8 @@ import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.CommandHandler;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.format.Color;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -69,7 +70,7 @@ public class SelfCommand
         if (account.role() != role)
         {
             account.role(role, database, redis);
-            Message.start().content("Your role has been updated to").bold(true).content(Text.fromEnum(role), role.color).bold(true).sendAsIs(player);
+            Message.start().content("Your role has been updated to").bold(true).content(Text.fromEnum(role), Color.from(role.color)).bold(true).sendAsIs(player);
         }
 
         // OP them

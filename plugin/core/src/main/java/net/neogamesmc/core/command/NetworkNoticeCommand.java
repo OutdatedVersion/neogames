@@ -11,8 +11,9 @@ import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
+import net.neogamesmc.core.message.option.format.Color;
 import net.neogamesmc.core.player.Players;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
@@ -61,7 +62,7 @@ public class NetworkNoticeCommand
                     @Necessary ( "Please supply a message" ) String[] message)
     {
         new NetworkNoticePayload(parseTarget(targetServer), Text.convertArray(message)).publish(redis);
-        Message.prefix("Network").content("Now propagating network notification", YELLOW).send(player);
+        Message.prefix("Network").content("Now propagating network notification", Color.YELLOW).send(player);
     }
 
     /**

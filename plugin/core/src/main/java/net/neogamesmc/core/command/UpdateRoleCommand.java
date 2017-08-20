@@ -13,15 +13,14 @@ import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.event.UpdatePlayerRoleEvent;
 import net.neogamesmc.core.issue.Issues;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.Messages;
+import net.neogamesmc.core.message.option.format.Color;
 import net.neogamesmc.core.scheduler.Scheduler;
-import net.neogamesmc.core.text.Message;
-import net.neogamesmc.core.text.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Optional;
-
-import static net.md_5.bungee.api.ChatColor.RED;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -78,7 +77,7 @@ public class UpdateRoleCommand
                 if (role == null)
                 {
                     Message.prefix("Account").player(account.name()).content("currently possess")
-                            .content(Text.fromEnum(account.role()), account.role().color).send(player);
+                            .content(Text.fromEnum(account.role()), Color.from(account.role().color)).send(player);
                     return;
                 }
 
@@ -88,15 +87,15 @@ public class UpdateRoleCommand
                 // Don't allow any changes past the player's own role
                 if (role.compare(ourRole))
                 {
-                    Message.prefix("Permissions").content("You may only set roles below your own", RED).send(player);
+                    Message.prefix("Permissions").content("You may only set roles below your own", Color.RED).send(player);
                     return;
                 }
 
                 // Detour players attempting to update some
                 // account possessing a role ranked higher than them.
-                if (account.role().compare(ourRole) && account.role() != Role.DEV) //Devs may need to change their role to something lower in order to test things.
+                if (account.role().compare(ourRole))
                 {
-                    Message.prefix("Permissions").content("You may not alter that player's role", RED).send(player);
+                    Message.prefix("Permissions").content("You may not alter that player's role", Color.RED).send(player);
                     return;
                 }
 
@@ -105,7 +104,7 @@ public class UpdateRoleCommand
                 Message.prefix("Account").content("You have updated the role of")
                         .player(account.name())
                         .content("to")
-                        .content(Text.fromEnum(role), role.color)
+                        .content(Text.fromEnum(role), Color.from(role.color))
                         .send(player);
             }
             catch (Exception ex)
@@ -136,7 +135,7 @@ public class UpdateRoleCommand
 
             // Inform human
             Message.prefix("Account").content("Your role has been updated to")
-                                     .content(Text.fromEnum(payload.role), payload.role.color)
+                                     .content(Text.fromEnum(payload.role), Color.from(payload.role.color))
                                      .send(player);
         });
     }

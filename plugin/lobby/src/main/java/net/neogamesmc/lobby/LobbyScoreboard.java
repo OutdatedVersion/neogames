@@ -19,7 +19,7 @@ import org.bukkit.event.Listener;
 import redis.clients.jedis.Jedis;
 
 import static net.md_5.bungee.api.ChatColor.*;
-import static net.neogamesmc.core.text.Colors.bold;
+import static net.neogamesmc.core.message.Colors.bold;
 
 /**
  * @author Ben (OutdatedVersion)

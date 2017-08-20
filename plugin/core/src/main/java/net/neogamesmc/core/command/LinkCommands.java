@@ -1,9 +1,8 @@
 package net.neogamesmc.core.command;
 
-import net.md_5.bungee.api.ChatColor;
-import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.command.api.annotation.Command;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.format.Color;
 import org.bukkit.entity.Player;
 
 /**
@@ -43,8 +42,8 @@ public class LinkCommands
      */
     private static void message(Player player, String address)
     {
-        Message.start().content("Join us at", ChatColor.GRAY).bold(true)
-                       .content("https://" + address, ChatColor.GREEN, Text::stripProtocol).bold(true)
+        Message.start().content("Join us at", Color.GRAY).bold(true)
+                       .content("https://" + address, Color.GREEN).bold(true)
                        .send(player);
     }
 

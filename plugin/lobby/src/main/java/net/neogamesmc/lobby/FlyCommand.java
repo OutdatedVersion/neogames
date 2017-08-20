@@ -6,17 +6,14 @@ import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Permission;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.format.Color;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-
-import static net.md_5.bungee.api.ChatColor.GREEN;
-import static net.md_5.bungee.api.ChatColor.RED;
-import static net.md_5.bungee.api.ChatColor.YELLOW;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -41,7 +38,7 @@ public class FlyCommand implements Listener
     {
         if (player.getGameMode() == GameMode.CREATIVE)
         {
-            Message.prefix("Lobby").content("May want to get out of creative mode before using this. ;)", YELLOW).send(player);
+            Message.prefix("Lobby").content("May want to get out of creative mode before using this. ;)", Color.YELLOW).sendAsIs(player);
             return;
         }
 
@@ -53,7 +50,7 @@ public class FlyCommand implements Listener
         player.setFlying(nowUsing);
 
         // Inform
-        Message.prefix("Lobby").content("Flight is now " + (nowUsing ? "enabled" : "disabled"), nowUsing ? GREEN : RED).send(player);
+        Message.prefix("Lobby").content("Flight is now " + (nowUsing ? "enabled" : "disabled"), nowUsing ? Color.GREEN : Color.RED).send(player);
     }
 
     /**

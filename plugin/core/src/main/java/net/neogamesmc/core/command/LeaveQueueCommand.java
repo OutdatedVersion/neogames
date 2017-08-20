@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import net.neogamesmc.common.payload.RemoveFromQueuePayload;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.core.command.api.annotation.Command;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
 import org.bukkit.entity.Player;
 
 /**

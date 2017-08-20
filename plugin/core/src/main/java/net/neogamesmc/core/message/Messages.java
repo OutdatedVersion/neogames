@@ -1,8 +1,9 @@
-package net.neogamesmc.core.text;
+package net.neogamesmc.core.message;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.neogamesmc.core.message.option.format.Color;
 import net.neogamesmc.core.player.Players;
 import org.bukkit.entity.Player;
 
@@ -19,12 +20,12 @@ public class Messages
     /**
      * The default "missing permission" to send players.
      */
-    public static Message PERMISSION = Message.prefix("Permissions").content("You are lacking the permission to do this.", ChatColor.RED);
+    public static Message PERMISSION = Message.prefix("Permissions").content("You are lacking the permission to do this.", Color.RED);
 
     /**
      * The default message to send players if we couldn't run a command.
      */
-    public static Message FAILED_TO_EXECUTE = Message.prefix("Commands").content("Failed to execute command", ChatColor.RED);
+    public static Message FAILED_TO_EXECUTE = Message.prefix("Commands").content("Failed to execute command", Color.RED);
 
     /**
      * Send a special message to every online player that is OP.
@@ -60,8 +61,8 @@ public class Messages
      */
     public static void noAccount(Player player, String provided)
     {
-        Message.prefix("Fetch").content("Failed to find player by name:", ChatColor.RED)
-                               .content(provided, ChatColor.YELLOW).send(player);
+        Message.prefix("Fetch").content("Failed to find player by name:", Color.RED)
+                               .content(provided, Color.YELLOW).send(player);
     }
 
 }

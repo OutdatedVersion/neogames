@@ -7,7 +7,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import lombok.val;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.neogamesmc.common.database.Database;
@@ -22,8 +21,9 @@ import net.neogamesmc.core.command.api.satisfier.PlayerSatisfier;
 import net.neogamesmc.core.command.api.satisfier.RoleSatisfier;
 import net.neogamesmc.core.command.api.satisfier.StringArraySatisfier;
 import net.neogamesmc.core.issue.Issues;
-import net.neogamesmc.core.text.Message;
-import net.neogamesmc.core.text.Messages;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.Messages;
+import net.neogamesmc.core.message.option.format.Color;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,13 +32,18 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkState;
-import static net.md_5.bungee.api.ChatColor.*;
-import static net.neogamesmc.core.text.Message.prefix;
+import static net.md_5.bungee.api.ChatColor.GRAY;
+import static net.md_5.bungee.api.ChatColor.YELLOW;
+import static net.neogamesmc.core.message.Message.prefix;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -310,7 +315,7 @@ public class CommandHandler implements Listener
                 {
                     if (necessary != null)
                     {
-                        prefix("Commands").content(necessary.value(), ChatColor.RED).send(player);
+                        prefix("Commands").content(necessary.value(), Color.RED).send(player);
                         return;
                     }
                     else
@@ -349,7 +354,7 @@ public class CommandHandler implements Listener
                         val fail = provider.fail(next);
 
                         if (fail != null)
-                            Message.prefix("Commands").content(fail, RED).send(player);
+                            Message.prefix("Commands").content(fail, Color.RED).send(player);
 
                         return;
                     }
@@ -386,7 +391,7 @@ public class CommandHandler implements Listener
             info.role = perm.value();
             info.permissionMessage = perm.note().equals("DEFAULT_MESSAGE")
                                      ? Messages.PERMISSION
-                                     : prefix("Permissions").content(perm.note(), RED);
+                                     : prefix("Permissions").content(perm.note(), Color.RED);
         }
         else
         {

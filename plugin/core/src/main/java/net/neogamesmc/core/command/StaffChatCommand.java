@@ -12,11 +12,11 @@ import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.format.Color;
 import net.neogamesmc.core.player.Players;
-import net.neogamesmc.core.text.Message;
 import org.bukkit.entity.Player;
 
-import static net.md_5.bungee.api.ChatColor.WHITE;
 import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
 
 /**
@@ -71,7 +71,7 @@ public class StaffChatCommand
     public void display(StaffChatPayload payload)
     {
         Players.stream(Role.MOD, database).forEach(entry ->
-            entry.getLeft().sendMessage(Message.start().content("Staff Chat", WHITE).bold(true)
+            entry.getLeft().sendMessage(Message.start().content("Staff Chat", Color.WHITE).bold(true)
                     .append(" " + Text.fromEnum(payload.role) + " " + payload.name, NONE).color(payload.role.color)
                     .append(" " + payload.message).color(ChatColor.YELLOW).create())
         );

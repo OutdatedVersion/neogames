@@ -6,10 +6,10 @@ import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Permission;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.format.Color;
 import org.bukkit.entity.Player;
 
-import static net.md_5.bungee.api.ChatColor.GREEN;
 import static net.neogamesmc.common.payload.RequestProxyActionPayload.Action.PURGE_PUNISHMENT_CACHE;
 
 /**
@@ -29,7 +29,7 @@ public class PurgeProxyPunishmentCacheCommand
     public void execute(Player player)
     {
         new RequestProxyActionPayload(PURGE_PUNISHMENT_CACHE).publish(redis);
-        Message.prefix("Network").content("Propagating request to purge cache", GREEN).send(player);
+        Message.prefix("Network").content("Propagating request to purge cache", Color.GREEN).send(player);
     }
 
 }

@@ -9,7 +9,8 @@ import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.format.Color;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -35,7 +36,7 @@ public class MessageCommand
 
         if (targetPlayer == null)
         {
-            Message.prefix("Messaging").content("We could not find any player by that name", ChatColor.RED).send(player);
+            Message.prefix("Messaging").content("We could not find any player by that name", Color.RED).send(player);
             return;
         }
 
@@ -53,7 +54,7 @@ public class MessageCommand
 
             if (targetPlayer == null)
             {
-                Message.prefix("Messaging").content("That player is no longer online", ChatColor.RED).send(player);
+                Message.prefix("Messaging").content("That player is no longer online", Color.RED).send(player);
                 return;
             }
 
@@ -61,7 +62,7 @@ public class MessageCommand
         }
         else
         {
-            Message.prefix("Messaging").content("You have not messaged anyone recently", ChatColor.RED).send(player);
+            Message.prefix("Messaging").content("You have not messaged anyone recently", Color.RED).send(player);
         }
     }
 

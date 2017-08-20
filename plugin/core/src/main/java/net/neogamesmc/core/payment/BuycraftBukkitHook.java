@@ -13,8 +13,9 @@ import net.neogamesmc.common.redis.api.FromChannel;
 import net.neogamesmc.common.redis.api.HandlesType;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.event.UpdatePlayerRoleEvent;
+import net.neogamesmc.core.message.option.format.Color;
 import net.neogamesmc.core.player.Players;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
 import org.bukkit.Bukkit;
 
 import static net.md_5.bungee.api.ChatColor.*;
@@ -56,8 +57,8 @@ public class BuycraftBukkitHook
         val all = Message.prefix("NeoGames").content("Thanks to")
                 .player(payload.name)
                 .content("for supporting our network at")
-                .content("neogamesmc.buycraft.net", RED)
-                .content("!", GRAY).create();
+                .content("neogamesmc.buycraft.net", Color.RED)
+                .content("!", Color.GRAY).create();
 
         Players.stream().filter(player -> !player.getName().equals(payload.name))
                         .forEach(player -> player.sendMessage(all));

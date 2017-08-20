@@ -3,7 +3,6 @@ package net.neogamesmc.core.command;
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import lombok.val;
-import net.md_5.bungee.api.ChatColor;
 import net.neogamesmc.common.backend.ServerConfiguration;
 import net.neogamesmc.common.payload.RawSwitchServerPayload;
 import net.neogamesmc.common.redis.RedisHandler;
@@ -11,8 +10,9 @@ import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.format.Color;
 import net.neogamesmc.core.player.Players;
-import net.neogamesmc.core.text.Message;
 import org.bukkit.entity.Player;
 
 import java.util.stream.Collectors;
@@ -51,8 +51,8 @@ public class SendPlayersCommand
         new RawSwitchServerPayload(server, target).publish(redis);
 
         // Inform
-        Message.prefix("Send").content("Forcing").content(target.length, ChatColor.GREEN)
-        .content("player" + (target.length > 1 ? "s" : "") + " to").content(server, ChatColor.YELLOW).send(player);
+        Message.prefix("Send").content("Forcing").content(target.length, Color.GREEN)
+        .content("player" + (target.length > 1 ? "s" : "") + " to").content(server, Color.YELLOW).send(player);
     }
 
     /**

@@ -3,11 +3,11 @@ package net.neogamesmc.core.command;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.google.inject.Inject;
-import net.md_5.bungee.api.ChatColor;
 import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.issue.Issues;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.format.Color;
 import org.bukkit.entity.Player;
 
 import java.io.InputStream;
@@ -44,9 +44,9 @@ public class VersionCommand
         {
             final BuildData data = new Gson().fromJson(stream, BuildData.class);
 
-            message = Message.start().content("NeoGames", ChatColor.GOLD).bold(true)
-                           .newLine().content("Build Version: ", ChatColor.GRAY).content(data.build, ChatColor.YELLOW)
-                           .newLine().content("Built/deployed by: ").content(data.by, ChatColor.YELLOW);
+            message = Message.start().content("NeoGames", Color.GOLD).bold(true)
+                           .newLine().content("Build Version: ", Color.GRAY).content(data.build, Color.YELLOW)
+                           .newLine().content("Deployed by: ").content(data.by, Color.YELLOW);
         }
         catch (Exception ex)
         {

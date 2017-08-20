@@ -2,7 +2,6 @@ package net.neogamesmc.core.command;
 
 import com.google.gson.Gson;
 import com.google.inject.Inject;
-import net.md_5.bungee.api.ChatColor;
 import net.neogamesmc.common.backend.ServerConfiguration;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.payload.SendDiscordMessagePayload;
@@ -11,7 +10,8 @@ import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.bukkit.Plugin;
 import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.format.Color;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
@@ -53,7 +53,7 @@ public class BugCommand {
             String dateFormatted = formatter.format(date);
 
             String message = ":bug:  New bug reported in server **" + serverData.name + "**, using build **" + data.build + "**\n**Description: **" + Text.convertArray(desc) + " -" + player.getName() + "\n**Server Time:** " + dateFormatted;
-            Message.prefix("Bug").content("Bug report sent to developers, thank you", ChatColor.GREEN).send(player);
+            Message.prefix("Bug").content("Bug report sent to developers, thank you", Color.GREEN).send(player);
             new SendDiscordMessagePayload(CHANNEL_ID, message).publish(redisHandler);
 
         } catch (IOException e) {

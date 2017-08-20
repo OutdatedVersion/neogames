@@ -15,11 +15,13 @@ import net.neogamesmc.common.payload.PunishmentPayload;
 import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.redis.api.HandlesType;
 import net.neogamesmc.common.reference.Role;
-import net.neogamesmc.common.text.Text;
 import net.neogamesmc.common.time.TimeFormatting;
 import net.neogamesmc.core.issue.Issues;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.MessageOption;
+import net.neogamesmc.core.message.option.format.Color;
+import net.neogamesmc.core.message.option.format.Style;
 import net.neogamesmc.core.player.Players;
-import net.neogamesmc.core.text.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -32,7 +34,10 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
-import static net.md_5.bungee.api.ChatColor.*;
+import static net.md_5.bungee.api.ChatColor.GRAY;
+import static net.md_5.bungee.api.ChatColor.RED;
+import static net.md_5.bungee.api.ChatColor.WHITE;
+import static net.md_5.bungee.api.ChatColor.YELLOW;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -46,7 +51,7 @@ public class Chat implements Listener
     /**
      * The message used to let players know that chat is currently disabled when they attempt to send a message.
      */
-    private static final Message SILENCE_INFORM = Message.start().content("Chat is currently disabled.", RED).bold(true).italic(true);
+    private static final Message SILENCE_INFORM = Message.start().content("Chat is currently disabled.", Color.RED, Style.BOLD, Style.ITALIC);
 
     /**
      * SQL query to grab active mutes on a player's account.
@@ -85,7 +90,7 @@ public class Chat implements Listener
     public void toggleChat()
     {
         this.isSilenced = !isSilenced;
-        Message.start().content("Public chat has been " + (isSilenced ? "disabled." : "enabled."), RED).italic(true).bold(true).sendAsIs();
+        Message.start().content("Public chat has been " + (isSilenced ? "disabled." : "enabled."), Color.RED, Style.BOLD, Style.ITALIC).sendAsIs();
     }
 
     @EventHandler
@@ -129,17 +134,17 @@ public class Chat implements Listener
         if (role != Role.PLAYER)
         {
             // start with the player's display role
-            builder.content(role.name.toUpperCase() + " ", role.color, String::trim).bold(true);
+            builder.content(role.name.toUpperCase(), Color.from(role.color)).bold(true);
         }
 
 
         // username -- gray w/o role, green if present
-        builder.content(name, role == Role.PLAYER ? GRAY : GREEN, role == Role.PLAYER ? String::trim : null);
+        builder.content(role == Role.PLAYER ? name : " " + name, role == Role.PLAYER ? Color.GRAY : Color.GREEN, MessageOption.NO_LEADING_SPACE);
 
 
         // Add the message content to the final message
         for (String word : event.getMessage().split(" "))
-            builder.content(word, WHITE, Text::stripProtocol);
+            builder.content(word, Color.WHITE);
 
 
         // Send out the message

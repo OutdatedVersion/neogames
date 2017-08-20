@@ -11,7 +11,7 @@ import net.neogamesmc.common.redis.RedisHandler;
 import net.neogamesmc.common.redis.api.HandlesType;
 import net.neogamesmc.core.issue.Issues;
 import net.neogamesmc.core.scheduler.Scheduler;
-import net.neogamesmc.core.text.Colors;
+import net.neogamesmc.core.message.Colors;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;

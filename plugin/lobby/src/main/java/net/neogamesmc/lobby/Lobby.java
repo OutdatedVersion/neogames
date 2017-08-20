@@ -17,13 +17,12 @@ import net.neogamesmc.core.hotbar.HotbarItem;
 import net.neogamesmc.core.inventory.ItemBuilder;
 import net.neogamesmc.core.npc.NPCManager;
 import net.neogamesmc.core.scoreboard.PlayerSidebarManager;
-import net.neogamesmc.core.text.Colors;
+import net.neogamesmc.core.message.Colors;
 import net.neogamesmc.lobby.news.News;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -50,7 +49,7 @@ import static net.md_5.bungee.api.ChatColor.*;
 import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
 import static net.neogamesmc.core.npc.NPCType.GO_TO_GAME;
 import static net.neogamesmc.core.npc.NPCType.TEAM_MEMBER;
-import static net.neogamesmc.core.text.Colors.bold;
+import static net.neogamesmc.core.message.Colors.bold;
 import static org.bukkit.Material.BOW;
 import static org.bukkit.Material.COMPASS;
 import static org.bukkit.Material.NETHER_STAR;
@@ -166,9 +165,9 @@ public class Lobby extends Plugin
         dejay.lineSet(1, ChatColor.YELLOW + "" + net.md_5.bungee.api.ChatColor.BOLD + "NPC " + net.md_5.bungee.api.ChatColor.RESET + org.bukkit.ChatColor.YELLOW + " " + dejay.getName());
         dejay.skinSet("eyJ0aW1lc3RhbXAiOjE1MDI1ODQzOTE2NTMsInByb2ZpbGVJZCI6IjlmMTViZjM4OTZkZDRkMGNiYTNiY2M2ZTQ0NzQwMmVjIiwicHJvZmlsZU5hbWUiOiJEZUpheTY0MjQiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2RhMGU5M2I5ZTRmMzZmNjI0ZDRlNzJkZWYwMTEzNjZlYWM3NWIxYjNjMWRjODA1Y2YwYWU0M2Q5MDA2MSJ9fX0=", "JWCGgfVSD/NpliHn0cSs3eNOYbFT4+mJnblSxNSKkiUyYMELBmhXYVyXzBZXnO75FDhSODbcgCiyvRcqOLszAQtEkFI0UmqgBLPauNVjAe57g7MnGyc4kys+svYuVytwfeY+EDxj9sKnQdWUYN5t35ccZ7HCFSK85mhEJM86qm78Ae9GKSGOdddkWEVHwM+aqCVSOu6zUb+ffUIgkq2++81h8cAPmH2P9ESKD7Mcs1T+dimaOcEfT7mzsi4vFiLu1oQNMAmDnGAOoFxAYzRvuod2YITHRHsrp9GUuHV8WGYUWuUAf5apj5OYVgjAnJa8xMfNm+cRz82yh2AJMNyQ0RbVZr6oAQ3+joRxLDqxs+snuGaDL6haDNl6I+oSwz1DkzxT7Dw8ztXjVqngutt9HUu0F3uxqIaN/MpSL5aKPPeu7l5huYwS7EZ8cgLVBiKQoLeRPfqD1R+2PJR3M2IUwb3LI+g/VWMzPLuvYG6CsX6cC6nYdI3vyRZGoBsknIu30kdJTZXw94gCSEsBvSbft0y3VhSe4qYlEkWLAUY39rOi6Gh/+3WGxzH++1U63Wc7h7GqSceuJZrk45zc6l4WFvmbeRkbF5lpyHK4zQ7cYQkmP5lvSModuazzjqS8wLv6b23Lr51IQxeizw9aJgd6rNaLbWgKKNmBCpSYCUaHvyk=");
 
-        val jp = manager.createNewNPC(TEAM_MEMBER,"Jp78",new Location(lobby,-18.666,65,37,-178.3f,5.4f));
-        jp.data("quote","eeks dee");
-        jp.lineSet(1,ChatColor.GREEN + "" + ChatColor.BOLD + "NPC" + ChatColor.RESET + jp.getName());
+        val jp = manager.createNewNPC(TEAM_MEMBER, "Jp78", new Location(lobby,-18.666,65,37,-178.3f,5.4f));
+        jp.data("quote", "eeks dee");
+        jp.lineSet(1, ChatColor.GREEN + "" + ChatColor.BOLD + "NPC" + ChatColor.RESET + jp.getName());
         jp.skinSet("eyJ0aW1lc3RhbXAiOjE1MDI4NTYxMjEwMTQsInByb2ZpbGVJZCI6IjBkODg3YmZhZDdlNzQxMDY4ZWU3MDZkNjEzMzg0ZDUwIiwicHJvZmlsZU5hbWUiOiJKcDc4Iiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS80NTNiNWJhODUyZTg0ZWI5YTY0NDM1OGM2MmMzYzllOTZmZGYyNTUzOGI5ZTYyM2U3MWJjNzE3M2JlNzZiIn0sIkNBUEUiOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS81YzNjYTdlZTJhNDk4ZjFiNWQyNThkNWZhOTI3ZTYzZTQzMzE0M2FkZDU1MzhjZjYzYjZhOWI3OGFlNzM1In19fQ==","Uj9FyrOtupKjFLrj/35VImuGrooXwsOBCm5TUFIG/1VuBVD3SM6QWZAlK6arFUnSWoVUwl1cTLAEnHk1p7oldmdWTr+wbF10UuzPSfGW9o0LSYxGE9HMDV6QHkmdlkz3ANVHosVWKQndhu9ALMs+Xy4n9aTmBEivn6cvyfmty12/v8LVsoq4/sIhjUgxGY6wHYZs9mgWhDiLMf7nGHqiBi8+nprqHj4tvLANWcOYaqv1OojtPwCwKzT+2lgcJGDg+0BOihZRZc8Vy0fuPnLe8zHG77VgRTnlAXZAqBdRv/Qqh78dye11vYIkYvSEi1O32nPppwqUp54JEjfDXY9QueyNPAMouhXyxYjuyUKHZ5UFi2I2yZXyNrFZ3oPjLlQlBgVpRhuWJLxIxcPzbeHv8rL6BBibnmratXhtjViWUL18PLRuch7AQ5jMqQ9mVjEItv4NDem2ZJC6tYZ2+RoukWpLblfOtLiAZxYKXdzQFAPuP+82kNFKE4BKvk6hvAet0k3APwxa6VH1qirO8SfpRX+1CV0QC5spsFRuqqHIg/nCBaM5KBIZJAHdSDhBz9F0XUfR83GnbfsSOmvo78QO/VyXZoCByj2FUJTJ0lBmZJeKtGQ4Dm0cO93BAL1z7THKOgcjSw7KbgTvvG5bhHmN+Uup1iimk0tAf6KksM46Fn4=");
 
         // EVENT
@@ -184,8 +183,6 @@ public class Lobby extends Plugin
     public void disable()
     {
         database.release();
-
-        spawnLocation.getWorld().getEntities().stream().filter(entity -> entity.hasMetadata("send-server")).forEach(Entity::remove);
     }
 
     @EventHandler ( priority = EventPriority.LOWEST )
@@ -201,8 +198,12 @@ public class Lobby extends Plugin
 
         scoreboard.create(event.getPlayer());
 
-        event.getPlayer().sendTitle(BUILDER.subtitle(new ComponentBuilder("Welcome back, ")
-                .append(event.getPlayer().getName()).color(DARK_GREEN).append("!", NONE).create()).build());
+        event.getPlayer().sendTitle(BUILDER.subtitle(
+                new ComponentBuilder("Welcome back, ")
+                             .append(event.getPlayer().getName()).color(DARK_GREEN)
+                             .append("!", NONE)
+                             .create()
+        ).build());
     }
 
     @EventHandler

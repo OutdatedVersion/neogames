@@ -2,10 +2,10 @@ package net.neogamesmc.core.command.messaging;
 
 import com.google.inject.Inject;
 import lombok.val;
-import net.md_5.bungee.api.ChatColor;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.core.command.api.annotation.Command;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.format.Color;
 import org.bukkit.entity.Player;
 
 /**
@@ -33,7 +33,7 @@ public class ToggleMessageCommand
         // invert setting
         account.message(!account.messages(), database);
 
-        Message.prefix("Messaging").content("You now have messaging " + (account.messages() ? "enabled" : "disabled"), account.messages() ? ChatColor.GREEN : ChatColor.RED).send(player);
+        Message.prefix("Messaging").content("You now have messaging " + (account.messages() ? "enabled" : "disabled"), account.messages() ? Color.GREEN : Color.RED).send(player);
     }
 
 }

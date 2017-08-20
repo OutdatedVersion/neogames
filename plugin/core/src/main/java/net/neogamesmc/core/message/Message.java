@@ -1,18 +1,20 @@
-package net.neogamesmc.core.text;
+package net.neogamesmc.core.message;
 
 import lombok.val;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
 import net.neogamesmc.common.regex.Regex;
 import net.neogamesmc.common.text.Text;
+import net.neogamesmc.core.message.option.MessageOption;
+import net.neogamesmc.core.message.option.event.Click;
+import net.neogamesmc.core.message.option.format.Color;
+import net.neogamesmc.core.message.option.format.Retention;
 import net.neogamesmc.core.player.Players;
 import org.bukkit.entity.Player;
 
-import java.util.function.Function;
+import java.util.Arrays;
 
-import static net.md_5.bungee.api.ChatColor.*;
+import static net.md_5.bungee.api.ChatColor.DARK_AQUA;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -80,42 +82,40 @@ public class Message extends ComponentBuilder
      */
     public Message content(Object text)
     {
-        return content(text, ChatColor.GRAY, null);
-    }
-
-    /**
-     * @param text The text
-     * @param color The color
-     * @return this builder
-     */
-    public Message content(Object text, ChatColor color)
-    {
-        return content(text, color, null);
+        return content(text, Color.GRAY);
     }
 
     /**
      * Add something onto this message.
      *
      * @param content The text to add
-     * @param color Color of the text
-     * @param textFormatter Function to format text
      * @return This message builder
      */
-    public Message content(Object content, ChatColor color, Function<String, String> textFormatter)
+    public Message content(Object content, MessageOption... optionsRaw)
     {
-        val text = " " + String.valueOf(content);
+        val options = Arrays.asList(optionsRaw);
+        val text = (options.contains(MessageOption.NO_LEADING_SPACE) ? "" : " ") + String.valueOf(content).trim();
+        val isURL = Regex.URL.matcher(text).matches();
+
+        // By default, we do not retain any formatting... follow through on that if there is no override provided..
+        val retention = options.stream()
+                               .filter(option -> option.getClass().equals(Retention.class))
+                               .findFirst()
+                               .map(option -> (Retention) option)
+                               .orElse(Retention.NOTHING);
+
 
         // Add actual content to message
-        append(textFormatter != null ? textFormatter.apply(text) : text, FormatRetention.NONE).color(color);
+        append(isURL ? Text.stripProtocol(text) : text, retention.ref);
 
-        // Add clickable links
-        val trim = text.trim().toLowerCase();
+        // Apply options
+        options.forEach(option -> option.accept(this));
 
-        if (Regex.URL.matcher(trim).matches())
-        {
-            this.event(new ClickEvent(ClickEvent.Action.OPEN_URL, (trim.startsWith("http") || trim.startsWith("https")) ? trim : "http://" + trim));
-            this.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to visit: ").color(GRAY).append(Text.stripProtocol(text)).color(AQUA).bold(true).create()));
-        }
+
+        // Add clickable links; whilst respecting the option to skip over this
+        if (!options.contains(MessageOption.DO_NOT_HOTLINK))
+            if (isURL)
+                Click.url(text).accept(this);
 
         return this;
     }
@@ -139,7 +139,7 @@ public class Message extends ComponentBuilder
      */
     public Message player(String name)
     {
-        return content(name, ChatColor.GREEN);
+        return content(name, Color.GREEN);
     }
 
     /**

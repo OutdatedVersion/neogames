@@ -3,7 +3,8 @@ package net.neogamesmc.core.player;
 import com.google.common.base.Joiner;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.reference.Role;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.format.Color;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -14,9 +15,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static net.md_5.bungee.api.ChatColor.GREEN;
-import static net.md_5.bungee.api.ChatColor.YELLOW;
-import static net.neogamesmc.core.text.Message.start;
+import static net.neogamesmc.core.message.Message.start;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -98,7 +97,7 @@ public class Players
         if (target.length() > 16)
         {
             if (inform)
-                start().content(target, YELLOW).content("is too long! (>16 characters)").sendAsIs(host);
+                start().content(target, Color.YELLOW).content("is too long! (>16 characters)").sendAsIs(host);
 
             return null;
         }
@@ -108,7 +107,7 @@ public class Players
             if (!Character.isLetterOrDigit(character) && character != '_')
             {
                 if (inform)
-                    start().content(target, YELLOW).content("is not a valid name!").sendAsIs(host);
+                    start().content(target, Color.YELLOW).content("is not a valid name!").sendAsIs(host);
 
                 return null;
             }
@@ -126,13 +125,13 @@ public class Players
             if (inform)
             {
                 if (matches.size() != 0)
-                    start().content("Matches for ").content(target, YELLOW).content(" (").content(String.valueOf(matches.size()), GREEN).content(")").sendAsIs(host);
+                    start().content("Matches for ").content(target, Color.YELLOW).content(" (").content(String.valueOf(matches.size()), Color.GREEN).content(")").sendAsIs(host);
 
                 if (matches.size() > 0)
                 {
                     final Message message = start().content("Matched names: ");
 
-                    matches.forEach(match -> message.content(match.getName(), YELLOW).content(", "));
+                    matches.forEach(match -> message.content(match.getName(), Color.YELLOW).content(", "));
                     message.sendAsIs(host);
                 }
             }

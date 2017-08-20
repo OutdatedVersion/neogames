@@ -3,7 +3,8 @@ package net.neogamesmc.core.punish;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.neogamesmc.common.payload.PunishmentPayload;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.format.Color;
 import org.bukkit.entity.Player;
 
 import java.util.function.BiConsumer;
@@ -32,7 +33,7 @@ public enum PunishmentType
                              .append("\nBan ID: ").color(GRAY).append("#" + data.id).color(WHITE).create())
         );
 
-        Message.start().content("A player has been removed from your server for abuse.", RED).bold(true).sendAsIs();
+        Message.start().content("A player has been removed from your server for abuse.", Color.RED).bold(true).sendAsIs();
     }, ":hammer: -id **-target** has been banned by **-issued_by**. This will expire -expire.\n**Reason:** -reason"),
 
     /**

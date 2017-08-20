@@ -10,7 +10,8 @@ import net.neogamesmc.common.text.Text;
 import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.command.api.annotation.SubCommand;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.format.Color;
 import org.bukkit.entity.Player;
 
 /**
@@ -30,7 +31,7 @@ public class MOTDCommand
     public void baseCommand(Player player)
     {
         // TODO(Ben): help system
-        Message.prefix("Ping Response").content("Invalid usage", ChatColor.RED).send(player);
+        Message.prefix("Ping Response").content("Invalid usage", Color.RED).send(player);
     }
 
     @SubCommand ( of = "motd", executors = "max" )
@@ -39,7 +40,7 @@ public class MOTDCommand
     {
         new ModifyMOTDPayload(null, count).publish(redis);
 
-        Message.prefix("Ping Response").content("Updated max player count to ").content(count, ChatColor.YELLOW).send(player);
+        Message.prefix("Ping Response").content("Updated max player count to ").content(count, Color.YELLOW).send(player);
     }
 
     @SubCommand ( of = "motd", executors = "line" )
@@ -54,7 +55,7 @@ public class MOTDCommand
         Message.prefix("Ping Response")
                 .content("Updated line to [")
                 .content(ChatColor.translateAlternateColorCodes('&', modified))
-                .content("]", ChatColor.GRAY)
+                .content("]", Color.GRAY)
                 .send(player);
     }
 

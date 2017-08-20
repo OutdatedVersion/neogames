@@ -1,4 +1,4 @@
-package net.neogamesmc.core.text;
+package net.neogamesmc.core.message;
 
 import net.md_5.bungee.api.ChatColor;
 

@@ -1,14 +1,14 @@
 package net.neogamesmc.core.command;
 
 import com.google.inject.Inject;
-import net.md_5.bungee.api.ChatColor;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.database.operation.RawFetchOperation;
 import net.neogamesmc.common.reference.Role;
 import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.issue.Issues;
-import net.neogamesmc.core.text.Message;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.format.Color;
 import org.bukkit.entity.Player;
 
 /**
@@ -32,7 +32,7 @@ public class AccountCountCommand
             new RawFetchOperation("SELECT COUNT(iid) FROM accounts;").task(set ->
             {
                 if (set.next())
-                    Message.prefix("Database").content("Currently tracking").content(set.getInt(1), ChatColor.YELLOW).content("accounts").send(player);
+                    Message.prefix("Database").content("Currently tracking").content(set.getInt(1), Color.YELLOW).content("accounts").send(player);
             }).async(database);
         }
         catch (Exception ex)

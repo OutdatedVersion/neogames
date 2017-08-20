@@ -5,7 +5,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.inject.Inject;
 import lombok.val;
-import net.md_5.bungee.api.ChatColor;
 import net.neogamesmc.common.backend.ServerConfiguration;
 import net.neogamesmc.common.payload.RawSwitchServerPayload;
 import net.neogamesmc.common.redis.RedisHandler;
@@ -14,8 +13,9 @@ import net.neogamesmc.core.command.api.annotation.Command;
 import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.issue.Issues;
+import net.neogamesmc.core.message.Message;
+import net.neogamesmc.core.message.option.format.Color;
 import net.neogamesmc.core.scheduler.Scheduler;
-import net.neogamesmc.core.text.Message;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
@@ -76,7 +76,7 @@ public class FindGoToCommands
                 if (server.equals("NO"))
                     Message.prefix("Locator").player(target).content("is not currently online").send(player);
                 else
-                    Message.prefix("Locator").player(target).content("is on").content(server, ChatColor.YELLOW).send(player);
+                    Message.prefix("Locator").player(target).content("is on").content(server, Color.YELLOW).send(player);
             }
             catch (Exception ex)
             {
