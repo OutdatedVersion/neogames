@@ -134,7 +134,7 @@ public class Chat implements Listener
         if (role != Role.PLAYER)
         {
             // start with the player's display role
-            builder.content(role.name.toUpperCase(), Color.from(role.color)).bold(true);
+            builder.content(role.name.toUpperCase(), Color.from(role.color), Style.BOLD);
         }
 
 

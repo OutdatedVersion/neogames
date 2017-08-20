@@ -13,6 +13,7 @@ import net.neogamesmc.core.player.Players;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import static net.md_5.bungee.api.ChatColor.DARK_AQUA;
 
@@ -88,6 +89,7 @@ public class Message extends ComponentBuilder
         // By default, we do not retain any formatting... follow through on that if there is no override provided..
         val retention = options.isEmpty() ? Retention.NOTHING
                                           : options.stream()
+                                                   .filter(Objects::nonNull)
                                                    .filter(option -> option.getClass().equals(Retention.class))
                                                    .findFirst()
                                                    .map(option -> (Retention) option)
