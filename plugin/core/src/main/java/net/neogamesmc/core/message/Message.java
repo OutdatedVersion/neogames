@@ -24,18 +24,6 @@ public class Message extends ComponentBuilder
 {
 
     /**
-     * Whether or not we're currently working
-     * with bold text.
-     */
-    private boolean isBold = false;
-
-    /**
-     * Whether or not we're currently working
-     * with italicised text.
-     */
-    private boolean isItalic = false;
-
-    /**
      * @param prefix The prefix
      */
     private Message(String prefix)
