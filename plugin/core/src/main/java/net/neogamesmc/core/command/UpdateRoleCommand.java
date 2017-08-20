@@ -93,7 +93,8 @@ public class UpdateRoleCommand
 
                 // Detour players attempting to update some
                 // account possessing a role ranked higher than them.
-                if (account.role().compare(ourRole))
+                // Developers may set a role below their own
+                if (account.role().compare(ourRole) && !(ourRole == Role.DEV && ourRole.compare(account.role())))
                 {
                     Message.prefix("Permissions").content("You may not alter that player's role", Color.RED).send(player);
                     return;
