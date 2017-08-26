@@ -84,6 +84,16 @@ public class NeoGames extends Plugin
     }
 
     /**
+     * Run a task asynchronously at a certain time period later.
+     *
+     * @param runnable The task to run
+     */
+    public void asyncDelayed(Runnable runnable, long val, TimeUnit unit)
+    {
+        ProxyServer.getInstance().getScheduler().schedule(this, () -> async(runnable), val, 0, unit);
+    }
+
+    /**
      * Run a task synchronously.
      *
      * @param runnable The task to run

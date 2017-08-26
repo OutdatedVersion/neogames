@@ -1,4 +1,4 @@
-package net.neogamesmc.bungee.limbo;
+package net.neogamesmc.bungee.limbo.handle;
 
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
