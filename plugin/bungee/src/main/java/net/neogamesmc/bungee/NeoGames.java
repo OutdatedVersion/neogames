@@ -80,7 +80,7 @@ public class NeoGames extends Plugin
      */
     public void async(Runnable runnable)
     {
-        ProxyServer.getInstance().getScheduler().runAsync(this, runnable);
+        getProxy().getScheduler().runAsync(this, runnable);
     }
 
     /**
@@ -90,7 +90,7 @@ public class NeoGames extends Plugin
      */
     public void asyncDelayed(Runnable runnable, long val, TimeUnit unit)
     {
-        ProxyServer.getInstance().getScheduler().schedule(this, () -> async(runnable), val, 0, unit);
+        getProxy().getScheduler().schedule(this, () -> async(runnable), val, 0, unit);
     }
 
     /**
@@ -98,9 +98,9 @@ public class NeoGames extends Plugin
      *
      * @param runnable The task to run
      */
-    public void sync(Runnable runnable)
+    public void schedule(Runnable runnable, long val, TimeUnit unit)
     {
-        runnable.run();
+        getProxy().getScheduler().schedule(this, runnable, val, unit);
     }
 
 }

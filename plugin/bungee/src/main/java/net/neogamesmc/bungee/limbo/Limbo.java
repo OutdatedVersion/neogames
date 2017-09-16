@@ -1,35 +1,28 @@
 package net.neogamesmc.bungee.limbo;
 
-import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import io.netty.channel.ChannelFutureListener;
 import lombok.Data;
 import lombok.val;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.protocol.packet.KeepAlive;
 import net.md_5.bungee.protocol.packet.Kick;
 import net.neogamesmc.bungee.NeoGames;
-import net.neogamesmc.bungee.limbo.netty.ChannelInitializer;
+import net.neogamesmc.bungee.limbo.handle.LimboTask;
 import net.neogamesmc.bungee.limbo.netty.LimboDownstream;
 
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Ben (OutdatedVersion)
  * @since Aug/24/2017 (4:00 PM)
  */
 @Singleton
-public class Limbo implements Listener, Runnable
+public class Limbo
 {
 
     /**
@@ -43,12 +36,16 @@ public class Limbo implements Listener, Runnable
     public static final String REQ_SEND_TO_LIMBO = "neogames|send-to-limbo";
 
     /**
-     *
+     * The text used to keep the user aware of where they are.
+     * <p>
+     * This is sent primarily on an <strong>action bar</strong>.
      */
     public static final BaseComponent[] MESSAGE_IN_LIMBO = new ComponentBuilder("You are currently in limbo").color(ChatColor.DARK_AQUA).italic(true).create();
 
     /**
-     *
+     * The text used to inform the user of where they are.
+     * <p>
+     * Sent when first entering limbo (the first and all subsequent times).
      */
     public static final BaseComponent[] MESSAGE_ENTERING_LIMBO = new ComponentBuilder("You are now entering limbo").color(ChatColor.DARK_AQUA).italic(true).create();
 
@@ -57,72 +54,41 @@ public class Limbo implements Listener, Runnable
      */
     @Inject private ProxyServer proxy;
 
-    /**
-     *
-     */
-    private final NeoGames plugin;
+    @Inject private NeoGames plugin;
 
-    /**
-     *
-     */
-    private Map<UUID, LimboPlayer> present = Maps.newConcurrentMap();
-
-    @Inject
-    public Limbo(NeoGames plugin)
-    {
-        this.plugin = plugin;
-    }
-
-    @Override
-    public void run()
-    {
-        for (LimboPlayer entry : present.values())
-        {
-            // let them know they're in limbo
-            entry.connection.sendMessage(ChatMessageType.ACTION_BAR, MESSAGE_IN_LIMBO);
-
-            // open up a connection and maintain it
-            val initializer = new ChannelInitializer(entry.connection);
-
-            ChannelFutureListener listener = future ->
-            {
-                if (future.isSuccess())
-                {
-                    //
-                    future.channel().close();
-
-                    entry.connection.unsafe().sendPacket(new KeepAlive(ThreadLocalRandom.current().nextInt()));
-
-                    plugin.asyncDelayed(() ->
-                    {
-
-                    }, 5, TimeUnit.SECONDS);
-                }
-                else
-                {
-                    // issue?
-                }
-            };
-        }
-    }
+    private Map<UUID, LimboData> data;
 
     public void sendTo(UserConnection connection)
     {
+        val uuid = connection.getUniqueId();
 
+        if (!data.containsKey(uuid))
+        {
+            data.put(uuid, new LimboData(
+                    new LimboTask(plugin, connection, connection.getServer(), false).schedule(),
+                    connection,
+                    System.currentTimeMillis()
+            ));
+        }
     }
 
-    public void removeFrom()
+    public void removeFrom(UserConnection connection)
     {
+        val limboData = data.remove(connection.getUniqueId());
 
+        if (limboData != null)
+        {
+            limboData.task.end();
+            connection.sendMessage("Limbo - Send to lobby");
+        }
     }
 
     @Data
-    private static class LimboPlayer
+    private static class LimboData
     {
-        private UserConnection connection;
-        private long enteredAt;
-        private long lastUpdatedAt;
-        private boolean removeOnNextCycle;
+        final LimboTask task;
+        final UserConnection connection;
+        final long enteredAt;
     }
 
 }
