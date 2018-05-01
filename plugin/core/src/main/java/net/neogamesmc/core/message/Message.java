@@ -2,6 +2,7 @@ package net.neogamesmc.core.message;
 
 import lombok.val;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.neogamesmc.common.regex.Regex;
 import net.neogamesmc.common.text.Text;
@@ -207,6 +208,16 @@ public class Message
     {
         builder.obfuscated(obfuscated);
         return this;
+    }
+
+    /**
+     * Build the builder.
+     *
+     * @return Every component within the delegated builder
+     */
+    public BaseComponent[] create()
+    {
+        return builder.create();
     }
 
     /**
