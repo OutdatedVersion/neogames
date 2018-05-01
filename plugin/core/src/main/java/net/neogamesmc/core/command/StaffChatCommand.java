@@ -1,7 +1,6 @@
 package net.neogamesmc.core.command;
 
 import com.google.inject.Inject;
-import net.md_5.bungee.api.ChatColor;
 import net.neogamesmc.common.backend.ServerConfiguration;
 import net.neogamesmc.common.database.Database;
 import net.neogamesmc.common.payload.StaffChatPayload;
@@ -14,10 +13,9 @@ import net.neogamesmc.core.command.api.annotation.Necessary;
 import net.neogamesmc.core.command.api.annotation.Permission;
 import net.neogamesmc.core.message.Message;
 import net.neogamesmc.core.message.option.format.Color;
+import net.neogamesmc.core.message.option.format.Retention;
 import net.neogamesmc.core.player.Players;
 import org.bukkit.entity.Player;
-
-import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
 
 /**
  * @author Ben (OutdatedVersion)
@@ -72,8 +70,8 @@ public class StaffChatCommand
     {
         Players.stream(Role.MOD, database).forEach(entry ->
             entry.getLeft().sendMessage(Message.start().content("Staff Chat", Color.WHITE).bold(true)
-                    .append(" " + Text.fromEnum(payload.role) + " " + payload.name, NONE).color(payload.role.color)
-                    .append(" " + payload.message).color(ChatColor.YELLOW).create())
+                    .content(" " + Text.fromEnum(payload.role) + " " + payload.name, Retention.NOTHING, Color.from(payload.role.color))
+                    .content(" " + payload.message, Color.YELLOW).create())
         );
     }
 
