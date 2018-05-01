@@ -3,10 +3,10 @@ package net.neogamesmc.core.npc;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
-import net.minecraft.server.v1_11_R1.Packet;
+import net.minecraft.server.v1_12_R1.Packet;
 import net.neogamesmc.common.payload.QueuePlayersForGroupPayload;
 import net.neogamesmc.core.message.Colors;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
