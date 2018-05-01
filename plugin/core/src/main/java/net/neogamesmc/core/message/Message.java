@@ -21,15 +21,20 @@ import static net.md_5.bungee.api.ChatColor.DARK_AQUA;
  * @author Ben (OutdatedVersion)
  * @since Jun/29/2017 (7:45 PM)
  */
-public class Message extends ComponentBuilder
+public class Message
 {
+
+    /**
+     * The {@link ComponentBuilder} that this item serves as a delegate.
+     */
+    private final ComponentBuilder builder;
 
     /**
      * @param prefix The prefix
      */
     private Message(String prefix)
     {
-        super(prefix == null ? "" : (prefix + " »"));
+        this.builder = new ComponentBuilder(prefix == null ? "" : (prefix + " »"));
 
         if (prefix != null)
             this.color(DARK_AQUA);
@@ -61,7 +66,7 @@ public class Message extends ComponentBuilder
      */
     public Message newLine()
     {
-        append("\n");
+        builder.append("\n");
         return this;
     }
 
@@ -96,16 +101,16 @@ public class Message extends ComponentBuilder
 
 
         // Add actual content to message
-        append(isURL ? Text.stripProtocol(text) : text, retention.ref);
+        builder.append(isURL ? Text.stripProtocol(text) : text, retention.ref);
 
         // Apply options
-        options.forEach(option -> option.accept(this));
+        options.forEach(option -> option.accept(builder));
 
 
         // Add clickable links; whilst respecting the option to skip over this
         if (!options.contains(MessageOption.DO_NOT_HOTLINK))
             if (isURL)
-                Click.url(text).accept(this);
+                Click.url(text).accept(builder);
 
         return this;
     }
@@ -138,10 +143,9 @@ public class Message extends ComponentBuilder
      * @param color The color
      * @return This message
      */
-    @Override
     public Message color(ChatColor color)
     {
-        super.color(color);
+        builder.color(color);
         return this;
     }
 
@@ -151,10 +155,9 @@ public class Message extends ComponentBuilder
      * @param bold Bold or not
      * @return The message
      */
-    @Override
     public Message bold(boolean bold)
     {
-        super.bold(bold);
+        builder.bold(bold);
         return this;
     }
 
@@ -164,10 +167,9 @@ public class Message extends ComponentBuilder
      * @param italic Italic or not
      * @return The message
      */
-    @Override
     public Message italic(boolean italic)
     {
-        super.italic(italic);
+        builder.italic(italic);
         return this;
     }
 
@@ -177,10 +179,9 @@ public class Message extends ComponentBuilder
      * @param underlined Underlined or not
      * @return The message
      */
-    @Override
     public Message underlined(boolean underlined)
     {
-        super.underlined(underlined);
+        builder.underlined(underlined);
         return this;
     }
 
@@ -190,10 +191,9 @@ public class Message extends ComponentBuilder
      * @param strikethrough strikethrough or not
      * @return The message
      */
-    @Override
     public Message strikethrough(boolean strikethrough)
     {
-        super.strikethrough(strikethrough);
+        builder.strikethrough(strikethrough);
         return this;
     }
 
@@ -203,10 +203,9 @@ public class Message extends ComponentBuilder
      * @param obfuscated Obfuscation
      * @return This message
      */
-    @Override
     public Message obfuscated(boolean obfuscated)
     {
-        super.obfuscated(obfuscated);
+        builder.obfuscated(obfuscated);
         return this;
     }
 
@@ -218,7 +217,7 @@ public class Message extends ComponentBuilder
      */
     public Player send(Player player)
     {
-        player.sendMessage(this.append(".").color(ChatColor.GRAY).create());
+        player.sendMessage(builder.append(".").color(ChatColor.GRAY).create());
         return player;
     }
 
@@ -228,7 +227,7 @@ public class Message extends ComponentBuilder
      */
     public Player sendAsIs(Player player)
     {
-        player.sendMessage(this.create());
+        player.sendMessage(builder.create());
         return player;
     }
 
@@ -237,7 +236,7 @@ public class Message extends ComponentBuilder
      */
     public void send()
     {
-        val message = this.append(".").color(ChatColor.GRAY).create();
+        val message = builder.append(".").color(ChatColor.GRAY).create();
 
         Players.stream().forEach(player -> player.sendMessage(message));
     }
@@ -247,7 +246,7 @@ public class Message extends ComponentBuilder
      */
     public void sendAsIs()
     {
-        val message = this.create();
+        val message = builder.create();
         Players.stream().forEach(player -> player.sendMessage(message));
     }
 
